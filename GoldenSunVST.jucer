@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="CPaC87" name="GoldenSunVST" projectType="audioplug" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
+              companyName="Vincent Dortel" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
+              pluginManufacturer="Vincent Dortel" pluginManufacturerCode="vdor"
+              pluginCode="GSVS" pluginFormats="buildVST" headerPath="..\..\Source\External\VST2_SDK\"
+              pluginAAXCategory="1">
+  <MAINGROUP id="XewrLe" name="GoldenSunVST">
+    <GROUP id="{AB811691-7DBF-4F63-1906-E59A98BEADA6}" name="Source">
+      <GROUP id="{405652EB-31C9-5857-B68F-FFEF24333993}" name="External">
+        <GROUP id="{0AC24816-AB03-CBEF-E3E3-CDBFEDB8B387}" name="Audiofile">
+          <FILE id="qHeOgl" name="AudioFile.h" compile="0" resource="0" file="Source/External/Audiofile/AudioFile.h"/>
+        </GROUP>
+        <GROUP id="{2B9BD0BE-EEBE-5F75-9C54-57F2CBCBC2F9}" name="tinysoundfont">
+          <FILE id="lcgKsQ" name="tsf.h" compile="0" resource="0" file="Source/External/tinysoundfont/tsf.h"/>
+        </GROUP>
+      </GROUP>
+      <GROUP id="{54AB33D5-7631-593D-D44C-158595ED9452}" name="GS">
+        <FILE id="ZO1k3T" name="GSPresets.cpp" compile="1" resource="0" file="Source/GS/GSPresets.cpp"/>
+        <FILE id="zkhh5E" name="GSPresets.h" compile="0" resource="0" file="Source/GS/GSPresets.h"/>
+        <FILE id="whaxlr" name="GSReverb.cpp" compile="1" resource="0" file="Source/GS/GSReverb.cpp"/>
+        <FILE id="jv5DMK" name="GSReverb.h" compile="0" resource="0" file="Source/GS/GSReverb.h"/>
+        <FILE id="tleD7I" name="GSSynths.cpp" compile="1" resource="0" file="Source/GS/GSSynths.cpp"/>
+        <FILE id="YS2MQz" name="GSSynths.h" compile="0" resource="0" file="Source/GS/GSSynths.h"/>
+      </GROUP>
+      <GROUP id="{DEBD2038-DFFD-DE5A-26CF-0AB5E2E1842D}" name="Processor">
+        <FILE id="zrtV8O" name="ChannelState.cpp" compile="1" resource="0"
+              file="Source/Processor/ChannelState.cpp"/>
+        <FILE id="gR7RxA" name="ChannelState.h" compile="0" resource="0" file="Source/Processor/ChannelState.h"/>
+        <FILE id="DODQXL" name="Instrument.cpp" compile="1" resource="0" file="Source/Processor/Instrument.cpp"/>
+        <FILE id="KlDasL" name="Instrument.h" compile="0" resource="0" file="Source/Processor/Instrument.h"/>
+        <FILE id="UNlYCx" name="Processor.cpp" compile="1" resource="0" file="Source/Processor/Processor.cpp"/>
+        <FILE id="DBi5ul" name="Processor.h" compile="0" resource="0" file="Source/Processor/Processor.h"/>
+        <FILE id="NcHTe2" name="Resampler.cpp" compile="1" resource="0" file="Source/Processor/Resampler.cpp"/>
+        <FILE id="jJMrTa" name="Resampler.h" compile="0" resource="0" file="Source/Processor/Resampler.h"/>
+        <FILE id="f9GKgX" name="ReverbEffect.cpp" compile="1" resource="0"
+              file="Source/Processor/ReverbEffect.cpp"/>
+        <FILE id="moFp1I" name="ReverbEffect.h" compile="0" resource="0" file="Source/Processor/ReverbEffect.h"/>
+        <FILE id="mcPC8L" name="SampleInstrument.cpp" compile="1" resource="0"
+              file="Source/Processor/SampleInstrument.cpp"/>
+        <FILE id="gqP66g" name="SampleInstrument.h" compile="0" resource="0"
+              file="Source/Processor/SampleInstrument.h"/>
+        <FILE id="XGeJmP" name="Types.h" compile="0" resource="0" file="Source/Processor/Types.h"/>
+      </GROUP>
+      <GROUP id="{E137C3F8-EB38-8C00-8790-D4644645478F}" name="Presets">
+        <FILE id="A0HdkS" name="Presets.cpp" compile="1" resource="0" file="Source/Presets/Presets.cpp"/>
+        <FILE id="C5VpmB" name="Presets.h" compile="0" resource="0" file="Source/Presets/Presets.h"/>
+        <FILE id="qO06O7" name="PresetsHandler.cpp" compile="1" resource="0"
+              file="Source/Presets/PresetsHandler.cpp"/>
+        <FILE id="MAxtGd" name="PresetsHandler.h" compile="0" resource="0"
+              file="Source/Presets/PresetsHandler.h"/>
+      </GROUP>
+      <GROUP id="{2F236CAC-DABF-AB53-7CFE-C54FE5CFEC70}" name="GUI">
+        <FILE id="MZf5me" name="ControlsTab.cpp" compile="1" resource="0" file="Source/GUI/ControlsTab.cpp"/>
+        <FILE id="wNbcZG" name="ControlsTab.h" compile="0" resource="0" file="Source/GUI/ControlsTab.h"/>
+        <FILE id="Djjz81" name="CustomLookAndFeel.cpp" compile="1" resource="0"
+              file="Source/GUI/CustomLookAndFeel.cpp"/>
+        <FILE id="kzXvRn" name="CustomLookAndFeel.h" compile="0" resource="0"
+              file="Source/GUI/CustomLookAndFeel.h"/>
+        <FILE id="NXCWNt" name="LevelMeter.cpp" compile="1" resource="0" file="Source/GUI/LevelMeter.cpp"/>
+        <FILE id="YuyQYr" name="LevelMeter.h" compile="0" resource="0" file="Source/GUI/LevelMeter.h"/>
+        <FILE id="zg8SrP" name="MainWindow.cpp" compile="1" resource="0" file="Source/GUI/MainWindow.cpp"/>
+        <FILE id="g3XwBd" name="MainWindow.h" compile="0" resource="0" file="Source/GUI/MainWindow.h"/>
+        <FILE id="VdUvPS" name="OverviewTab.cpp" compile="1" resource="0" file="Source/GUI/OverviewTab.cpp"/>
+        <FILE id="tuDAHy" name="OverviewTab.h" compile="0" resource="0" file="Source/GUI/OverviewTab.h"/>
+        <FILE id="Yks0hX" name="PresetCombo.cpp" compile="1" resource="0" file="Source/GUI/PresetCombo.cpp"/>
+        <FILE id="ZaEWoO" name="PresetCombo.h" compile="0" resource="0" file="Source/GUI/PresetCombo.h"/>
+        <FILE id="Cu24TI" name="PropertyListener.h" compile="0" resource="0"
+              file="Source/GUI/PropertyListener.h"/>
+        <FILE id="Q5acsS" name="SettingsWindow.cpp" compile="1" resource="0"
+              file="Source/GUI/SettingsWindow.cpp"/>
+        <FILE id="KorccJ" name="SettingsWindow.h" compile="0" resource="0"
+              file="Source/GUI/SettingsWindow.h"/>
+        <FILE id="ltZJBB" name="SliderEx.cpp" compile="1" resource="0" file="Source/GUI/SliderEx.cpp"/>
+        <FILE id="XF2D8b" name="SliderEx.h" compile="0" resource="0" file="Source/GUI/SliderEx.h"/>
+      </GROUP>
+      <GROUP id="{C9B90C71-BE79-F4FF-B956-133D1CCBAD20}" name="Resources">
+        <FILE id="f92nJX" name="gsfont.ttf" compile="0" resource="1" file="Source/Resources/gsfont.ttf"/>
+      </GROUP>
+    </GROUP>
+  </MAINGROUP>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
+  <EXPORTFORMATS>
+    <VS2022 targetFolder="Builds/VisualStudio2022">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="GoldenSunVST" headerPath="..\..\Source\"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="GoldenSunVST" headerPath="..\..\Source\"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="../juce-7.0.7-windows/modules"/>
+        <MODULEPATH id="juce_core" path="../juce-7.0.7-windows/modules"/>
+        <MODULEPATH id="juce_events" path="../juce-7.0.7-windows/modules"/>
+        <MODULEPATH id="juce_graphics" path="../juce-7.0.7-windows/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../juce-7.0.7-windows/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../juce-7.0.7-windows/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../juce-7.0.7-windows/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../juce-7.0.7-windows/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../juce-7.0.7-windows/modules"/>
+      </MODULEPATHS>
+    </VS2022>
+  </EXPORTFORMATS>
+</JUCERPROJECT>
