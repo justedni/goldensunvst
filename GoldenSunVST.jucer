@@ -100,15 +100,15 @@
         <CONFIGURATION isDebug="0" name="Release" targetName="GoldenSunVST" headerPath="..\..\Source\"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_audio_basics" path="../juce-7.0.7-windows/modules"/>
-        <MODULEPATH id="juce_core" path="../juce-7.0.7-windows/modules"/>
-        <MODULEPATH id="juce_events" path="../juce-7.0.7-windows/modules"/>
-        <MODULEPATH id="juce_graphics" path="../juce-7.0.7-windows/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../juce-7.0.7-windows/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../juce-7.0.7-windows/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../juce-7.0.7-windows/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../juce-7.0.7-windows/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../juce-7.0.7-windows/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="Source/Externals/Juce/modules"/>
+        <MODULEPATH id="juce_core" path="Source/Externals/Juce/modules"/>
+        <MODULEPATH id="juce_events" path="Source/Externals/Juce/modules"/>
+        <MODULEPATH id="juce_graphics" path="Source/Externals/Juce/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="Source/Externals/Juce/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="Source/Externals/Juce/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="Source/Externals/Juce/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="Source/Externals/Juce/modules"/>
+        <MODULEPATH id="juce_data_structures" path="Source/Externals/Juce/modules"/>
       </MODULEPATHS>
     </VS2022>
   </EXPORTFORMATS>
