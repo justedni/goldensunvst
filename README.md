@@ -3,7 +3,7 @@
 ## goldensunvst
 __goldensunvst__ is a VST plugin to play and experiment with music from the two Golden Sun games on the GBA.
 It is fully compatible with MIDI and SF2 files exported with GBA Mus Ripper.
-The low-level algorithms are based on __agbplay__ by ipatix.
+The low-level algorithms are based on [agbplay](https://github.com/ipatix/agbplay) by ipatix.
 
 The goal of this plugin is to offer an alternative to general soundfont plugins with the following features:
 - most accurate versions of the Golden Sun specific synthesizers (thanks to ipatix disassembly work)
@@ -38,3 +38,8 @@ I'm using the following libraries, just slightly modified to remove some compile
 - parameter automation is not implemented yet
 - sounfont samples are only "mono" for now. This is not a limitation if you use GBA Mus Ripper soundfonts. Stereo samples (basically, two regions, one with 100% left pan an another with 100% right) will be handled later.
 - you can experiment with ADSR and PWM sliders but I haven't implemented a "save new preset" feature yet. All included presets are read-only and your changes won't be saved when you close your DAW.
+
+### Thanks
+Massive thanks to __ipatix__ for his incredible work on agbplay.
+
+Special thanks to __FreeJusticeHere__ for testing and giving me feedback on the plugin. And for his invaluable knowledge on Golden Sun samples!
