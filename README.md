@@ -36,7 +36,7 @@ I'm using the following libraries, just slightly modified to remove some compile
 - for now, the VST only includes a partial port of agbplay's code. I only took what I needed for Golden Sun 1 & 2. The VST was only tested on those two games (which is why it's called "Golden Sun VST" and not "GBA VST", I plan to make it work with other GBA games in the future.
 - some midi events are not handled yet
 - parameter automation is not implemented yet
-- sounfont samples are only "mono" for now. This is not a limitation if you use GBA Mus Ripper soundfonts. Stereo samples (basically, two regions, one with 100% left pan an another with 100% right) will be handled later.
+- soundfont samples are only "mono" for now. This is not a limitation if you use GBA Mus Ripper soundfonts. Stereo samples (basically, two regions, one with 100% left pan and another with 100% right) will be handled later.
 - you can experiment with ADSR and PWM sliders but I haven't implemented a "save new preset" feature yet. All included presets are read-only and your changes won't be saved when you close your DAW.
 
 ### Thanks
