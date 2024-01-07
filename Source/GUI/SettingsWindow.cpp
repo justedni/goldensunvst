@@ -48,6 +48,8 @@ void SettingsWindow::paint(juce::Graphics& g)
     g.setFont(9);
     g.drawText("ipatix: creator of agbplay", 0, 130, width, 20, juce::Justification::centredRight);
     g.drawText("FreeJusticeHere: feedback and sample wisdom", 0, 140, width, 20, juce::Justification::centredRight);
+    g.setFont(8);
+    g.drawText("v0.1 alpha", 0, getHeight() - 15, width, 15, juce::Justification::centredRight);
 }
 
 void SettingsWindow::resized()
