@@ -212,7 +212,7 @@ void ChannelState::setPreset(int presetId, const PresetsHandler& presets)
 {
     for (auto* preset : presets.m_presets)
     {
-        if (preset->id == presetId)
+        if (preset->programid == presetId)
         {
             m_preset = preset;
             m_envelope = ADSR(preset->getADSR());
@@ -230,7 +230,7 @@ void ChannelState::resetPreset()
 
 int ChannelState::getCurrentPreset() const
 {
-    return m_preset ? m_preset->id : -1;
+    return m_preset ? m_preset->programid : -1;
 }
 
 void ChannelState::updateADSR(const ADSR& in_adsr)

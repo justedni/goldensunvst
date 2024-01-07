@@ -87,7 +87,7 @@ private:
 
     int m_detectedBPM = -1;
 
-    Preset* m_preset = nullptr;
+    const Preset* m_preset = nullptr;
 
     ADSR m_envelope;
     PWMData m_pwmData;

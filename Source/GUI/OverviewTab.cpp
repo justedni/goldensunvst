@@ -64,7 +64,7 @@ void GlobalViewTab::paint(juce::Graphics& g)
 
         g.setFont(10);
         g.setColour(m_channelDescs[i].m_deviceColour);
-        g.drawText(m_channelDescs[i].m_deviceName, 240, currentY, 50, 20, juce::Justification::centredLeft);
+        g.drawText(m_channelDescs[i].m_deviceName, 240, currentY, 60, 20, juce::Justification::centredLeft);
         currentY += 22;
     }
 
@@ -78,20 +78,19 @@ void GlobalViewTab::resized()
     for (int i = 0; i < 10; i++)
     {
         m_channelDescs[i].m_presetCombo->setBounds(30, currentY, 200, 20);
-        m_channelDescs[i].m_meter->setBounds(290, currentY, 100, 20);
+        m_channelDescs[i].m_meter->setBounds(300, currentY, 100, 20);
         currentY += 22;
     }
 }
 
 void GlobalViewTab::presetComboChanged(int channel)
 {
-    auto selectedId = m_channelDescs[channel].m_presetCombo->getSelectedId();
+    auto selectedId = m_channelDescs[channel].m_presetCombo->getSelectedProgramId();
 
     auto& channelState = m_audioProcessor.GetChannelState(channel);
     channelState.setPreset(selectedId, m_audioProcessor.getPresets());
 
     refresh();
-    //m_mainTab.refresh(selectedChannel);
 }
 
 void GlobalViewTab::refresh()
@@ -102,8 +101,7 @@ void GlobalViewTab::refresh()
     {
         auto& desc = m_channelDescs[i];
         auto selection = m_audioProcessor.GetChannelState(i).getCurrentPreset();
-        if (desc.m_presetCombo->getSelectedId() != selection)
-            desc.m_presetCombo->setSelectedId(selection);
+        desc.m_presetCombo->setSelectedProgram(selection);
 
         if (auto it = programsInfo.find(selection); it != programsInfo.end())
         {

@@ -26,18 +26,18 @@ class Preset
 {
 public:
     Preset(int in_id, EPresetType in_type, std::string&& in_name)
-        : id(in_id)
+        : programid(in_id)
         , type(in_type)
         , name(std::move(in_name))
     {}
     virtual ~Preset() {}
 
-    virtual Instrument* createPlayingInstance(const Note& note) = 0;
+    virtual Instrument* createPlayingInstance(const Note& note) const = 0;
     virtual EDSPType getDSPType() const = 0;
     virtual const ADSR& getADSR() const = 0;
     virtual void getPWMData(PWMData&) const {}
 
-    const int id;
+    const int programid;
     const EPresetType type;
     const std::string name;
 };
@@ -51,7 +51,7 @@ public:
         , adsr(std::move(in_adsr))
     {}
 
-    Instrument* createPlayingInstance(const Note& note) final;
+    Instrument* createPlayingInstance(const Note& note) const final;
     EDSPType getDSPType() const final { return synthType; }
     const ADSR& getADSR() const final { return adsr; }
 
@@ -70,7 +70,7 @@ public:
         , pwmdata(std::move(in_data))
     {}
 
-    Instrument* createPlayingInstance(const Note& note) final;
+    Instrument* createPlayingInstance(const Note& note) const final;
     EDSPType getDSPType() const final { return EDSPType::ModPulse; }
     const ADSR& getADSR() const final { return adsr; }
     void getPWMData(PWMData& out_data) const final { out_data = pwmdata; }
@@ -84,7 +84,7 @@ class SamplePreset : public Preset
 public:
     SamplePreset(int in_id, std::string&& in_name, std::string&& in_filepath, ADSR&& in_adsr, SampleInfo&& in_info);
 
-    Instrument* createPlayingInstance(const Note& note) final;
+    Instrument* createPlayingInstance(const Note& note) const final;
     EDSPType getDSPType() const final { return EDSPType::PCM; }
     const ADSR& getADSR() const final { return info.adsr; }
 
@@ -106,7 +106,7 @@ public:
         , samples(std::move(in_samples))
     {}
 
-    Instrument* createPlayingInstance(const Note& note) final;
+    Instrument* createPlayingInstance(const Note& note) const final;
     EDSPType getDSPType() const final;
     const ADSR& getADSR() const final;
 

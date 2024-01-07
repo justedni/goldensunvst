@@ -158,7 +158,7 @@ void ControlsTab::channelComboChanged()
 void ControlsTab::presetComboChanged()
 {
     auto selectedChannel = m_comboChannel->getSelectedId();
-    auto selectedId = m_comboPreset->getSelectedId();
+    auto selectedId = m_comboPreset->getSelectedProgramId();
 
     auto& channelState = m_audioProcessor.GetChannelState(selectedChannel - 1);
     channelState.setPreset(selectedId, m_audioProcessor.getPresets());
@@ -261,7 +261,7 @@ void ControlsTab::refresh()
     const auto& channelState = m_audioProcessor.GetChannelState(m_currentMidiChannel);
 
     auto currentChannelPreset = channelState.getCurrentPreset();
-    m_comboPreset->setSelectedId(currentChannelPreset);
+    m_comboPreset->setSelectedProgram(currentChannelPreset);
 
     m_sliderVolume->setValue(channelState.getVolume());
     m_sliderPan->setValue(channelState.getPan());

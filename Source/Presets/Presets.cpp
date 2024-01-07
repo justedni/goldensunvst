@@ -16,14 +16,14 @@ namespace GSVST {
 const ADSR SoundfontPreset::m_emptyADSR;
 
 //-----------------------------------------------------------------------------
-Instrument* SynthPreset::createPlayingInstance(const Note& note)
+Instrument* SynthPreset::createPlayingInstance(const Note& note) const
 {
     assert(synthType == EDSPType::Saw || synthType == EDSPType::Tri);
     return GSSynth::createSynth(synthType, note);
 }
 
 //-----------------------------------------------------------------------------
-Instrument* PWMSynthPreset::createPlayingInstance(const Note& note)
+Instrument* PWMSynthPreset::createPlayingInstance(const Note& note) const
 {
     return GSPWMSynth::createPWMSynth(pwmdata, note);
 }
@@ -39,7 +39,7 @@ SamplePreset::SamplePreset(int in_id, std::string&& in_name, std::string&& in_fi
 }
 
 
-Instrument* SamplePreset::createPlayingInstance(const Note& note)
+Instrument* SamplePreset::createPlayingInstance(const Note& note) const
 {
     auto* sampleInfo = new SampleInfo(info);
     sampleInfo->numChannels = static_cast<uint8_t>(audioFile->getNumChannels());
@@ -62,7 +62,7 @@ bool SamplePreset::loadFile()
 }
 
 //-----------------------------------------------------------------------------
-Instrument* SoundfontPreset::createPlayingInstance(const Note& note)
+Instrument* SoundfontPreset::createPlayingInstance(const Note& note) const
 {
     auto noteNum = note.midiKeyPitch;
     auto found = std::find_if(samples.begin(), samples.end(), [noteNum](auto& s) { return noteNum >= s.keyRange.first && noteNum <= s.keyRange.second; });
