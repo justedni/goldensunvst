@@ -80,7 +80,7 @@ private:
     int m_samplesPerBlockComputation = 0;
 
     uint8_t volume = 77;
-    uint8_t pan = 64;
+    int8_t pan = 0;
     int16_t pitchWheel = 0;
     uint8_t modWheel = 0;
     const uint8_t lfoSpeed = 40; // 0x28
