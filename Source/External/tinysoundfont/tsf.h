@@ -436,6 +436,7 @@ struct tsf_region
 	int freqModLFO, modLfoToPitch;
 	float delayVibLFO;
 	int freqVibLFO, vibLfoToPitch;
+	tsf_char20 sampleName;
 };
 
 struct tsf_preset
@@ -820,6 +821,7 @@ static int tsf_load_presets(tsf* res, struct tsf_hydra *hydra, unsigned int font
 
 								// Fixup sample positions
 								pshdr = &hydra->shdrs[pigen->genAmount.wordAmount];
+								strncpy(zoneRegion.sampleName, pshdr->sampleName, 20);
 								zoneRegion.offset += pshdr->start;
 								zoneRegion.end += pshdr->end;
 								zoneRegion.loop_start += pshdr->startLoop;
