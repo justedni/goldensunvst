@@ -7,7 +7,7 @@ namespace GSVST {
 RPNHandler::RPNHandler()
 {
     rpns.emplace_back(RPN::Type::RPN,  RPN::Param::Detune, 0, 1, 0);
-    rpns.emplace_back(RPN::Type::RPN,  RPN::Param::PitchBendRange, 0, 0, 0);
+    rpns.emplace_back(RPN::Type::RPN,  RPN::Param::PitchBendRange, 0, 0, 2);
     rpns.emplace_back(RPN::Type::NRPN, RPN::Param::LfoSpeed, 1, 8, 40);
 }
 
