@@ -36,4 +36,15 @@ public:
     void Reset() override;
 };
 
+class BlepResampler : public Resampler {
+public:
+    BlepResampler();
+    ~BlepResampler() override;
+    bool Process(sample* outData, size_t numBlocks, float phaseInc, res_data_fetch_cb cbPtr, void* cbdata) override;
+    void Reset() override;
+private:
+    static float fast_Si(float t);
+};
+
+
 }
