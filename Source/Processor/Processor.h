@@ -76,6 +76,7 @@ private:
     }
 
     int detectedBPM = 120;
+    double currentTime = 0.0;
     ChannelState* m_channels[MAX_MIDI_CHANNELS];
 
     std::unique_ptr<PresetsHandler> m_presets;

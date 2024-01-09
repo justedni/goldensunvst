@@ -11,16 +11,14 @@ class Instrument;
 
 class Preset;
 struct PresetsHandler;
+struct RPNHandler;
 enum class EDSPType : uint8_t;
 
 struct ChannelState
 {
 public:
-    ChannelState() {}
-    ~ChannelState()
-    {
-        outputBuffers.clear();
-    }
+    ChannelState();
+    ~ChannelState();
 
     void init(double in_sampleRate, int in_samplesPerBlock, int in_samplesPerBlockComputation);
     void cleanup();
@@ -62,12 +60,17 @@ public:
 
     Instrument* handleNoteOn(uint8_t noteNumber, int8_t velocity, int bpm);
     void handleNoteOff(int noteNumber);
-    bool handleMidiMsg(const juce::MidiMessage& msg, const PresetsHandler& presets, bool bIgnorePrgChg);
+    bool handleMidiMsg(const juce::MidiMessage& msg, const PresetsHandler& presets, bool bIgnorePrgChg, bool bIsPlaying);
     void allNotesOff();
 
     std::vector<sample>& getOutBuffer() { return outputBuffers; }
 
     float getAverageLevel() const;
+
+    int16_t getDetune() const;
+    int16_t getPitchBendRange() const;
+    int16_t getLfoSpeed() const;
+    void resetAllRPNs();
 
 private:
     static void allocateBuffersIfNecessary(std::vector<sample>& io_buffers, int numSamples);
@@ -83,7 +86,6 @@ private:
     int8_t pan = 0;
     int16_t pitchWheel = 0;
     uint8_t modWheel = 0;
-    const uint8_t lfoSpeed = 40; // 0x28
 
     int m_detectedBPM = -1;
 
@@ -101,36 +103,7 @@ private:
 
     std::unique_ptr<ReverbEffect> revdsp;
 
-    struct RPN
-    {
-        bool validMsb = false;
-        bool validLsb = false;
-
-        bool hasValue() const { return bValueSet; }
-        int16_t getValue() const { return value; }
-        void setValue(int16_t in_val) { value = in_val; }
-
-        bool isValid() const { return (validMsb && validLsb); }
-
-        void reset()
-        {
-            validMsb = false;
-            validLsb = false;
-        }
-
-    private:
-        int16_t value = 0;
-        bool bValueSet = false;
-    };
-
-    RPN detune;
-    RPN pitchBendRange;
-
-    void resetAllRPNs()
-    {
-        detune.reset();
-        pitchBendRange.reset();
-    }
+    std::unique_ptr<RPNHandler> m_rpnHanlder;
 };
 
 }

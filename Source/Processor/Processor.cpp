@@ -171,8 +171,15 @@ void Processor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
+    bool bIsPlaying = true;
+
+    auto positionInfo = getPlayHead()->getPosition();
+    auto timeInSec = positionInfo->getTimeInSeconds();
+
     {
-        auto positionInfo = getPlayHead()->getPosition();
+       
+        bIsPlaying = positionInfo->getIsPlaying();
+        
         if (auto bpm = positionInfo->getBpm(); bpm.hasValue())
         {
             auto newVal = *bpm;
@@ -181,6 +188,20 @@ void Processor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&
                 detectedBPM = static_cast<int>(std::round(*bpm));
                 bRefreshUIRequired = true;
             }
+        }
+
+        if (timeInSec.hasValue())
+        {
+            if (std::abs(*timeInSec - currentTime) > 0.2)
+            {
+                // Jump detected: reset all RPNs to avoid weird bugs
+                ForEachMidiChannel([&](auto& state)
+                {
+                    state.resetAllRPNs();
+                });
+            }
+
+            currentTime = *timeInSec;
         }
 
         if (bRefreshUIRequired)
@@ -225,9 +246,13 @@ void Processor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&
                 state.allNotesOff();
             });
         }
+        else if (msg.isNoteOff())
+        {
+            // Ignore for now
+        }
         else
         {
-            bRefreshUIRequired |= state.handleMidiMsg(msg, *m_presets.get(), bIgnoreProgramChange);
+            bRefreshUIRequired |= state.handleMidiMsg(msg, *m_presets.get(), bIgnoreProgramChange, bIsPlaying);
         }
     }
 

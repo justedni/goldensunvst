@@ -6,8 +6,20 @@
 
 #include "Presets/PresetsHandler.h"
 #include "Presets/Presets.h"
+#include "RPNHandler.h"
+
 
 namespace GSVST {
+
+ChannelState::ChannelState()
+{
+    m_rpnHanlder.reset(new RPNHandler());
+}
+
+ChannelState::~ChannelState()
+{
+    outputBuffers.clear();
+}
 
 void ChannelState::init(double in_sampleRate, int in_samplesPerBlock, int in_samplesPerBlockComputation)
 {
@@ -275,16 +287,20 @@ Instrument* ChannelState::handleNoteOn(uint8_t noteNumber, int8_t velocity, int 
         if (newInstance->shouldUseTrackADSR())
             newInstance->updateADSR(m_envelope);
 
-        if (pitchBendRange.hasValue())
-            newInstance->setPitchBendRange(pitchBendRange.getValue());
+        if (m_rpnHanlder->hasValue(RPN::Param::PitchBendRange))
+            newInstance->setPitchBendRange(m_rpnHanlder->getValue(RPN::Param::PitchBendRange));
 
         newInstance->setPitchWheel(pitchWheel);
 
-        if (detune.hasValue())
-            newInstance->setTune(detune.getValue());
+        if (m_rpnHanlder->hasValue(RPN::Param::Detune))
+            newInstance->setTune(m_rpnHanlder->getValue(RPN::Param::Detune));
 
-        if (lfoSpeed != 0 && modWheel != 0)
-            newInstance->setLfo(lfoSpeed, modWheel);
+        if (m_rpnHanlder->hasValue(RPN::Param::LfoSpeed))
+        {
+            auto lfoSpeedVal = m_rpnHanlder->getValue(RPN::Param::LfoSpeed);
+            if (lfoSpeedVal != 0 && modWheel != 0)
+                newInstance->setLfo(lfoSpeedVal, modWheel);
+        }
 
 
         newInstance->setVol(volume);
@@ -315,13 +331,19 @@ void ChannelState::allNotesOff()
     {
         soundChannel->release();
     }
+
+    m_rpnHanlder->resetAllRPNs(); // just to be safe
 }
 
-bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHandler& presets, bool bIgnorePrgChg)
+bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHandler& presets, bool bIgnorePrgChg, bool bIsPlaying)
 {
     bool bRefreshRequired = false;
 
-    if (msg.isProgramChange() && !bIgnorePrgChg)
+    if (msg.isControllerOfType(0)) // Bank change
+    {
+        // TODO: handle
+    }
+    else if (msg.isProgramChange() && !bIgnorePrgChg)
     {
         auto prgChg = msg.getProgramChangeNumber();
         setPreset(prgChg, presets);
@@ -342,11 +364,12 @@ bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHand
     {
         modWheel = static_cast<uint8_t>(msg.getControllerValue() / 10);
 
-        if (lfoSpeed != 0 && modWheel != 0)
+        auto lfoSpeedVal = m_rpnHanlder->hasValue(RPN::Param::LfoSpeed) ? m_rpnHanlder->getValue(RPN::Param::LfoSpeed) : 0;
+        if (lfoSpeedVal != 0 && modWheel != 0)
         {
             for (auto& soundChannel : m_playingInstruments)
             {
-                soundChannel->setLfo(lfoSpeed, modWheel);
+                soundChannel->setLfo(lfoSpeedVal, modWheel);
             }
         }
     }
@@ -365,51 +388,55 @@ bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHand
         setReverbLevel(msg.getControllerValue());
         bRefreshRequired = true;
     }
-    else if (msg.isControllerOfType(101)) // RPN MSB
+    else if (msg.isController()) // All other controllers
     {
-        resetAllRPNs();
-
-        auto msb = msg.getControllerValue();
-        if (msb == 0)
+        auto ccId = msg.getControllerNumber();
+        auto val = msg.getControllerValue();
+        auto timestamp = msg.getTimeStamp();
+        switch (ccId)
         {
-            detune.validMsb = true;
-            pitchBendRange.validMsb = true;
-        }
-    }
-    else if (msg.isControllerOfType(100)) // RPN LSB
-    {
-        auto lsb = msg.getControllerValue();
-        if (lsb == 0)
+        case 101: // RPN MSB
+            m_rpnHanlder->setRPN_MSB(RPN::Type::RPN, val, timestamp);
+            break;
+        case 100: // RPN LSB
+            m_rpnHanlder->setRPN_LSB(RPN::Type::RPN, val, timestamp);
+            break;
+        case 99: // NRPN MSB
+            m_rpnHanlder->setRPN_MSB(RPN::Type::NRPN, val, timestamp);
+            break;
+        case 98: // NRPN LSB
+            m_rpnHanlder->setRPN_LSB(RPN::Type::NRPN, val, timestamp);
+            break;
+        case 6: // Data entry
         {
-            pitchBendRange.validLsb = true;
-            detune.validLsb = false;
-        }
-        if (lsb == 1)
-        {
-            detune.validLsb = true;
-            pitchBendRange.validLsb = false;
-
-        }
-    }
-    else if (msg.isControllerOfType(6)) // Data entry
-    {
-        if (detune.isValid())
-        {
-            int16_t val = static_cast<int16_t>(msg.getControllerValue() - 0x40);
-            detune.setValue(val);
-            for (auto& soundChannel : m_playingInstruments)
+            if (bIsPlaying)
             {
-                soundChannel->setTune(val);
+                auto param = m_rpnHanlder->setDataEntry(val, timestamp);
+
+                if (param != RPN::Param::None)
+                {
+                    auto convertedVal = m_rpnHanlder->getValue(param);
+                    for (auto& soundChannel : m_playingInstruments)
+                    {
+                        switch (param)
+                        {
+                        case RPN::Param::Detune:
+                            soundChannel->setTune(val);
+                            break;
+                        case RPN::Param::PitchBendRange:
+                            soundChannel->setPitchBendRange(val);
+                            break;
+                        case RPN::Param::LfoSpeed:
+                            soundChannel->setLfo(val, modWheel);
+                            break;
+                        }
+                    }
+
+                    bRefreshRequired = true;
+                }
             }
+            break;
         }
-        else if (pitchBendRange.isValid())
-        {
-            int16_t val = static_cast<int16_t>(msg.getControllerValue());
-            pitchBendRange.setValue(val);
-            for (auto& soundChannel : m_playingInstruments)
-            {
-                soundChannel->setPitchBendRange(val);
-            }
         }
     }
 
@@ -430,6 +457,26 @@ float ChannelState::getAverageLevel() const
     }
 
     return 0.0f;
+}
+
+int16_t ChannelState::getDetune() const
+{
+    return m_rpnHanlder->getValue(RPN::Param::Detune);
+}
+
+int16_t ChannelState::getPitchBendRange() const
+{
+    return m_rpnHanlder->getValue(RPN::Param::PitchBendRange);
+}
+
+int16_t ChannelState::getLfoSpeed() const
+{
+    return m_rpnHanlder->getValue(RPN::Param::LfoSpeed);
+}
+
+void ChannelState::resetAllRPNs()
+{
+    m_rpnHanlder->resetAllRPNs();
 }
 
 }
