@@ -9,12 +9,12 @@ struct RPN
     enum class Type { RPN, NRPN };
     enum class Param { None, Detune, PitchBendRange, LfoSpeed };
 
-    RPN(Type in_type, Param in_param, uint8_t in_msb, uint8_t in_lsb, int16_t in_defaultVal)
+    RPN(Type in_type, Param in_param, int in_msb, int in_lsb, int in_defaultVal)
         : type(in_type)
         , param(in_param)
-        , msb(in_msb)
-        , lsb(in_lsb)
-        , value(in_defaultVal)
+        , msb(static_cast<uint8_t>(in_msb))
+        , lsb(static_cast<uint8_t>(in_lsb))
+        , value(static_cast<int16_t>(in_defaultVal))
         , bValueSet(true)
     {
     }

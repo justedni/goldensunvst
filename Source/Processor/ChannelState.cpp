@@ -299,7 +299,7 @@ Instrument* ChannelState::handleNoteOn(uint8_t noteNumber, int8_t velocity, int 
         {
             auto lfoSpeedVal = m_rpnHanlder->getValue(RPN::Param::LfoSpeed);
             if (lfoSpeedVal != 0 && modWheel != 0)
-                newInstance->setLfo(lfoSpeedVal, modWheel);
+                newInstance->setLfo(static_cast<uint8_t>(lfoSpeedVal), modWheel);
         }
 
 
@@ -369,7 +369,7 @@ bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHand
         {
             for (auto& soundChannel : m_playingInstruments)
             {
-                soundChannel->setLfo(lfoSpeedVal, modWheel);
+                soundChannel->setLfo(static_cast<uint8_t>(lfoSpeedVal), modWheel);
             }
         }
     }
@@ -421,13 +421,13 @@ bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHand
                         switch (param)
                         {
                         case RPN::Param::Detune:
-                            soundChannel->setTune(val);
+                            soundChannel->setTune(static_cast<int16_t>(convertedVal));
                             break;
                         case RPN::Param::PitchBendRange:
-                            soundChannel->setPitchBendRange(val);
+                            soundChannel->setPitchBendRange(static_cast<int16_t>(convertedVal));
                             break;
                         case RPN::Param::LfoSpeed:
-                            soundChannel->setLfo(val, modWheel);
+                            soundChannel->setLfo(static_cast<uint8_t>(convertedVal), modWheel);
                             break;
                         }
                     }
