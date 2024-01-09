@@ -62,6 +62,9 @@ private:
     bool m_isPWMSynth = false;
     bool m_reverbSliderEnabled = false;
     int m_detectedBPM = 120;
+    int m_detune = 0;
+    int m_pitchBendRange = 0;
+    int m_lfoSpeed = 0;
 
     Processor& m_audioProcessor;
     MainWindow& m_mainWindow;

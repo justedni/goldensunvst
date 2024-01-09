@@ -81,13 +81,17 @@ ControlsTab::ControlsTab(Processor& p, MainWindow& e)
 void ControlsTab::paint(juce::Graphics& g)
 {
     CustomLookAndFeel::drawGSBox(g, 0, 0, getWidth(), 50);
-    CustomLookAndFeel::drawGSBox(g, 370, 50, getWidth() - 370, 40);
+    CustomLookAndFeel::drawGSBox(g, 320, 50, getWidth() - 320, 50);
 
     g.setColour(juce::Colours::white);
-    g.setFont(12);
+    g.setFont(11);
     g.drawText("Midi channel / Program", 8, 5, getWidth() - 20, 20, juce::Justification::centredLeft);
 
-    g.drawText(juce::String::formatted("BPM used for LFO: %d", m_detectedBPM), 355, 50, getWidth() - 370, 40, juce::Justification::centredRight);
+    g.drawText(juce::String::formatted("LFO Speed: %d (BPM: %d)", m_lfoSpeed, m_detectedBPM),
+        300, 57, getWidth() - 310, 15, juce::Justification::centredRight);
+
+    g.drawText(juce::String::formatted("Detune: %d PitchbendRange: %d", m_detune, m_pitchBendRange),
+        300, 77, getWidth() - 310, 15, juce::Justification::centredRight);
 
     CustomLookAndFeel::drawGSBox(g, 0, 51, 290, 99);
     CustomLookAndFeel::drawGSBox(g, 0, 151, 290, 100);
@@ -296,16 +300,21 @@ void ControlsTab::refresh()
     m_sliderReverb->setVisible(m_reverbSliderEnabled);
 
     auto detectedBPM = static_cast<int>(std::round(m_audioProcessor.getDetectedBPM()));
+    auto detune = channelState.getDetune();
+    auto pitchBendRange = channelState.getPitchBendRange();
+    auto lfoSpeed = channelState.getLfoSpeed();
 
-    if (bIsPWM != m_isPWMSynth)
+    if (bIsPWM != m_isPWMSynth
+        || detectedBPM != m_detectedBPM
+        || detune != m_detune
+        || pitchBendRange != m_pitchBendRange
+        || lfoSpeed != m_lfoSpeed)
     {
         m_isPWMSynth = bIsPWM;
-        repaint();
-    }
-
-    if (detectedBPM != m_detectedBPM)
-    {
         m_detectedBPM = detectedBPM;
+        m_detune = detune;
+        m_pitchBendRange = pitchBendRange;
+        m_lfoSpeed = lfoSpeed;
         repaint();
     }
 }
