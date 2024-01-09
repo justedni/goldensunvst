@@ -22,7 +22,8 @@ enum class EDSPType : uint8_t
     PCMFixed,
     ModPulse,
     Saw,
-    Tri
+    Tri,
+    Square
 };
 class Instrument
 {
@@ -35,7 +36,7 @@ public:
     Instrument(const Instrument&) = delete;
     Instrument& operator=(const Instrument&) = delete;
 
-    void processCommon(sample* buffer, size_t numSamples, const MixingArgs& args);
+    virtual void processCommon(sample* buffer, size_t numSamples, const MixingArgs& args);
 
     virtual EDSPType getType() const = 0;
     virtual void process(sample* buffer, size_t numSamples, const MixingArgs& args) = 0;
@@ -45,7 +46,7 @@ public:
     uint8_t getMidiNote() const { return note.midiKeyTrackData; }
 
     virtual void processStart(const MixingArgs& args);
-    void processEnd(const MixingArgs& args);
+    virtual void processEnd(const MixingArgs& args);
 
     struct VolumeFade
     {
@@ -55,7 +56,7 @@ public:
         float toVolRight;
     };
 
-    VolumeFade getVol() const;
+    virtual VolumeFade getVol() const;
     void setVol(uint8_t in_vol);
     void setPan(int8_t in_pan);
     void updateVolAndPan();
@@ -72,11 +73,11 @@ public:
     void setPitchWheel(int16_t pitch);
     void setPitchBendRange(int16_t range);
     void setTune(int16_t in_tune);
-    void updatePitch();
+    virtual void updatePitch();
 
     void setBPM(int bpm) { bpmRefresh = bpm; }
 
-    void release();
+    virtual void release();
     void kill();
 
     void tickLfo();
@@ -88,8 +89,8 @@ protected:
     void updateIncrements(const MixingArgs& args);
     void updateBPMStack();
 
-    void stepEnvelope();
-    void updateVolFade();
+    virtual void stepEnvelope();
+    virtual void updateVolFade();
 
     /* all of these values have pairs of new and old value to allow smooth fades */
     EnvState envState = EnvState::INIT;

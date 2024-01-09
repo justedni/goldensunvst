@@ -1,7 +1,9 @@
 #include "PresetsHandler.h"
 #include "Presets.h"
+#include "CGBSynthPresets.h"
 
 #include "Processor/SampleInstrument.h"
+#include "Processor/CGBChannel.h"
 
 #define TSF_IMPLEMENTATION
 #include "External/tinysoundfont/tsf.h"
@@ -115,10 +117,57 @@ void PresetsHandler::addSamplePreset(int id, std::string&& name, std::string&& f
     }
 }
 
+std::string getSynthName(const tsf_preset& preset)
+{
+    for (int j = 0; j < preset.regionNum; j++)
+    {
+        auto& region = preset.regions[j];
+
+        if (std::string(region.sampleName).find("square ") != std::string::npos)
+            return region.sampleName;
+    }
+
+    return "";
+}
+
 ADSR getSoundfontADSR(const tsf_region& region)
 {
     auto& adsr = region.ampenv;
 
+    if (std::string(region.sampleName).find("square ") != std::string::npos)
+    {
+        // GB instrument ADSR
+
+        uint8_t attack = 15;
+        uint8_t decay = 0;
+        uint8_t sustain = 15;
+        uint8_t release = 0;
+
+        if (adsr.attack > 0.0f)
+        {
+            attack = static_cast<uint8_t>(std::round((adsr.attack * 5.0)));
+        }
+
+        if (adsr.decay > 0.0f)
+        {
+            decay = static_cast<uint8_t>(std::round(((adsr.decay - 1) * 5.0)));
+        }
+
+        if (adsr.sustain < 1.0f)
+        {
+            auto writtenSf2Val = std::round(log10(adsr.sustain) / -0.005f);
+            sustain = static_cast<uint8_t>(15.0 / exp(writtenSf2Val / 100.0));
+        }
+
+        if (adsr.release > 0.0f)
+        {
+            release = static_cast<uint8_t>(std::round((adsr.release * 5.0)));
+        }
+
+        return ADSR(attack, decay, sustain, release);
+    }
+    else // Sample ADSR
+    {
     uint8_t attack = 255;
     uint8_t decay = 0;
     uint8_t sustain = 255;
@@ -146,6 +195,7 @@ ADSR getSoundfontADSR(const tsf_region& region)
     }
 
     return ADSR(attack, decay, sustain, release);
+    }
 }
 
 void PresetsHandler::addSoundFontPresets()
@@ -175,6 +225,8 @@ void PresetsHandler::addSoundFontPresets()
 
         const auto& friendlyNames = getHandledProgramsList();
         const auto& friendlyName = friendlyNames.find(presetId);
+        //if (friendlyName == friendlyNames.end())
+        //    continue;
 
         if (bankId == 0)
         {
@@ -183,48 +235,70 @@ void PresetsHandler::addSoundFontPresets()
             else if (presetId < 100) label.append("0");
             label.append(std::to_string(presetId));
             label.append(" ");
+
+            auto synthName = getSynthName(preset);
+
             if (friendlyName != friendlyNames.end())
                 label.append(friendlyName->second.name);
+            else if (!synthName.empty())
+                label.append(synthName);
             else
                 label.append(name);
 
-            std::vector<SoundfontSampleInfo> samples;
-
-            for (int j = 0; j < preset.regionNum; j++)
+            if (synthName.empty())
             {
-                auto& region = preset.regions[j];
+                std::vector<SoundfontSampleInfo> samples;
 
-                if (region.hivel == 0)
-                    continue;
-
-                bool bLoopEnabled = (region.loop_mode == 1);
-                auto loopStart = (bLoopEnabled ? region.loop_start - region.offset : 0);
-                auto loopEnd = (bLoopEnabled ? (region.loop_end - region.offset) + 1 : region.end - region.offset);
-                auto offset = region.offset;
-
-                bool fixed = (region.pitch_keytrack == 0);
-
-                // Calculate mid-c freq
-                int calculated_mid_c = calculateMidCFreq(region.tune, region.pitch_keycenter, region.sample_rate);
-
-                int8_t rhythmPan = 0;
-
-                if (bIsEveryKeySplit && region.pan)
+                for (int j = 0; j < preset.regionNum; j++)
                 {
-                    rhythmPan = static_cast<int8_t>(std::round((region.pan * 256)));
+                    auto& region = preset.regions[j];
+
+                    if (region.hivel == 0)
+                        continue;
+
+                    bool bLoopEnabled = (region.loop_mode == 1);
+                    auto loopStart = (bLoopEnabled ? region.loop_start - region.offset : 0);
+                    auto loopEnd = (bLoopEnabled ? (region.loop_end - region.offset) + 1 : region.end - region.offset);
+                    auto offset = region.offset;
+
+                    bool fixed = (region.pitch_keytrack == 0);
+
+                    // Calculate mid-c freq
+                    int calculated_mid_c = calculateMidCFreq(region.tune, region.pitch_keycenter, region.sample_rate);
+
+                    int8_t rhythmPan = 0;
+
+                    if (bIsEveryKeySplit && region.pan)
+                    {
+                        rhythmPan = static_cast<int8_t>(std::round((region.pan * 256)));
+                    }
+
+                    auto sampleInfo = SoundfontSampleInfo(calculated_mid_c, fixed, region.sample_rate, bLoopEnabled, loopStart, loopEnd);
+                    sampleInfo.adsr = getSoundfontADSR(region);
+                    sampleInfo.offset = offset;
+                    sampleInfo.keyRange = { region.lokey, region.hikey };
+                    sampleInfo.rhythmPan = rhythmPan;
+                    sampleInfo.notePitch = static_cast<uint8_t>(region.pitch_keycenter);
+
+                    samples.push_back(sampleInfo);
                 }
 
-                auto sampleInfo = SoundfontSampleInfo(calculated_mid_c, fixed, region.sample_rate, bLoopEnabled, loopStart, loopEnd);
-                sampleInfo.adsr = getSoundfontADSR(region);
-                sampleInfo.offset = offset;
-                sampleInfo.keyRange = { region.lokey, region.hikey };
-                sampleInfo.rhythmPan = rhythmPan;
-                sampleInfo.notePitch = static_cast<uint8_t>(region.pitch_keycenter);
-
-                samples.push_back(sampleInfo);
+                m_presets.push_back(new SoundfontPreset(presetId, std::move(label), *this, std::move(samples)));
             }
-
-            m_presets.push_back(new SoundfontPreset(presetId, std::move(label), *this, std::move(samples)));
+            else
+            {
+                auto firstAdsr = preset.regions ? getSoundfontADSR(preset.regions[0]) : ADSR();
+                auto dutyCycle = WaveDuty::D12;
+                if (synthName.find("12.5%") != std::string::npos)
+                    dutyCycle = WaveDuty::D12;
+                else if (synthName.find("25%") != std::string::npos)
+                    dutyCycle = WaveDuty::D25;
+                else if (synthName.find("50%") != std::string::npos)
+                    dutyCycle = WaveDuty::D50;
+                else if (synthName.find("75%") != std::string::npos) // Requires a modified version of GBA Mus Ripper
+                    dutyCycle = WaveDuty::D75;
+                m_presets.push_back(new SquareSynthPreset(presetId, std::move(label), std::move(firstAdsr), dutyCycle));
+            }
         }
     }
 }
