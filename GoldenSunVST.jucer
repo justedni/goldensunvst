@@ -25,6 +25,10 @@
         <FILE id="YS2MQz" name="GSSynths.h" compile="0" resource="0" file="Source/GS/GSSynths.h"/>
       </GROUP>
       <GROUP id="{DEBD2038-DFFD-DE5A-26CF-0AB5E2E1842D}" name="Processor">
+        <FILE id="u3tRtY" name="CGBChannel.cpp" compile="1" resource="0" file="Source/Processor/CGBChannel.cpp"/>
+        <FILE id="RhkO1y" name="CGBChannel.h" compile="0" resource="0" file="Source/Processor/CGBChannel.h"/>
+        <FILE id="atOmQx" name="CGBPatterns.cpp" compile="1" resource="0" file="Source/Processor/CGBPatterns.cpp"/>
+        <FILE id="MoFoLE" name="CGBPatterns.h" compile="0" resource="0" file="Source/Processor/CGBPatterns.h"/>
         <FILE id="zrtV8O" name="ChannelState.cpp" compile="1" resource="0"
               file="Source/Processor/ChannelState.cpp"/>
         <FILE id="gR7RxA" name="ChannelState.h" compile="0" resource="0" file="Source/Processor/ChannelState.h"/>
@@ -37,6 +41,8 @@
         <FILE id="f9GKgX" name="ReverbEffect.cpp" compile="1" resource="0"
               file="Source/Processor/ReverbEffect.cpp"/>
         <FILE id="moFp1I" name="ReverbEffect.h" compile="0" resource="0" file="Source/Processor/ReverbEffect.h"/>
+        <FILE id="aqcokr" name="RPNHandler.cpp" compile="1" resource="0" file="Source/Processor/RPNHandler.cpp"/>
+        <FILE id="UIhryl" name="RPNHandler.h" compile="0" resource="0" file="Source/Processor/RPNHandler.h"/>
         <FILE id="mcPC8L" name="SampleInstrument.cpp" compile="1" resource="0"
               file="Source/Processor/SampleInstrument.cpp"/>
         <FILE id="gqP66g" name="SampleInstrument.h" compile="0" resource="0"
@@ -44,6 +50,10 @@
         <FILE id="XGeJmP" name="Types.h" compile="0" resource="0" file="Source/Processor/Types.h"/>
       </GROUP>
       <GROUP id="{E137C3F8-EB38-8C00-8790-D4644645478F}" name="Presets">
+        <FILE id="uq9XVM" name="CGBSynthPresets.cpp" compile="1" resource="0"
+              file="Source/Presets/CGBSynthPresets.cpp"/>
+        <FILE id="aajEUQ" name="CGBSynthPresets.h" compile="0" resource="0"
+              file="Source/Presets/CGBSynthPresets.h"/>
         <FILE id="A0HdkS" name="Presets.cpp" compile="1" resource="0" file="Source/Presets/Presets.cpp"/>
         <FILE id="C5VpmB" name="Presets.h" compile="0" resource="0" file="Source/Presets/Presets.h"/>
         <FILE id="qO06O7" name="PresetsHandler.cpp" compile="1" resource="0"
