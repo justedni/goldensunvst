@@ -27,8 +27,7 @@ The goal of this plugin is to offer an alternative to general soundfont plugins 
 - If your midi file contains standard program change events (and volume, pan, pitch etc), the correct instruments will be set on each channel and you should immediately hear sound!
 
 ### Dependencies
-I'm using the following libraries, just slightly modified to remove some compiler warnings:
- - [Audiofile](https://github.com/adamstark/AudioFile)
+I'm using the following library, just slightly modified to remove some compiler warnings:
  - [TinySoundFont](https://github.com/schellingb/TinySoundFont)
 
 

@@ -2,10 +2,16 @@
 
 #include "Processor/SampleInstrument.h"
 
-#include <string>
+#include <JuceHeader.h>
 
 template <class T>
 class AudioFile;
+
+namespace juce
+{
+    template <typename Type>
+    class AudioBuffer;
+}
 
 struct tsf;
 
@@ -86,15 +92,17 @@ public:
 
     Instrument* createPlayingInstance(const Note& note) const final;
     EDSPType getDSPType() const final { return EDSPType::PCM; }
-    const ADSR& getADSR() const final { return info.adsr; }
+    const ADSR& getADSR() const final { return m_info.adsr; }
 
-    bool loadFile();
+    bool loadFile(juce::AudioFormatManager& formatManager);
 
 private:
-    const std::string filepath;
-    SampleInfo info;
+    const std::string m_filepath;
+    SampleInfo m_info;
 
-    std::unique_ptr<AudioFile<float>> audioFile;
+    juce::AudioBuffer<float> m_audioBuffer;
+    unsigned int m_numChannels = 0;
+    int64_t m_lengthInSamples = 0;
 };
 
 class SoundfontPreset : public Preset

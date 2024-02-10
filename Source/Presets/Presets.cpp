@@ -7,9 +7,9 @@
 #include <map>
 #include <cmath>
 #include <algorithm>
+#include <assert.h>
 
 #include <JuceHeader.h>
-#include "External/Audiofile/AudioFile.h"
 
 namespace GSVST {
 
@@ -31,32 +31,40 @@ Instrument* PWMSynthPreset::createPlayingInstance(const Note& note) const
 //-----------------------------------------------------------------------------
 SamplePreset::SamplePreset(int in_id, std::string&& in_name, std::string&& in_filepath, ADSR&& in_adsr, SampleInfo&& in_info)
     : Preset(in_id, EPresetType::Sample, std::move(in_name))
-    , filepath(std::move(in_filepath))
-    , info(std::move(in_info))
+    , m_filepath(std::move(in_filepath))
+    , m_info(std::move(in_info))
 {
-    info.adsr = std::move(in_adsr);
-    audioFile.reset(new AudioFile<float>());
+    m_info.adsr = std::move(in_adsr);
 }
 
 
 Instrument* SamplePreset::createPlayingInstance(const Note& note) const
 {
-    auto* sampleInfo = new SampleInfo(info);
-    sampleInfo->numChannels = static_cast<uint8_t>(audioFile->getNumChannels());
-    sampleInfo->samplePtr = &audioFile->samples;
+    auto* sampleInfo = new SampleInfo(m_info);
+    sampleInfo->numChannels = m_numChannels;
+    sampleInfo->sampleBuffer = m_audioBuffer.getArrayOfReadPointers();
 
     if (!sampleInfo->loopEnabled)
-        sampleInfo->endPos = static_cast<uint32_t>(audioFile->samples[0].size());
+    {
+        sampleInfo->endPos = m_lengthInSamples;
+    }
 
     return new SampleInstrument(std::move(sampleInfo), note);
 }
 
-bool SamplePreset::loadFile()
+bool SamplePreset::loadFile(juce::AudioFormatManager& formatManager)
 {
-    audioFile->load(filepath);
-
-    if (audioFile->samples.empty() || audioFile->samples[0].empty())
+    auto file = juce::File(m_filepath);
+    if (!file.exists())
         return false;
+
+    auto* reader = formatManager.createReaderFor(file);
+    m_audioBuffer.setSize(reader->numChannels, reader->lengthInSamples);
+    reader->read(&m_audioBuffer, 0, reader->lengthInSamples, 0, true, true);
+    m_numChannels = reader->numChannels;
+    m_lengthInSamples = reader->lengthInSamples;
+
+    delete reader;
 
     return true;
 }

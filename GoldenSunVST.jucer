@@ -9,9 +9,6 @@
   <MAINGROUP id="XewrLe" name="GoldenSunVST">
     <GROUP id="{AB811691-7DBF-4F63-1906-E59A98BEADA6}" name="Source">
       <GROUP id="{405652EB-31C9-5857-B68F-FFEF24333993}" name="External">
-        <GROUP id="{0AC24816-AB03-CBEF-E3E3-CDBFEDB8B387}" name="Audiofile">
-          <FILE id="qHeOgl" name="AudioFile.h" compile="0" resource="0" file="Source/External/Audiofile/AudioFile.h"/>
-        </GROUP>
         <GROUP id="{2B9BD0BE-EEBE-5F75-9C54-57F2CBCBC2F9}" name="tinysoundfont">
           <FILE id="lcgKsQ" name="tsf.h" compile="0" resource="0" file="Source/External/tinysoundfont/tsf.h"/>
         </GROUP>
@@ -94,6 +91,7 @@
   </MAINGROUP>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
             useGlobalPath="1"/>
     <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
@@ -121,6 +119,7 @@
         <MODULEPATH id="juce_audio_processors" path="Source/Externals/Juce/modules"/>
         <MODULEPATH id="juce_audio_plugin_client" path="Source/Externals/Juce/modules"/>
         <MODULEPATH id="juce_data_structures" path="Source/Externals/Juce/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../juce-7.0.7-windows/modules"/>
       </MODULEPATHS>
     </VS2022>
   </EXPORTFORMATS>

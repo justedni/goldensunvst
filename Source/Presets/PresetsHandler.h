@@ -8,6 +8,11 @@
 
 struct tsf;
 
+namespace juce
+{
+    class AudioFormatManager;
+}
+
 namespace GSVST {
 
 class Preset;
@@ -20,7 +25,7 @@ struct ProgramInfo
 
 struct PresetsHandler
 {
-    PresetsHandler() {}
+    PresetsHandler();
     ~PresetsHandler();
 
     void clear();
@@ -57,6 +62,8 @@ private:
     void addSoundFontPresets();
 
     const std::map<int, ProgramInfo> m_emptyMap;
+
+    std::unique_ptr<juce::AudioFormatManager> m_formatManager;
 };
 
 }

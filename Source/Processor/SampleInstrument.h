@@ -39,9 +39,9 @@ struct SampleInfo
 
     virtual void fillSample(uint32_t pos, float& out_left, float& out_right) const
     {
-        out_left = static_cast<float>((*samplePtr)[0][pos]);
+        out_left = sampleBuffer[0][pos];
         if (numChannels == 2)
-            out_right = static_cast<float>((*samplePtr)[1][pos]);
+            out_right = sampleBuffer[1][pos];
         else
             out_right = out_left;
     }
@@ -49,7 +49,7 @@ struct SampleInfo
     virtual EDSPType getType() const { return EDSPType::PCM; }
 
     const int midCfreq = 16738;
-    const std::vector<std::vector<float>>* samplePtr = nullptr;
+    const float* const* sampleBuffer = nullptr;
     uint32_t loopPos = 0;
     uint32_t endPos = 0;
     bool loopEnabled = false;

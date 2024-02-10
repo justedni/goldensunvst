@@ -16,6 +16,12 @@
 
 namespace GSVST {
 
+PresetsHandler::PresetsHandler()
+{
+    m_formatManager.reset(new juce::AudioFormatManager());
+    m_formatManager->registerBasicFormats();
+}
+
 PresetsHandler::~PresetsHandler()
 {
     clear();
@@ -107,7 +113,7 @@ void PresetsHandler::clearSoundfontPresets()
 void PresetsHandler::addSamplePreset(int id, std::string&& name, std::string&& filepath, ADSR&& adsr, int pitch_correction, int original_pitch, int sample_rate)
 {
     auto* newPreset = new SamplePreset(id, std::move(name), std::move(filepath), std::move(adsr), SampleInfo(calculateMidCFreq(pitch_correction, original_pitch, sample_rate)));
-    if (newPreset->loadFile())
+    if (newPreset->loadFile(*m_formatManager.get()))
     {
         m_presets.push_back(newPreset);
     }
