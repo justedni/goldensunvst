@@ -15,6 +15,18 @@ namespace GSVST {
 
 const ADSR SoundfontPreset::m_emptyADSR;
 
+std::string EnumToString_EPresetType(EPresetType type)
+{
+    switch (type)
+    {
+    case EPresetType::Sample: return "Sample";
+    case EPresetType::Soundfont: return "Sf2";
+    case EPresetType::Synth: return "Synth";
+    }
+
+    return "";
+}
+
 //-----------------------------------------------------------------------------
 Instrument* SynthPreset::createPlayingInstance(const Note& note) const
 {

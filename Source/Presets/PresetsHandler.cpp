@@ -36,6 +36,9 @@ void PresetsHandler::setSoundfont(const std::string& path)
 {
     soundFontPath = path;
 
+    clearPresetsOfType(EPresetType::Synth);
+    clearPresetsOfType(EPresetType::Soundfont);
+
     if (juce::File(path).exists())
     {
         addSoundFontPresets();
@@ -43,7 +46,7 @@ void PresetsHandler::setSoundfont(const std::string& path)
     }
     else
     {
-        clearSoundfontPresets();
+        addSynthsPresets();
     }
 }
 
@@ -65,7 +68,7 @@ void PresetsHandler::setEnableGSMode(bool bEnable)
         }
         else
         {
-            clearSynthPresets();
+            clearPresetsOfType(EPresetType::Synth);
         }
     }
 }
@@ -80,27 +83,12 @@ void PresetsHandler::clear()
     m_presets.clear();
 }
 
-void PresetsHandler::clearSynthPresets()
+void PresetsHandler::clearPresetsOfType(EPresetType type)
 {
     for (auto it = m_presets.begin(); it != m_presets.end(); )
     {
         auto* preset = (*it);
-        if (preset->type == EPresetType::Synth || preset->type == EPresetType::PWMSynth)
-        {
-            delete preset;
-            it = m_presets.erase(it);
-        }
-        else
-            ++it;
-    }
-}
-
-void PresetsHandler::clearSoundfontPresets()
-{
-    for (auto it = m_presets.begin(); it != m_presets.end(); )
-    {
-        auto* preset = (*it);
-        if (preset->type == EPresetType::Soundfont)
+        if (preset->type == type)
         {
             delete preset;
             it = m_presets.erase(it);
@@ -209,7 +197,7 @@ void PresetsHandler::addSoundFontPresets()
     if (soundFontPath.empty())
         return;
 
-    clearSoundfontPresets();
+    clearPresetsOfType(EPresetType::Soundfont);
 
     cleanupSoundfont();
     soundFont = tsf_load_filename(soundFontPath.c_str());

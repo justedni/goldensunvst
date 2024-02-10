@@ -24,9 +24,10 @@ enum class EPresetType : uint8_t
 {
     Sample,
     Soundfont,
-    Synth,
-    PWMSynth
+    Synth
 };
+
+std::string EnumToString_EPresetType(EPresetType type);
 
 class Preset
 {
@@ -71,7 +72,7 @@ class PWMSynthPreset : public Preset
 {
 public:
     PWMSynthPreset(int in_id, std::string&& in_name, ADSR&& in_adsr, PWMData&& in_data)
-        : Preset(in_id, EPresetType::PWMSynth, std::move(in_name))
+        : Preset(in_id, EPresetType::Synth, std::move(in_name))
         , adsr(std::move(in_adsr))
         , pwmdata(std::move(in_data))
     {}
@@ -119,14 +120,6 @@ public:
     const ADSR& getADSR() const final;
 
 private:
-    const SoundfontSampleInfo* findSample(int note) const
-    {
-        auto found = std::find_if(samples.begin(), samples.end(), [note](auto& s) { return note >= s.keyRange.first && note <= s.keyRange.second; });
-        if (found != samples.end())
-            return &(*found);
-
-        return nullptr;
-    }
 
     const PresetsHandler& m_presetsHandler;
     std::vector<SoundfontSampleInfo> samples;

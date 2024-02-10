@@ -46,8 +46,7 @@ struct PresetsHandler
     void setEnableGSMode(bool bEnable);
     bool getGSModeEnabled() const { return m_bGSModeEnabled; }
 
-    void clearSynthPresets();
-    void clearSoundfontPresets();
+    void clearPresetsOfType(EPresetType type);
 
     std::vector<Preset*> m_presets;
 
