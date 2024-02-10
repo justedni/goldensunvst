@@ -50,6 +50,8 @@ ADSR GSPresets::getADSRInfo(int programId) const
     case 90: // PWM 1
     case 91: // PWM 2
         return ADSR(255, 235, 90, 178);
+    case 93: // Sawtooth 2
+        return ADSR(255, 235, 103, 178);
     case 105: // Music Box
     case 110: // Gender
     case 114: // Steel Drums
@@ -75,6 +77,8 @@ void GSPresets::addSynthsPresets()
     m_presets.push_back(new PWMSynthPreset(91, "091 PWM Synth 2", ADSR(255, 235, 90, 178), PWMData(128, 96, 32, 64)));
 
     m_presets.push_back(new SynthPreset(83, "083 Sawtooth Synth", EDSPType::Saw, ADSR(85, 165, 167, 178)));
+    m_presets.push_back(new SynthPreset(93, "093 Sawtooth Synth 2", EDSPType::Saw, ADSR(255, 235, 103, 178)));
+
     m_presets.push_back(new SynthPreset(84, "084 Triangle Synth 1", EDSPType::Tri, ADSR(85, 127, 218, 165)));
     m_presets.push_back(new SynthPreset(89, "085 Triangle Synth 2", EDSPType::Tri, ADSR(22, 127, 218, 195)));
 }
@@ -104,6 +108,7 @@ const std::map<int, ProgramInfo>& GSPresets::getHandledProgramsList() const
         { 89,  { "Triangle Synth 2", "Synth" } },
         { 90,  { "PWM Synth 1", "Synth" } },
         { 91,  { "PWM Synth 2", "Synth" } },
+        { 93,  { "Sawtooth Synth 2", "Synth" } },
         { 105, { "Music Box", "JV-1080" } },
         { 106, { "Sitar Gliss", "JV-1080"} },
         { 107, { "Balaphone", "JV-1080"} },
