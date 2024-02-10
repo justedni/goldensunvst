@@ -98,9 +98,26 @@ void PresetsHandler::clearPresetsOfType(EPresetType type)
     }
 }
 
-void PresetsHandler::addSamplePreset(int id, std::string&& name, std::string&& filepath, ADSR&& adsr, int pitch_correction, int original_pitch, int sample_rate)
+void PresetsHandler::addSamplePreset(int id, std::string&& name, std::string&& filepath, ADSR&& adsr,
+    int pitch_correction, int original_pitch, int sample_rate)
 {
     auto* newPreset = new SamplePreset(id, std::move(name), std::move(filepath), std::move(adsr), SampleInfo(calculateMidCFreq(pitch_correction, original_pitch, sample_rate)));
+    if (newPreset->loadFile(*m_formatManager.get()))
+    {
+        m_presets.push_back(newPreset);
+    }
+    else
+    {
+        delete newPreset;
+    }
+}
+
+void PresetsHandler::addSamplePresetLooping(int id, std::string&& name, std::string&& filepath, ADSR&& adsr,
+    int pitch_correction, int original_pitch, int sample_rate, uint32_t in_loopPos, uint32_t in_endPos)
+{
+    auto* newPreset = new SamplePreset(id, std::move(name), std::move(filepath), std::move(adsr),
+        SampleInfo(calculateMidCFreq(pitch_correction, original_pitch, sample_rate), true, in_loopPos, in_endPos));
+
     if (newPreset->loadFile(*m_formatManager.get()))
     {
         m_presets.push_back(newPreset);

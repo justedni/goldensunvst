@@ -82,6 +82,80 @@ bool SamplePreset::loadFile(juce::AudioFormatManager& formatManager)
 }
 
 //-----------------------------------------------------------------------------
+SampleMultiPreset::SampleMultiPreset(int in_id, std::string&& in_name, ADSR&& in_adsr, std::vector<MultiSample>&& in_info)
+    : Preset(in_id, EPresetType::Sample, std::move(in_name))
+    , samples(std::move(in_info))
+    , adsr(std::move(in_adsr))
+
+{
+}
+
+Instrument* SampleMultiPreset::createPlayingInstance(const Note& note) const
+{
+    auto noteNum = note.midiKeyPitch;
+    auto found = std::find_if(samples.begin(), samples.end(), [noteNum](auto& s) { return noteNum >= s.keyRange.first && noteNum <= s.keyRange.second; });
+    if (found == samples.end())
+        return nullptr;
+
+    auto* sample = &(*found);
+
+    auto* sampleInfo = new SampleInfo(sample->info);
+    sampleInfo->numChannels = sample->numChannels;
+    sampleInfo->sampleBuffer = sample->audioBuffer.getArrayOfReadPointers();
+
+    sampleInfo->loopEnabled = true;
+    sampleInfo->loopPos = sample->loopStart;
+    sampleInfo->endPos = sample->loopEnd;
+
+    return new SampleInstrument(std::move(sampleInfo), note);
+}
+
+void SampleMultiPreset::getLoopTimesFromFile(juce::AudioFormatManager& formatManager, std::string filePath, int& loopStart, int& loopEnd)
+{
+    auto file = juce::File(filePath);
+    if (!file.exists())
+        return;
+
+    auto* reader = formatManager.createReaderFor(file);
+
+    juce::String defaultVal = "";
+    auto startVal = reader->metadataValues.getValue("Cue0Offset", defaultVal);
+    auto endVal = reader->metadataValues.getValue("Cue1Offset", defaultVal);
+
+    loopStart = std::stoi(std::string(startVal.getCharPointer()));
+    loopEnd = std::stoi(std::string(endVal.getCharPointer()));
+
+    delete reader;
+}
+
+bool SampleMultiPreset::loadFiles(juce::AudioFormatManager& formatManager)
+{
+    for (auto& sample : samples)
+    {
+        auto file = juce::File(sample.filePath);
+        if (!file.exists())
+            continue;
+
+        auto* reader = formatManager.createReaderFor(file);
+        sample.audioBuffer.setSize(reader->numChannels, reader->lengthInSamples);
+        reader->read(&sample.audioBuffer, 0, reader->lengthInSamples, 0, true, true);
+        sample.numChannels = reader->numChannels;
+        sample.lengthInSamples = reader->lengthInSamples;
+
+        juce::String defaultVal = "";
+        auto startVal = reader->metadataValues.getValue("Cue0Offset", defaultVal);
+        auto endVal = reader->metadataValues.getValue("Cue1Offset", defaultVal);
+
+        sample.loopStart = std::stoi(std::string(startVal.getCharPointer()));
+        sample.loopEnd = std::stoi(std::string(endVal.getCharPointer()));
+
+        delete reader;
+    }
+
+    return true;
+}
+
+//-----------------------------------------------------------------------------
 Instrument* SoundfontPreset::createPlayingInstance(const Note& note) const
 {
     auto noteNum = note.midiKeyPitch;

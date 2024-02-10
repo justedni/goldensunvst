@@ -106,6 +106,46 @@ private:
     int64_t m_lengthInSamples = 0;
 };
 
+class SampleMultiPreset : public Preset
+{
+public:
+    struct MultiSample
+    {
+        MultiSample(std::string&& in_filePath, SampleInfo&& in_info, uint16_t lowRange, uint16_t upRange)
+            : filePath(std::move(in_filePath))
+            , info(std::move(in_info))
+        {
+            keyRange.first = lowRange;
+            keyRange.second = upRange;
+        }
+
+        std::string filePath;
+        SampleInfo info;
+        std::pair<uint16_t, uint16_t> keyRange;
+
+        juce::AudioBuffer<float> audioBuffer;
+        unsigned int numChannels = 0;
+        int64_t lengthInSamples = 0;
+
+        int loopStart = 0;
+        int loopEnd = 0;
+    };
+
+    SampleMultiPreset(int in_id, std::string&& in_name, ADSR&& in_adsr, std::vector<MultiSample>&& in_info);
+
+    Instrument* createPlayingInstance(const Note& note) const final;
+    EDSPType getDSPType() const final { return EDSPType::PCM; }
+    const ADSR& getADSR() const final { return adsr; }
+
+    bool loadFiles(juce::AudioFormatManager& formatManager);
+
+    static void getLoopTimesFromFile(juce::AudioFormatManager& formatManager, std::string filePath, int& loopStart, int& loopEnd);
+
+private:
+    std::vector<MultiSample> samples;
+    ADSR adsr;
+};
+
 class SoundfontPreset : public Preset
 {
 public:

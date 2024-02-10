@@ -35,6 +35,7 @@ struct PresetsHandler
     virtual const std::map<int, ProgramInfo>& getHandledProgramsList() const { return m_emptyMap; }
 
     void addSamplePreset(int id, std::string&& name, std::string&& filename, ADSR&& adsr, int pitch_correction, int original_pitch, int sample_rate);
+    void addSamplePresetLooping(int id, std::string&& name, std::string&& filepath, ADSR&& adsr, int pitch_correction, int original_pitch, int sample_rate, uint32_t in_loopPos, uint32_t in_endPos);
 
     void setSoundfont(const std::string& path);
     void cleanupSoundfont();
