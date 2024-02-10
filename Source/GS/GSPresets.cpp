@@ -82,9 +82,9 @@ void GSPresets::addSynthsPresets()
 const std::map<int, ProgramInfo>& GSPresets::getHandledProgramsList() const
 {
     static std::map<int, ProgramInfo> presetsList = {
-        { 8,   { "Celesta", "SC-88"} },
+        { 8,   { "Music Box", "SC-88"} },
         { 24,  { "Nylon-str. Gt", "SC-88"} },
-        { 33,  { "Rock Bass", "SC-88"} },
+        { 33,  { "Picked Bass", "SC-88"} },
         { 45,  { "Pizz. Str", "SC-88"} },
         { 46,  { "Harp", "SC-88"} },
         { 47,  { "Timpani", "SC-88"} },
