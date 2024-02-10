@@ -79,6 +79,23 @@ ControlsTab::ControlsTab(Processor& p, MainWindow& e)
     m_changeReverbForAll->addListener(this);
 }
 
+void ControlsTab::updateADSRSliderRanges()
+{
+    auto min = 0.0;
+    auto max = 255.0;
+    auto step = 1.0;
+
+    if (m_isGBSynth)
+    {
+        max = 15.0;
+    }
+
+    m_sliderAtt->setRange(min, max, step);
+    m_sliderDec->setRange(min, max, step);
+    m_sliderSus->setRange(min, max, step);
+    m_sliderRel->setRange(min, max, step);
+}
+
 void ControlsTab::paint(juce::Graphics& g)
 {
     CustomLookAndFeel::drawGSBox(g, 0, 0, getWidth(), 50);
@@ -279,6 +296,7 @@ void ControlsTab::refresh()
     m_sliderRel->setValue(adsr.rel);
 
     auto bIsPWM = (channelState.getType() == EDSPType::ModPulse);
+    auto bIsGBSynth = (channelState.getType() == EDSPType::Square);
 
     m_sliderInitDuty->setVisible(bIsPWM);
     m_sliderDutyBase->setVisible(bIsPWM);
@@ -293,6 +311,8 @@ void ControlsTab::refresh()
         m_sliderDutyStep->setValue(pwmData.dutyStep);
         m_sliderDepth->setValue(pwmData.depth);
     }
+
+    updateADSRSliderRanges();
 
     auto reverbType = channelState.getReverbType();
     m_comboReverb->setSelectedId((int)reverbType + 1, juce::dontSendNotification);
@@ -312,6 +332,7 @@ void ControlsTab::refresh()
         || lfoSpeed != m_lfoSpeed)
     {
         m_isPWMSynth = bIsPWM;
+        m_isGBSynth = bIsGBSynth;
         m_detectedBPM = detectedBPM;
         m_detune = detune;
         m_pitchBendRange = pitchBendRange;

@@ -36,6 +36,8 @@ public:
 private:
     void setPropertyVal(EProperty prop, uint8_t val) override;
 
+    void updateADSRSliderRanges();
+
     std::unique_ptr<juce::ComboBox> m_comboChannel;
     std::unique_ptr<PresetCombo> m_comboPreset;
     std::unique_ptr<juce::ToggleButton> m_tickBoxIgnorePrgChg;
@@ -60,6 +62,7 @@ private:
     int m_currentMidiChannel = 0;
 
     bool m_isPWMSynth = false;
+    bool m_isGBSynth = false;
     bool m_reverbSliderEnabled = false;
     int m_detectedBPM = 120;
     int m_detune = 0;
