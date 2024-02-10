@@ -66,6 +66,8 @@ public:
 private:
     int getNumSamplesForComputation(double sampleRate);
 
+    void killAll();
+
     template<typename T>
     void ForEachMidiChannel(T func)
     {

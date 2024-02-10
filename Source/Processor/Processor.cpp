@@ -348,11 +348,7 @@ void Processor::setPresetsRefresh()
 void Processor::setSoundfont(const std::string& path)
 {
     // Make sure nothing is already playing
-    ForEachMidiChannel([&](auto& state)
-    {
-        state.killAllPlayingInstruments();
-        state.resetPreset();
-    });
+    killAll();
 
     m_presets->setSoundfont(path);
     bRefreshPresetsRequired = true;
@@ -362,15 +358,21 @@ void  Processor::setGSMode(bool bEnable)
 {
     if (!bEnable)
     {
-        ForEachMidiChannel([&](auto& state)
-        {
-            state.killAllPlayingInstruments();
-            state.resetPreset();
-        });
+        killAll();
     }
 
     m_presets->setEnableGSMode(bEnable);
 }
+
+void Processor::killAll()
+{
+    ForEachMidiChannel([&](auto& state)
+    {
+        state.killAllPlayingInstruments();
+        state.resetPreset();
+    });
+}
+
 
 //==============================================================================
 void Processor::getStateInformation (juce::MemoryBlock& destData)
