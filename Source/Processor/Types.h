@@ -9,7 +9,7 @@
 
 namespace GSVST {
 
-enum class EReverbType : uint8_t { None, Default, GS1, GS2 };
+enum class EReverbType : uint8_t { None, Default, GS1, GS2, MGAT };
 
 struct ADSR
 {

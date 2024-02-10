@@ -180,6 +180,11 @@ void ChannelState::allocateReverb()
             reverbIntensity, m_samplesPerBlockComputation, uint8_t(revBufSize / (maxFixedModeRate / AGB_FPS)),
             0.4140625f, -0.0625f);
         break;
+    case EReverbType::MGAT:
+        revdsp = std::make_unique<ReverbGS2>(
+            reverbIntensity, m_samplesPerBlockComputation, uint8_t(revBufSize / (maxFixedModeRate / AGB_FPS)),
+            0.25f, -0.046875f);
+        break;
     }
 }
 

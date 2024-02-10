@@ -68,6 +68,7 @@ ControlsTab::ControlsTab(Processor& p, MainWindow& e)
     m_comboReverb->addItem("Default Reverb", 2);
     m_comboReverb->addItem("GS1 Reverb", 3);
     m_comboReverb->addItem("GS2 Reverb", 4);
+    m_comboReverb->addItem("Mario Golf Reverb", 5);
 
     m_comboReverb->onChange = [this] { reverbComboChanged(); };
     m_comboReverb->setSelectedId(2);
