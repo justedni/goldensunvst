@@ -62,6 +62,8 @@
               file="Source/Presets/PresetsHandler.h"/>
       </GROUP>
       <GROUP id="{2F236CAC-DABF-AB53-7CFE-C54FE5CFEC70}" name="GUI">
+        <FILE id="hsL6Hy" name="AboutWindow.cpp" compile="1" resource="0" file="Source/GUI/AboutWindow.cpp"/>
+        <FILE id="ZoyL06" name="AboutWindow.h" compile="0" resource="0" file="Source/GUI/AboutWindow.h"/>
         <FILE id="MZf5me" name="ControlsTab.cpp" compile="1" resource="0" file="Source/GUI/ControlsTab.cpp"/>
         <FILE id="wNbcZG" name="ControlsTab.h" compile="0" resource="0" file="Source/GUI/ControlsTab.h"/>
         <FILE id="Djjz81" name="CustomLookAndFeel.cpp" compile="1" resource="0"

@@ -41,15 +41,6 @@ void SettingsWindow::paint(juce::Graphics& g)
     g.setColour(juce::Colours::white);
     g.drawText("General", 10, 5, getWidth() - 20, 20, juce::Justification::centredLeft);
     g.drawText("Soundfont", 10, 48, getWidth() - 20, 20, juce::Justification::centredLeft);
-
-    auto width = getWidth() - 15;
-    g.setFont(12);
-    g.drawText("Massive thanks to:", 0, 110, width, 20, juce::Justification::centredRight);
-    g.setFont(9);
-    g.drawText("ipatix: creator of agbplay", 0, 130, width, 20, juce::Justification::centredRight);
-    g.drawText("FreeJusticeHere: feedback and sample wisdom", 0, 140, width, 20, juce::Justification::centredRight);
-    g.setFont(8);
-    g.drawText("v0.1 alpha", 0, getHeight() - 15, width, 15, juce::Justification::centredRight);
 }
 
 void SettingsWindow::resized()
@@ -100,13 +91,14 @@ void SettingsWindow::buttonClicked(juce::Button* button)
     }
     else if (button == &m_closeButton)
     {
-        m_mainWindow.closeSettingsWindow();
+        m_mainWindow.closePopupWindow();
     }
     else if (button == &m_clearSoundfontButton)
     {
         m_audioProcessor.setSoundfont("");
         refresh();
         m_mainWindow.refreshMainTab();
+        m_mainWindow.refreshGlobalTab();
     }
 }
 

@@ -4,6 +4,7 @@
 #include "Processor/ReverbEffect.h"
 
 #include "SettingsWindow.h"
+#include "AboutWindow.h"
 #include "ControlsTab.h"
 #include "OverviewTab.h"
 #include "CustomLookAndFeel.h"
@@ -16,7 +17,9 @@ MainWindow::MainWindow (Processor& p)
     , m_mainTab(new ControlsTab(p, *this))
     , m_globalViewTab(new GlobalViewTab(p))
     , m_settingsWindow(new SettingsWindow(p, *this))
+    , m_aboutWindow(new AboutWindow(*this))
     , m_settingsButton(new juce::TextButton())
+    , m_aboutButton(new juce::TextButton())
     , m_audioProcessor (p)
 {
     setSize (600, 300);
@@ -33,7 +36,11 @@ MainWindow::MainWindow (Processor& p)
 
     addAndMakeVisible(*m_settingsButton.get());
     m_settingsButton->setButtonText("Settings");
-    m_settingsButton->onClick = [this] { openSettingsWindow(); };
+    m_settingsButton->onClick = [this] { openPopupWindow(EPopup::Settings); };
+
+    addAndMakeVisible(*m_aboutButton.get());
+    m_aboutButton->setButtonText("About");
+    m_aboutButton->onClick = [this] { openPopupWindow(EPopup::About); };
 
     refresh(true);
 }
@@ -67,6 +74,9 @@ void MainWindow::resized()
 
     m_settingsButton->setBounds(245, 265, 90, 20);
     m_settingsWindow->setBounds(0, 0, 400, 200);
+
+    m_aboutButton->setBounds(335, 265, 70, 20);
+    m_aboutWindow->setBounds(0, 0, 400, 200);
 }
 
 void MainWindow::timerCallback()
@@ -90,25 +100,35 @@ void MainWindow::refresh(bool bForce)
     }
 }
 
-void MainWindow::openSettingsWindow()
+void MainWindow::openPopupWindow(EPopup popup)
 {
-    if (m_window)
+    if (!m_window)
     {
-        m_window->toFront(true);
-    }
-    else
-    {
-        m_window = new juce::DocumentWindow("Settings", juce::Colour(80, 80, 80), false, false);
-        m_window->setUsingNativeTitleBar(true);
+        m_window = new juce::DocumentWindow("", juce::Colour(80, 80, 80), false, false);
         addAndMakeVisible(m_window);
+    }
+
+    auto title = "";
+    switch (popup)
+    {
+    case EPopup::Settings:
+        title = "Settings";
         m_settingsWindow->refresh(false);
         m_window->setContentNonOwned(m_settingsWindow.get(), true);
-        m_window->centreWithSize(400, 200);
-        m_window->setVisible(true);
+        break;
+    case EPopup::About:
+        title = "About";
+        m_window->setContentNonOwned(m_aboutWindow.get(), true);
+        break;
     }
+
+    m_window->setName(title);
+    m_window->centreWithSize(400, 200);
+    m_window->setVisible(true);
+    m_window->toFront(true);
 }
 
-void MainWindow::closeSettingsWindow()
+void MainWindow::closePopupWindow()
 {
     m_window.deleteAndZero();
 }

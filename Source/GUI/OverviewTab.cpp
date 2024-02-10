@@ -1,5 +1,4 @@
 #include "OverviewTab.h"
-#include "SettingsWindow.h"
 #include "CustomLookAndFeel.h"
 #include "PresetCombo.h"
 #include "LevelMeter.h"

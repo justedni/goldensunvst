@@ -9,6 +9,7 @@ class Processor;
 class ControlsTab;
 class GlobalViewTab;
 class SettingsWindow;
+class AboutWindow;
 class CustomLookAndFeel;
 
 class MainWindow  : public juce::AudioProcessorEditor
@@ -23,8 +24,9 @@ public:
 
     void timerCallback() override;
 
-    void openSettingsWindow();
-    void closeSettingsWindow();
+    enum class EPopup : uint8_t { Settings, About };
+    void openPopupWindow(EPopup popup);
+    void closePopupWindow();
 
     void refreshMainTab();
     void refreshGlobalTab();
@@ -37,8 +39,10 @@ private:
     std::unique_ptr<ControlsTab> m_mainTab;
     std::unique_ptr<GlobalViewTab> m_globalViewTab;
     std::unique_ptr<SettingsWindow> m_settingsWindow;
+    std::unique_ptr<AboutWindow> m_aboutWindow;
 
     std::unique_ptr<juce::TextButton> m_settingsButton;
+    std::unique_ptr<juce::TextButton> m_aboutButton;
     juce::Component::SafePointer<juce::DocumentWindow> m_window;
 
     std::unique_ptr<CustomLookAndFeel> m_customLookAndFeel;
