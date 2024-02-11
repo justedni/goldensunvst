@@ -8,6 +8,8 @@
 #include "Presets/PresetsHandler.h"
 #include "Presets/Presets.h"
 
+#define DISPLAYED_MIDI_CHANNELS 10
+
 namespace GSVST {
 
 GlobalViewTab::GlobalViewTab(Processor& p)
@@ -25,7 +27,7 @@ GlobalViewTab::GlobalViewTab(Processor& p)
         combo->setSelectedId(defaultSelection);
     }
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < DISPLAYED_MIDI_CHANNELS; i++)
     {
         m_channelDescs[i].m_meter.reset(new LevelMeter());
         addAndMakeVisible(*m_channelDescs[i].m_meter.get());
@@ -37,7 +39,7 @@ GlobalViewTab::GlobalViewTab(Processor& p)
 void GlobalViewTab::timerCallback()
 {
     // Only showing 10 channels for now (TODO: add <-> selector)
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < DISPLAYED_MIDI_CHANNELS; i++)
     {
         auto& channelState = m_audioProcessor.GetChannelState(i);
         float level = 0.0f;
@@ -55,7 +57,7 @@ void GlobalViewTab::paint(juce::Graphics& g)
 
     auto currentY = 10;
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < DISPLAYED_MIDI_CHANNELS; i++)
     {
         g.setFont(12);
         g.setColour(juce::Colours::white);
@@ -74,7 +76,7 @@ void GlobalViewTab::resized()
 {
     auto currentY = 10;
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < DISPLAYED_MIDI_CHANNELS; i++)
     {
         m_channelDescs[i].m_presetCombo->setBounds(30, currentY, 200, 20);
         m_channelDescs[i].m_meter->setBounds(300, currentY, 100, 20);
@@ -94,15 +96,15 @@ void GlobalViewTab::presetComboChanged(int channel)
 
 void GlobalViewTab::refresh()
 {
-    const auto& programsInfo = m_audioProcessor.getPresets().getHandledProgramsList();
+    const auto& programInfo = m_audioProcessor.getPresets().getProgramInfo();
 
-    for (int i = 0; i < MAX_MIDI_CHANNELS; i++)
+    for (int i = 0; i < DISPLAYED_MIDI_CHANNELS; i++)
     {
         auto& desc = m_channelDescs[i];
         auto selection = m_audioProcessor.GetChannelState(i).getCurrentPreset();
         desc.m_presetCombo->setSelectedProgram(selection);
 
-        if (auto it = programsInfo.find(selection); it != programsInfo.end())
+        if (auto it = programInfo.find(selection); it != programInfo.end())
         {
             desc.m_deviceName = it->second.device;
             auto colour = getDeviceColour(it->second.device);

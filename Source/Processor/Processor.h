@@ -4,9 +4,12 @@
 #include "Types.h"
 #include "ChannelState.h"
 
-struct PresetsHandler;
+
 
 namespace GSVST {
+
+struct PresetsHandler;
+enum class EProgramNameMode : uint8_t;
 
 class Processor  : public juce::AudioProcessor
                             #if JucePlugin_Enable_ARA
@@ -59,7 +62,9 @@ public:
     void setPresetsRefresh();
 
     void setSoundfont(const std::string& path);
-    void setGSMode(bool bEnable);
+    void setAutoReplaceGSSynths(bool bEnable);
+    void setAutoReplaceGBSynths(bool bEnable);
+    void setProgramNameMode(EProgramNameMode mode);
 
     void setIgnoreProgramChange(bool in_ignore) { bIgnoreProgramChange = in_ignore; }
 

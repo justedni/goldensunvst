@@ -12,6 +12,14 @@ SettingsWindow::SettingsWindow(Processor& p, MainWindow& e)
  : m_audioProcessor(p)
  , m_mainWindow(e)
 {
+    addAndMakeVisible(m_comboProgramNameMode);
+    m_comboProgramNameMode.addItem("SF2", 1);
+    m_comboProgramNameMode.addItem("GS", 2);
+
+    m_comboProgramNameMode.onChange = [this] { comboChangedProgramNameMode(); };
+    auto mode = static_cast<int>(p.getPresets().getProgramNameMode()) + 1;
+    m_comboProgramNameMode.setSelectedId(mode);
+
     auto addButton = [&](auto& button, auto&& text)
     {
         button.setButtonText(text);
@@ -19,14 +27,18 @@ SettingsWindow::SettingsWindow(Processor& p, MainWindow& e)
         addAndMakeVisible(button);
     };
 
-    addButton(m_browseSoundfontButton, "Browse soundfont");
+    addButton(m_browseSoundfontButton, "Browse");
     addButton(m_clearSoundfontButton, "Clear");
 
     addAndMakeVisible(m_labelSoundfont);
 
-    addAndMakeVisible(m_gsModeToggleButton);
-    m_gsModeToggleButton.setButtonText("GS mode (enable synths and program names)");
-    m_gsModeToggleButton.onClick = [this] { toggleButtonStateChanged(); };
+    addAndMakeVisible(m_gsSynthModeToggleButton);
+    m_gsSynthModeToggleButton.setButtonText("GS (PWM, Tri, Saw)");
+    m_gsSynthModeToggleButton.onClick = [this] { toggleButtonStateChanged(&m_gsSynthModeToggleButton); };
+
+    addAndMakeVisible(m_gbSynthModeToggleButton);
+    m_gbSynthModeToggleButton.setButtonText("GB (Square)");
+    m_gbSynthModeToggleButton.onClick = [this] { toggleButtonStateChanged(&m_gbSynthModeToggleButton); };
 
     addAndMakeVisible(m_closeButton);
     m_closeButton.setButtonText("Close");
@@ -37,21 +49,28 @@ void SettingsWindow::paint(juce::Graphics& g)
 {
     CustomLookAndFeel::drawGSBox(g, 0, 0, getWidth(), getHeight());
 
-    g.setFont(14);
     g.setColour(juce::Colours::white);
-    g.drawText("General", 10, 5, getWidth() - 20, 20, juce::Justification::centredLeft);
-    g.drawText("Soundfont", 10, 48, getWidth() - 20, 20, juce::Justification::centredLeft);
+    g.setFont(14);
+    g.drawText("Soundfont:", 10, 10, 130, 20, juce::Justification::centredLeft);
+
+    g.setFont(10);
+    g.drawText("Use program names from:", 10, 60, 180, 20, juce::Justification::centredLeft);
+    g.drawText("Auto-replace synths with better ones:", 10, 80, 300, 20, juce::Justification::centredLeft);
 }
 
 void SettingsWindow::resized()
 {
-    m_gsModeToggleButton.setBounds(10, 25, getWidth(), 20);
+    m_labelSoundfont.setBounds(140, 10, getWidth() - 150, 20);
 
-    m_browseSoundfontButton.setBounds(10, 70, 120, 20);
-    m_labelSoundfont.setBounds(140, 70, getWidth() - 150, 20);
-    m_clearSoundfontButton.setBounds(10, 90, 60, 20);
+    m_browseSoundfontButton.setBounds(10, 35, 60, 20);
+    m_clearSoundfontButton.setBounds(90, 35, 60, 20);
 
-    m_closeButton.setBounds(30, getHeight() - 30, 60, 20);
+    m_comboProgramNameMode.setBounds(210, 60, 70, 20);
+
+    m_gsSynthModeToggleButton.setBounds(10, 100, getWidth() / 2, 20);
+    m_gbSynthModeToggleButton.setBounds(getWidth() / 2, 100, getWidth() / 2, 20);
+
+    m_closeButton.setBounds(getWidth() / 2 - 30, getHeight() - 30, 60, 20);
 }
 
 void SettingsWindow::refresh(bool /*bForce*/)
@@ -66,7 +85,8 @@ void SettingsWindow::refresh(bool /*bForce*/)
 
     m_labelSoundfont.setText(text, juce::dontSendNotification);
 
-    m_gsModeToggleButton.setToggleState(presets.getGSModeEnabled(), juce::dontSendNotification);
+    m_gsSynthModeToggleButton.setToggleState(presets.getAutoReplaceGSSynths(), juce::dontSendNotification);
+    m_gbSynthModeToggleButton.setToggleState(presets.getAutoReplaceGBSynths(), juce::dontSendNotification);
 }
 
 void SettingsWindow::buttonClicked(juce::Button* button)
@@ -102,11 +122,25 @@ void SettingsWindow::buttonClicked(juce::Button* button)
     }
 }
 
-void SettingsWindow::toggleButtonStateChanged()
+void SettingsWindow::toggleButtonStateChanged(juce::ToggleButton* button)
 {
-    m_audioProcessor.setGSMode(m_gsModeToggleButton.getToggleState());
+    if (button == &m_gsSynthModeToggleButton)
+        m_audioProcessor.setAutoReplaceGSSynths(button->getToggleState());
+    else if (button == &m_gbSynthModeToggleButton)
+        m_audioProcessor.setAutoReplaceGBSynths(button->getToggleState());
 
     m_mainWindow.refreshMainTab();
+    m_mainWindow.refreshGlobalTab();
 }
+
+void SettingsWindow::comboChangedProgramNameMode()
+{
+    auto mode = static_cast<EProgramNameMode>(m_comboProgramNameMode.getSelectedId() - 1);
+    m_audioProcessor.setProgramNameMode(mode);
+
+    m_mainWindow.refreshMainTab();
+    m_mainWindow.refreshGlobalTab();
+}
+
 
 }

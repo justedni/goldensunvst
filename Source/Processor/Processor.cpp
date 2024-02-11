@@ -354,14 +354,25 @@ void Processor::setSoundfont(const std::string& path)
     bRefreshPresetsRequired = true;
 }
 
-void  Processor::setGSMode(bool bEnable)
+void Processor::setAutoReplaceGSSynths(bool bEnable)
 {
-    if (!bEnable)
-    {
-        killAll();
-    }
+    killAll();
 
-    m_presets->setEnableGSMode(bEnable);
+    m_presets->setAutoReplaceGSSynths(bEnable);
+}
+
+void Processor::setAutoReplaceGBSynths(bool bEnable)
+{
+    killAll();
+
+    m_presets->setAutoReplaceGBSynths(bEnable);
+}
+
+void Processor::setProgramNameMode(EProgramNameMode mode)
+{
+    killAll();
+
+    m_presets->setProgramNameMode(mode);
 }
 
 void Processor::killAll()
@@ -378,8 +389,10 @@ void Processor::killAll()
 void Processor::getStateInformation (juce::MemoryBlock& destData)
 {
     juce::XmlElement root("plugin_data");
-    root.setAttribute("version", 0.1);
-    root.setAttribute("gsmode", m_presets->m_bGSModeEnabled);
+    root.setAttribute("version", 0.2);
+    root.setAttribute("autoreplacegssynths", m_presets->m_bAutoReplaceGSSynthsEnabled);
+    root.setAttribute("autoreplacegbsynths", m_presets->m_bAutoReplaceGBSynthsEnabled);
+    root.setAttribute("programnamemode", (int)m_presets->m_programNameMode);
     root.setAttribute("soundfont", m_presets->soundFontPath);
 
     copyXmlToBinary(root, destData);
@@ -397,7 +410,18 @@ void Processor::setStateInformation (const void* data, int sizeInBytes)
         return;
 
     if (xmlState->hasAttribute("gsmode"))
-        m_presets->setEnableGSMode(xmlState->getBoolAttribute("gsmode"));
+        m_presets->setAutoReplaceGSSynths(xmlState->getBoolAttribute("gsmode"));
+    else if (xmlState->hasAttribute("autoreplacegssynths"))
+        m_presets->setAutoReplaceGSSynths(xmlState->getBoolAttribute("autoreplacegssynths"));
+
+    if (xmlState->hasAttribute("autoreplacegbsynths"))
+        m_presets->setAutoReplaceGBSynths(xmlState->getBoolAttribute("autoreplacegbsynths"));
+
+    if (xmlState->hasAttribute("programnamemode"))
+    {
+        auto mode = static_cast<EProgramNameMode>(xmlState->getIntAttribute("programnamemode"));
+        m_presets->setProgramNameMode(mode);
+    }
 
     auto path = std::string(xmlState->getStringAttribute("soundfont").getCharPointer());
     setSoundfont(path);

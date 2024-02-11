@@ -20,15 +20,18 @@ public:
     void refresh(bool bForce = false);
 
 private:
+    void comboChangedProgramNameMode();
     void buttonClicked(juce::Button* button) override;
-    void toggleButtonStateChanged();
+    void toggleButtonStateChanged(juce::ToggleButton* button);
 
+    juce::ComboBox m_comboProgramNameMode;
     juce::TextButton m_browseSoundfontButton;
     juce::TextButton m_clearSoundfontButton;
     juce::Label m_labelSoundfont;
     std::unique_ptr<juce::FileChooser> fileChooser;
 
-    juce::ToggleButton m_gsModeToggleButton;
+    juce::ToggleButton m_gsSynthModeToggleButton;
+    juce::ToggleButton m_gbSynthModeToggleButton;
 
     juce::TextButton m_closeButton;
 
