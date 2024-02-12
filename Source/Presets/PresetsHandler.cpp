@@ -82,6 +82,9 @@ void PresetsHandler::setAutoReplaceGSSynths(bool bEnable)
     {
         m_bAutoReplaceGSSynthsEnabled = bEnable;
 
+        if (!bEnable)
+            clearPresetsOfType(EPresetType::Synth);
+
         addSoundFontPresets();
         sort();
     }
@@ -268,6 +271,7 @@ void PresetsHandler::addSoundFontPresets()
         return;
 
     clearPresetsOfType(EPresetType::Soundfont);
+    clearPresetsOfType(EPresetType::Synth);
 
     cleanupSoundfont();
     soundFont = tsf_load_filename(soundFontPath.c_str());

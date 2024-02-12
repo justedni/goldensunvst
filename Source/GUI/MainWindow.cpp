@@ -138,8 +138,11 @@ void MainWindow::refreshMainTab()
     m_mainTab->refreshPresets();
 }
 
-void MainWindow::refreshGlobalTab()
+void MainWindow::refreshGlobalTab(bool bRefreshPresets)
 {
+    if (bRefreshPresets)
+        m_globalViewTab->refreshPresets();
+
     m_globalViewTab->refresh();
 }
 

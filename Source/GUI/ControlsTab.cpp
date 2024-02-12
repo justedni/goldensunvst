@@ -79,23 +79,6 @@ ControlsTab::ControlsTab(Processor& p, MainWindow& e)
     m_changeReverbForAll->addListener(this);
 }
 
-void ControlsTab::updateADSRSliderRanges()
-{
-    auto min = 0.0;
-    auto max = 255.0;
-    auto step = 1.0;
-
-    if (m_isGBSynth)
-    {
-        max = 15.0;
-    }
-
-    m_sliderAtt->setRange(min, max, step);
-    m_sliderDec->setRange(min, max, step);
-    m_sliderSus->setRange(min, max, step);
-    m_sliderRel->setRange(min, max, step);
-}
-
 void ControlsTab::paint(juce::Graphics& g)
 {
     CustomLookAndFeel::drawGSBox(g, 0, 0, getWidth(), 50);
@@ -186,7 +169,7 @@ void ControlsTab::presetComboChanged()
     channelState.setPreset(selectedId, m_audioProcessor.getPresets());
 
     refresh();
-    m_mainWindow.refreshGlobalTab();
+    m_mainWindow.refreshGlobalTab(false);
 }
 
 void ControlsTab::updateCheckboxState()
@@ -312,7 +295,21 @@ void ControlsTab::refresh()
         m_sliderDepth->setValue(pwmData.depth);
     }
 
-    updateADSRSliderRanges();
+    {
+        auto sliderMin = 0.0;
+        auto sliderMax = 255.0;
+        auto sliderStep = 1.0;
+
+        if (bIsGBSynth)
+        {
+            sliderMax = 15.0;
+        }
+
+        m_sliderAtt->setRange(sliderMin, sliderMax, sliderStep);
+        m_sliderDec->setRange(sliderMin, sliderMax, sliderStep);
+        m_sliderSus->setRange(sliderMin, sliderMax, sliderStep);
+        m_sliderRel->setRange(sliderMin, sliderMax, sliderStep);
+    }
 
     auto reverbType = channelState.getReverbType();
     m_comboReverb->setSelectedId((int)reverbType + 1, juce::dontSendNotification);

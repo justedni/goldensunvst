@@ -36,8 +36,6 @@ public:
 private:
     void setPropertyVal(EProperty prop, uint8_t val) override;
 
-    void updateADSRSliderRanges();
-
     std::unique_ptr<juce::ComboBox> m_comboChannel;
     std::unique_ptr<PresetCombo> m_comboPreset;
     std::unique_ptr<juce::ToggleButton> m_tickBoxIgnorePrgChg;

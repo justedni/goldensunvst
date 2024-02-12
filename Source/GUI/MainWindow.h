@@ -29,7 +29,7 @@ public:
     void closePopupWindow();
 
     void refreshMainTab();
-    void refreshGlobalTab();
+    void refreshGlobalTab(bool bRefreshPresets = true);
 
 private:
     void refresh(bool bForce = false);
