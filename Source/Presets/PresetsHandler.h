@@ -32,7 +32,7 @@ struct ProgramInfo
 struct PresetsHandler
 {
     PresetsHandler();
-    ~PresetsHandler();
+    virtual ~PresetsHandler();
 
     void clear();
     void sort();
