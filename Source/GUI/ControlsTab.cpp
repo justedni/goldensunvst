@@ -57,10 +57,10 @@ ControlsTab::ControlsTab(Processor& p, MainWindow& e)
     addSlider(m_sliderSus, "Sus", EProperty::Sustain, 0.0, 255.0, 1.0);
     addSlider(m_sliderRel, "Rel", EProperty::Release, 0.0, 255.0, 1.0);
 
-    addSlider(m_sliderInitDuty, "Duty Init", EProperty::InitDuty, 0.0, 256.0, 32.0); // 64
-    addSlider(m_sliderDutyBase, "Base", EProperty::DutyBase, 0.0, 128.0, 16.0);
-    addSlider(m_sliderDutyStep, "Step", EProperty::DutyStep, -64.0, 64.0, 16.0);
-    addSlider(m_sliderDepth, "Depth", EProperty::Depth, -0.0, 224, 8.0); // 64
+    addSlider(m_sliderInitDuty, "Duty Init", EProperty::InitDuty, 0.0, 255.0, 1.0);
+    addSlider(m_sliderDutyBase, "Base", EProperty::DutyBase, 0.0, 255.0, 1.0);
+    addSlider(m_sliderDutyStep, "Step", EProperty::DutyStep, 0.0, 255.0, 1.0);
+    addSlider(m_sliderDepth, "Depth", EProperty::Depth, 0.0, 255.0, 1.0);
 
     addAndMakeVisible(*m_comboReverb.get());
 

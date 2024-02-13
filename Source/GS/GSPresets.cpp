@@ -162,13 +162,18 @@ Preset* GSPresets::buildGSSynthPreset(unsigned short presetId)
 
     auto adsr = getADSRInfo(presetId);
 
+    static const auto pwmPreset1 = PWMData(128, 16, 240, 224);
+    static const auto pwmPreset2 = PWMData(128, 96, 32, 64);
+    static const auto pwmPreset3 = PWMData(64, 128, 64, 64);
+
     switch (presetId)
     {
-    case 80: newPreset = new PWMSynthPreset(presetId, "080 PWM Synth 1", std::move(adsr), PWMData(128, 16, -16, 224)); break;
-    case 81: newPreset = new PWMSynthPreset(presetId, "081 PWM Synth 2", std::move(adsr), PWMData(128, 96, 32, 64)); break;
-    case 82: newPreset = new PWMSynthPreset(presetId, "082 PWM Synth 3", std::move(adsr), PWMData(64, 128, 64, 64)); break;
-    case 90: newPreset = new PWMSynthPreset(presetId, "090 PWM Synth 1", std::move(adsr), PWMData(128, 16, -16, 224)); break;
-    case 91: newPreset = new PWMSynthPreset(presetId, "091 PWM Synth 2", std::move(adsr), PWMData(128, 96, 32, 64)); break;
+    case 80: newPreset = new PWMSynthPreset(presetId, "080 PWM Synth 1", std::move(adsr), PWMData(pwmPreset1)); break;
+    case 81: newPreset = new PWMSynthPreset(presetId, "081 PWM Synth 2", std::move(adsr), PWMData(pwmPreset2)); break;
+    case 82: newPreset = new PWMSynthPreset(presetId, "082 PWM Synth 3", std::move(adsr), PWMData(pwmPreset3)); break;
+    case 90: newPreset = new PWMSynthPreset(presetId, "090 PWM Synth 1", std::move(adsr), PWMData(pwmPreset1)); break;
+    case 91: newPreset = new PWMSynthPreset(presetId, "091 PWM Synth 2", std::move(adsr), PWMData(pwmPreset2)); break;
+    case 92: newPreset = new PWMSynthPreset(presetId, "092 Unused PWM",  std::move(adsr), PWMData(pwmPreset3)); break;
 
     case 83: newPreset = new SynthPreset(presetId, "083 Sawtooth Synth", EDSPType::Saw, std::move(adsr)); break;
     case 93: newPreset = new SynthPreset(presetId, "093 Sawtooth Synth 2", EDSPType::Saw, std::move(adsr)); break;
@@ -176,15 +181,14 @@ Preset* GSPresets::buildGSSynthPreset(unsigned short presetId)
     case 84: newPreset = new SynthPreset(presetId, "084 Triangle Synth 1", EDSPType::Tri, std::move(adsr)); break;
     case 89: newPreset = new SynthPreset(presetId, "089 Triangle Synth 2", EDSPType::Tri, std::move(adsr)); break;
 
-    case 85: newPreset = new PWMSynthPreset(presetId, "085 Unused PWM", std::move(adsr), PWMData(64, 128, 64, 64)); break;
-    case 86: newPreset = new PWMSynthPreset(presetId, "086 Unused PWM", std::move(adsr), PWMData(64, 128, 64, 64)); break;
-    case 87: newPreset = new PWMSynthPreset(presetId, "087 Unused PWM", std::move(adsr), PWMData(64, 128, 64, 64)); break;
-    case 88: newPreset = new SynthPreset(presetId, "088 Unused Sawtooth", EDSPType::Saw, std::move(adsr)); break;
-    case 92: newPreset = new PWMSynthPreset(presetId, "092 Unused PWM", std::move(adsr), PWMData(64, 128, 64, 64)); break;
+    case 85: newPreset = new PWMSynthPreset(presetId, "085 Unused PWM", std::move(adsr), PWMData(pwmPreset1)); break;
+    case 86: newPreset = new PWMSynthPreset(presetId, "086 Unused PWM", std::move(adsr), PWMData(pwmPreset2)); break;
+    case 87: newPreset = new PWMSynthPreset(presetId, "087 Unused PWM", std::move(adsr), PWMData(pwmPreset3)); break;
+    case 88: newPreset = new SynthPreset(presetId, "088 Unused Sawtooth", EDSPType::Saw, std::move(adsr)); break;   
     case 94: newPreset = new SynthPreset(presetId, "094 Unused Triangle", EDSPType::Tri, std::move(adsr)); break;
-    case 95: newPreset = new PWMSynthPreset(presetId, "095 Unused PWM", std::move(adsr), PWMData(64, 128, 64, 64)); break;
-    case 96: newPreset = new PWMSynthPreset(presetId, "096 Unused PWM", std::move(adsr), PWMData(64, 128, 64, 64)); break;
-    case 97: newPreset = new PWMSynthPreset(presetId, "097 Unused PWM", std::move(adsr), PWMData(64, 128, 64, 64)); break;
+    case 95: newPreset = new PWMSynthPreset(presetId, "095 Unused PWM", std::move(adsr), PWMData(pwmPreset1)); break;
+    case 96: newPreset = new PWMSynthPreset(presetId, "096 Unused PWM", std::move(adsr), PWMData(pwmPreset2)); break;
+    case 97: newPreset = new PWMSynthPreset(presetId, "097 Unused PWM", std::move(adsr), PWMData(pwmPreset3)); break;
     case 98: newPreset = new SynthPreset(presetId, "098 Unused Sawtooth", EDSPType::Saw, std::move(adsr)); break;
     case 99: newPreset = new SynthPreset(presetId, "099 Unused Triangle", EDSPType::Tri, std::move(adsr)); break;
     }
