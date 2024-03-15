@@ -50,22 +50,5 @@
             <instrument bank="0" id="94" name="Unused Triangle" device="Synth" type="Tri" visible="0"/>
             <instrument bank="0" id="99" name="Unused Triangle" device="Synth" type="Tri" visible="0"/>
         </instruments>
-        <presets>
-            <preset bank="0" id="8"  type="Sample" file="Music Box 84_Match_Decay40.wav" sample_key="59" sample_rate="48000"/>
-            <preset bank="0" id="56" type="Sample" file="Trumpet_60.wav" sample_key="60" sample_rate="48000"/>
-            <preset bank="0" id="48" type="Sample" file="BrightStr_57.wav" sample_key="57" sample_rate="48000"/>
-            <preset bank="0" id="24" type="Sample" file="Nylon Gt Perfect Match.wav" sample_key="60" sample_rate="48000"/>
-            <preset bank="0" id="33" type="Sample" file="PickedBass_34.wav" sample_key="57" sample_rate="48000"/>
-            <preset bank="0" id="61" type="Sample" file="Brassff_48k_Stereo_60.wav" sample_key="60" sample_rate="48000"/>
-            <preset bank="0" id="68" type="Sample" file="Oboe B4.wav" sample_key="58" sample_rate="48000"/>
-            <preset bank="0" id="72" type="Sample" file="Flute1_70_Long.wav" sample_key="57" sample_rate="48000"/>
-            <preset bank="0" id="73" type="Sample" file="Flute 2 Note 70.wav" sample_key="58" sample_rate="48000"/>
-            <preset bank="0" id="75" type="Sample" file="PanFlute78.wav" sample_key="66" sample_rate="48000"/>
-            <preset bank="0" id="114" type="Sample" loop="True" file="SteelDrums_72_loop_test.wav" sample_key="60" sample_rate="48000"/>
-
-            <preset bank="0" id="80" type="PWMSynth" init_duty="128" duty_base="16" duty_step="240" depth="224"/>
-            <preset bank="0" id="81" type="PWMSynth" init_duty="128" duty_base="96" duty_step="32" depth="64"/>
-            <preset bank="0" id="82" type="PWMSynth" init_duty="64" duty_base="128" duty_step="64" depth="64"/>
-        </presets>
     </game>
 </games>
