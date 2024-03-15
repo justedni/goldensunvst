@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<games>
+    <game name="Golden Sun">
+        <instruments>
+            <instrument bank="0" id="8" name="Music Box" device="SC-88"/>
+            <instrument bank="0" id="24" name="Nylon-str. Gt" device="SC-88"/>
+            <instrument bank="0" id="33" name="Picked Bass" device="SC-88"/>
+            <instrument bank="0" id="45" name="Pizz. Str" device="SC-88"/>
+            <instrument bank="0" id="46" name="Harp" device="SC-88"/>
+            <instrument bank="0" id="47" name="Timpani" device="SC-88"/>
+            <instrument bank="0" id="48" name="Bright Str" device="SC-88"/>
+            <instrument bank="0" id="52" name="Choir Aahs" device="SC-88"/>
+            <instrument bank="0" id="56" name="Trumpet" device="SC-88"/>
+            <instrument bank="0" id="61" name="Brass ff" device="SC-88"/>
+            <instrument bank="0" id="68" name="Oboe" device="SC-88"/>
+            <instrument bank="0" id="72" name="Flute 1" device="SC-88"/>
+            <instrument bank="0" id="73" name="Flute 2" device="SC-88"/>
+            <instrument bank="0" id="75" name="Pan Flute" device="SC-88"/>
+            <instrument bank="0" id="80" name="PWM Synth 1" device="Synth" type="ModPulse"/>
+            <instrument bank="0" id="81" name="PWM Synth 2" device="Synth" type="ModPulse"/>
+            <instrument bank="0" id="82" name="PWM Synth 3" device="Synth" type="ModPulse"/>
+            <instrument bank="0" id="83" name="Sawtooth Synth" device="Synth" type="Saw"/>
+            <instrument bank="0" id="84" name="Triangle Synth 1" device="Synth" type="Tri"/>
+            <instrument bank="0" id="89" name="Triangle Synth 2" device="Synth" type="Tri"/>
+            <instrument bank="0" id="90" name="PWM Synth 1" device="Synth" type="ModPulse"/>
+            <instrument bank="0" id="91" name="PWM Synth 2" device="Synth" type="ModPulse"/>
+            <instrument bank="0" id="93" name="Sawtooth Synth 2" device="Synth" type="Saw"/>
+            <instrument bank="0" id="105" name="Music Box 2" device="JV-1080"/>
+            <instrument bank="0" id="106" name="Sitar Gliss" device="JV-1080"/>
+            <instrument bank="0" id="107" name="Balaphone" device="JV-1080"/>
+            <instrument bank="0" id="108" name="Shout" device="JV-1080"/>
+            <instrument bank="0" id="109" name="Bonang" device="JV-1080"/>
+            <instrument bank="0" id="110" name="Gender" device="JV-1080"/>
+            <instrument bank="0" id="111" name="Sitar" device="JV-1080"/>
+            <instrument bank="0" id="112" name="Ritual Loop" device="JV-1080"/>
+            <instrument bank="0" id="113" name="Daila Loop" device="JV-1080"/>
+            <instrument bank="0" id="114" name="Steel Drums" device="JV-1080"/>
+            <instrument bank="0" id="116" name="Verb Lo Tom" device="JV-1080"/>
+            <instrument bank="0" id="127" name="Drum kit" device="SC-88"/>
+            <!-- Unused synths (only used for SFX) -->
+            <instrument bank="0" id="85" name="Unused PWM Synth" device="Synth" type="ModPulse" visible="0"/>
+            <instrument bank="0" id="86" name="Unused PWM Synth" device="Synth" type="ModPulse" visible="0"/>
+            <instrument bank="0" id="87" name="Unused PWM Synth" device="Synth" type="ModPulse" visible="0"/>
+            <instrument bank="0" id="92" name="Unused PWM Synth" device="Synth" type="ModPulse" visible="0"/>
+            <instrument bank="0" id="95" name="Unused PWM Synth" device="Synth" type="ModPulse" visible="0"/>
+            <instrument bank="0" id="96" name="Unused PWM Synth" device="Synth" type="ModPulse" visible="0"/>
+            <instrument bank="0" id="97" name="Unused PWM Synth" device="Synth" type="ModPulse" visible="0"/>
+            <instrument bank="0" id="88" name="Unused Sawtooth" device="Synth" type="Saw" visible="0"/>
+            <instrument bank="0" id="98" name="Unused Sawtooth" device="Synth" type="Saw" visible="0"/>
+            <instrument bank="0" id="94" name="Unused Triangle" device="Synth" type="Tri" visible="0"/>
+            <instrument bank="0" id="99" name="Unused Triangle" device="Synth" type="Tri" visible="0"/>
+        </instruments>
+        <presets>
+            <preset bank="0" id="8"  type="Sample" file="Music Box 84_Match_Decay40.wav" sample_key="59" sample_rate="48000"/>
+            <preset bank="0" id="56" type="Sample" file="Trumpet_60.wav" sample_key="60" sample_rate="48000"/>
+            <preset bank="0" id="48" type="Sample" file="BrightStr_57.wav" sample_key="57" sample_rate="48000"/>
+            <preset bank="0" id="24" type="Sample" file="Nylon Gt Perfect Match.wav" sample_key="60" sample_rate="48000"/>
+            <preset bank="0" id="33" type="Sample" file="PickedBass_34.wav" sample_key="57" sample_rate="48000"/>
+            <preset bank="0" id="61" type="Sample" file="Brassff_48k_Stereo_60.wav" sample_key="60" sample_rate="48000"/>
+            <preset bank="0" id="68" type="Sample" file="Oboe B4.wav" sample_key="58" sample_rate="48000"/>
+            <preset bank="0" id="72" type="Sample" file="Flute1_70_Long.wav" sample_key="57" sample_rate="48000"/>
+            <preset bank="0" id="73" type="Sample" file="Flute 2 Note 70.wav" sample_key="58" sample_rate="48000"/>
+            <preset bank="0" id="75" type="Sample" file="PanFlute78.wav" sample_key="66" sample_rate="48000"/>
+            <preset bank="0" id="114" type="Sample" loop="True" file="SteelDrums_72_loop_test.wav" sample_key="60" sample_rate="48000"/>
+
+            <preset bank="0" id="80" type="PWMSynth" init_duty="128" duty_base="16" duty_step="240" depth="224"/>
+            <preset bank="0" id="81" type="PWMSynth" init_duty="128" duty_base="96" duty_step="32" depth="64"/>
+            <preset bank="0" id="82" type="PWMSynth" init_duty="64" duty_base="128" duty_step="64" depth="64"/>
+        </presets>
+    </game>
+</games>

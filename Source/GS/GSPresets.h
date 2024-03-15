@@ -14,6 +14,8 @@ struct GSPresets : public PresetsHandler
     Preset* buildCustomSynthPreset(unsigned short presetId, const std::string& synthName, const ADSR& adsr) override;
 
 private:
+    void parseXmlInfo();
+
     ADSR getADSRInfo(int programId);
 
     bool validateGSSynth(unsigned short presetId, const std::string& synthName, const ADSR& adsr);
@@ -22,6 +24,8 @@ private:
     std::vector<int> m_pwmPresets;
     std::vector<int> m_sawPresets;
     std::vector<int> m_triPresets;
+
+    std::list<ProgramInfo> m_programsList;
 };
 
 }

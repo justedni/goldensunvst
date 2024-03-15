@@ -7,6 +7,8 @@ namespace GSVST {
 
 GSPresets::GSPresets()
 {
+    parseXmlInfo();
+
     auto programs = getCustomProgramList();
 
     for (const auto& info : programs)
@@ -21,6 +23,65 @@ GSPresets::GSPresets()
 
     addSynthsPresets();
     sort();
+}
+
+
+void GSPresets::parseXmlInfo()
+{
+    auto dllLocation = juce::File::getSpecialLocation(juce::File::currentExecutableFile);
+    auto xmlFileName = dllLocation.getParentDirectory().getFullPathName() + "\\GoldenSunVST_presets_info.xml";
+
+    auto presetsFile = juce::File(xmlFileName);
+    if (!presetsFile.exists())
+        return;
+
+    auto doc = juce::XmlDocument(presetsFile);
+
+    bool bHasErrors = !doc.getLastParseError().isEmpty();
+    if (bHasErrors)
+        return;
+
+    auto parseType = [](auto& typeStr)
+    {
+        if (typeStr == "PCM")
+            return EDSPType::PCM;
+        else if (typeStr == "ModPulse")
+            return EDSPType::ModPulse;
+        else if (typeStr == "Saw")
+            return EDSPType::Saw;
+        else if (typeStr == "Tri")
+            return EDSPType::Tri;
+        else if (typeStr == "Square")
+            return EDSPType::Square;
+
+        return EDSPType::PCM;
+    };
+
+    if (auto mainElement = doc.getDocumentElement())
+    {
+        for (const auto* gameElem : mainElement->getChildIterator())
+        {
+            auto gameName = gameElem->getStringAttribute("name");
+
+            // Parse instruments
+            {
+                if (auto * instrumentsElem = gameElem->getChildByName("instruments"))
+                {
+                    for (const auto* instrElem : instrumentsElem->getChildIterator())
+                    {
+                        auto bankid = instrElem->getIntAttribute("bank");
+                        auto programid = instrElem->getIntAttribute("id");
+                        auto name = instrElem->getStringAttribute("name");
+                        auto device = instrElem->getStringAttribute("device");
+                        auto type = instrElem->hasAttribute("type") ? parseType(instrElem->getStringAttribute("type")) : EDSPType::PCM;
+                        auto visible = instrElem->hasAttribute("visible") ? (instrElem->getIntAttribute("visible") == 1) : true;
+
+                        m_programsList.push_back(ProgramInfo{ bankid, programid, name.getCharPointer(), device.getCharPointer(), type, visible });
+                    }
+                }
+            }
+        }
+    }
 }
 
 ADSR GSPresets::getADSRInfo(int programId)
@@ -114,6 +175,9 @@ void GSPresets::addSynthsPresets()
 
 bool GSPresets::validateGSSynth(unsigned short presetId, const std::string& synthName, const ADSR& adsr)
 {
+    if (m_pwmPresets.empty() && m_sawPresets.empty() && m_triPresets.empty())
+        return false;
+
     bool bIsValid = false;
 
     if (synthName.find("Square @0x") != std::string::npos)
@@ -200,59 +264,7 @@ Preset* GSPresets::buildGSSynthPreset(unsigned short presetId)
 
 const std::list<ProgramInfo>& GSPresets::getCustomProgramList() const
 {
-    static std::list<ProgramInfo> presetsList = {
-        { 0, 8,   "Music Box", "SC-88" },
-        { 0, 24,  "Nylon-str. Gt", "SC-88" },
-        { 0, 33,  "Picked Bass", "SC-88" },
-        { 0, 45,  "Pizz. Str", "SC-88" },
-        { 0, 46,  "Harp", "SC-88" },
-        { 0, 47,  "Timpani", "SC-88" },
-        { 0, 48,  "Bright Str", "SC-88" },
-        { 0, 52,  "Choir Aahs", "SC-88" },
-        { 0, 56,  "Trumpet", "SC-88" },
-        { 0, 61,  "Brass ff", "SC-88" },
-        { 0, 68,  "Oboe", "SC-88" },
-        { 0, 72,  "Flute 1", "SC-88" },
-        { 0, 73,  "Flute 2", "SC-88" },
-        { 0, 75,  "Pan Flute", "SC-88" },
-        { 0, 80,  "PWM Synth 1", "Synth", EDSPType::ModPulse },
-        { 0, 81,  "PWM Synth 2", "Synth", EDSPType::ModPulse },
-        { 0, 82,  "PWM Synth 3", "Synth", EDSPType::ModPulse },
-        { 0, 83,  "Sawtooth Synth", "Synth", EDSPType::Saw },
-        { 0, 84,  "Triangle Synth 1", "Synth", EDSPType::Tri },
-        { 0, 89,  "Triangle Synth 2", "Synth", EDSPType::Tri },
-        { 0, 90,  "PWM Synth 1", "Synth", EDSPType::ModPulse },
-        { 0, 91,  "PWM Synth 2", "Synth", EDSPType::ModPulse },
-        { 0, 93,  "Sawtooth Synth 2", "Synth", EDSPType::Saw },
-        { 0, 105, "Music Box", "JV-1080" },
-        { 0, 106, "Sitar Gliss", "JV-1080" },
-        { 0, 107, "Balaphone", "JV-1080" },
-        { 0, 108, "Shout", "JV-1080" },
-        { 0, 109, "Bonang", "JV-1080" },
-        { 0, 110, "Gender", "JV-1080" },
-        { 0, 111, "Sitar", "JV-1080" },
-        { 0, 112, "Ritual Loop", "JV-1080" },
-        { 0, 113, "Daila Loop", "JV-1080" },
-        { 0, 114, "Steel Drums", "JV-1080" },
-        { 0, 116, "Verb Lo Tom", "JV-1080" },
-        { 0, 127, "Drum kit", "SC-88" },
-
-        // Unused synths (only used for SFX)
-        { 0, 85, "Unused PWM Synth", "Synth", EDSPType::ModPulse, false },
-        { 0, 86, "Unused PWM Synth", "Synth", EDSPType::ModPulse, false },
-        { 0, 87, "Unused PWM Synth", "Synth", EDSPType::ModPulse, false },
-        { 0, 92, "Unused PWM Synth", "Synth", EDSPType::ModPulse, false },
-        { 0, 95, "Unused PWM Synth", "Synth", EDSPType::ModPulse, false },
-        { 0, 96, "Unused PWM Synth", "Synth", EDSPType::ModPulse, false },
-        { 0, 97, "Unused PWM Synth", "Synth", EDSPType::ModPulse, false },
-        { 0, 88, "Unused Sawtooth",  "Synth", EDSPType::Saw, false },
-        { 0, 98, "Unused Sawtooth",  "Synth", EDSPType::Saw, false },
-        { 0, 94, "Unused Triangle",  "Synth", EDSPType::Tri, false },
-        { 0, 99, "Unused Triangle",  "Synth", EDSPType::Tri, false },
-    };
-
-
-    return presetsList;
+    return m_programsList;
 }
 
 }
