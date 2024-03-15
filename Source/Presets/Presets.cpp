@@ -41,8 +41,8 @@ Instrument* PWMSynthPreset::createPlayingInstance(const Note& note) const
 }
 
 //-----------------------------------------------------------------------------
-SamplePreset::SamplePreset(int in_id, std::string&& in_name, std::string&& in_filepath, ADSR&& in_adsr, SampleInfo&& in_info)
-    : Preset(in_id, EPresetType::Sample, std::move(in_name))
+SamplePreset::SamplePreset(int in_bankid, int in_programid, std::string&& in_name, std::string&& in_filepath, ADSR&& in_adsr, SampleInfo&& in_info)
+    : Preset(in_bankid, in_programid, EPresetType::Sample, std::move(in_name))
     , m_filepath(std::move(in_filepath))
     , m_info(std::move(in_info))
 {
@@ -82,8 +82,8 @@ bool SamplePreset::loadFile(juce::AudioFormatManager& formatManager)
 }
 
 //-----------------------------------------------------------------------------
-SampleMultiPreset::SampleMultiPreset(int in_id, std::string&& in_name, ADSR&& in_adsr, std::vector<MultiSample>&& in_info)
-    : Preset(in_id, EPresetType::Sample, std::move(in_name))
+SampleMultiPreset::SampleMultiPreset(int in_bankid, int in_programid, std::string&& in_name, ADSR&& in_adsr, std::vector<MultiSample>&& in_info)
+    : Preset(in_bankid, in_programid, EPresetType::Sample, std::move(in_name))
     , samples(std::move(in_info))
     , adsr(std::move(in_adsr))
 

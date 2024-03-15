@@ -23,8 +23,8 @@ GlobalViewTab::GlobalViewTab(Processor& p)
         combo->refresh(p.getPresets());
         combo->onChange = [this, id=i] { presetComboChanged(id); };
 
-        auto defaultSelection = p.GetChannelState(i).getCurrentPreset();
-        combo->setSelectedId(defaultSelection);
+        auto [bankId, programId] = p.GetChannelState(i).getCurrentPreset();
+        combo->setSelectedProgram(bankId, programId);
     }
 
     for (int i = 0; i < DISPLAYED_MIDI_CHANNELS; i++)
@@ -86,28 +86,28 @@ void GlobalViewTab::resized()
 
 void GlobalViewTab::presetComboChanged(int channel)
 {
-    auto selectedId = m_channelDescs[channel].m_presetCombo->getSelectedProgramId();
-
+    auto [bankId, programId] = m_channelDescs[channel].m_presetCombo->getSelectedProgramId();
     auto& channelState = m_audioProcessor.GetChannelState(channel);
-    channelState.setPreset(selectedId, m_audioProcessor.getPresets());
+    channelState.setPreset(bankId, programId, m_audioProcessor.getPresets());
 
     refresh();
 }
 
 void GlobalViewTab::refresh()
 {
-    const auto& programInfo = m_audioProcessor.getPresets().getProgramInfo();
+    const auto& presetsHandler = m_audioProcessor.getPresets();
+    const auto& programInfo = presetsHandler.getProgramInfo();
 
     for (int i = 0; i < DISPLAYED_MIDI_CHANNELS; i++)
     {
         auto& desc = m_channelDescs[i];
-        auto selection = m_audioProcessor.GetChannelState(i).getCurrentPreset();
-        desc.m_presetCombo->setSelectedProgram(selection);
+        auto [bankId, programId] = m_audioProcessor.GetChannelState(i).getCurrentPreset();
+        desc.m_presetCombo->setSelectedProgram(bankId, programId);
 
-        if (auto it = programInfo.find(selection); it != programInfo.end())
+        if (auto* info = presetsHandler.findProgramInfo(programInfo, bankId, programId))
         {
-            desc.m_deviceName = it->second.device;
-            auto colour = getDeviceColour(it->second.device);
+            desc.m_deviceName = info->device;
+            auto colour = getDeviceColour(info->device);
             desc.m_deviceColour = colour;
             desc.m_meter->setColour(colour);
         }

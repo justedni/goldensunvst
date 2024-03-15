@@ -225,11 +225,11 @@ void ChannelState::setPan(int val)
     }
 }
 
-void ChannelState::setPreset(int presetId, const PresetsHandler& presets)
+void ChannelState::setPreset(int bankId, int programId, const PresetsHandler& presets)
 {
     for (auto* preset : presets.m_presets)
     {
-        if (preset->programid == presetId)
+        if (preset->bankid == bankId && preset->programid == programId)
         {
             m_preset = preset;
             m_envelope = ADSR(preset->getADSR());
@@ -245,9 +245,9 @@ void ChannelState::resetPreset()
     m_preset = nullptr;
 }
 
-int ChannelState::getCurrentPreset() const
+std::pair<int, int> ChannelState::getCurrentPreset() const
 {
-    return m_preset ? m_preset->programid : -1;
+    return m_preset ? std::make_pair(m_preset->bankid, m_preset->programid) : std::make_pair(0, -1);
 }
 
 void ChannelState::updateADSR(const ADSR& in_adsr)
@@ -347,12 +347,12 @@ bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHand
 
     if (msg.isControllerOfType(0)) // Bank change
     {
-        // TODO: handle
+        m_currentBankId = msg.getControllerValue();
     }
     else if (msg.isProgramChange() && !bIgnorePrgChg)
     {
-        auto prgChg = msg.getProgramChangeNumber();
-        setPreset(prgChg, presets);
+        auto programId = msg.getProgramChangeNumber();
+        setPreset(m_currentBankId, programId, presets);
         bRefreshRequired = true;
     }
     else if (msg.isPitchWheel())

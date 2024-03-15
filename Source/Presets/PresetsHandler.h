@@ -23,6 +23,8 @@ enum class EProgramNameMode : uint8_t { Sf2, GS };
 
 struct ProgramInfo
 {
+    int bankid;
+    int programid;
     std::string name;
     std::string device;
     EDSPType type = EDSPType::PCM;
@@ -37,14 +39,14 @@ struct PresetsHandler
     void clear();
     void sort();
 
-    const std::map<int, ProgramInfo>& getProgramInfo() const;
-    virtual const std::map<int, ProgramInfo>& getCustomProgramList() const { return m_emptyMap; }
+    const std::list<ProgramInfo>& getProgramInfo() const;
+    virtual const std::list<ProgramInfo>& getCustomProgramList() const { return m_emptyList; }
 
     virtual void addSynthsPresets() {}
     virtual Preset* buildCustomSynthPreset(unsigned short, const std::string&, const ADSR&) { return nullptr; }
 
-    void addSamplePreset(int id, std::string&& name, std::string&& filename, ADSR&& adsr, int pitch_correction, int original_pitch, int sample_rate);
-    void addSamplePresetLooping(int id, std::string&& name, std::string&& filepath, ADSR&& adsr, int pitch_correction, int original_pitch, int sample_rate, uint32_t in_loopPos, uint32_t in_endPos);
+    void addSamplePreset(int bankid, int programid, std::string&& name, std::string&& filename, ADSR&& adsr, int pitch_correction, int original_pitch, int sample_rate);
+    void addSamplePresetLooping(int bankid, int programid, std::string&& name, std::string&& filepath, ADSR&& adsr, int pitch_correction, int original_pitch, int sample_rate, uint32_t in_loopPos, uint32_t in_endPos);
 
     void setSoundfont(const std::string& path);
     void cleanupSoundfont();
@@ -62,6 +64,8 @@ struct PresetsHandler
     EProgramNameMode getProgramNameMode() const { return m_programNameMode; }
 
     void clearPresetsOfType(EPresetType type);
+
+    const ProgramInfo* findProgramInfo(const std::list<ProgramInfo>& list, int bankid, int programid) const;
 
     std::vector<Preset*> m_presets;
 
@@ -83,7 +87,7 @@ protected:
     bool isSynth(const tsf_preset& preset);
     ADSR getSoundfontADSR(const tsf_region& region);
 
-    const std::map<int, ProgramInfo> m_emptyMap;
+    const std::list<ProgramInfo> m_emptyList;
 
     std::unique_ptr<juce::AudioFormatManager> m_formatManager;
 };

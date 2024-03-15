@@ -32,8 +32,9 @@ std::string EnumToString_EPresetType(EPresetType type);
 class Preset
 {
 public:
-    Preset(int in_id, EPresetType in_type, std::string&& in_name)
-        : programid(in_id)
+    Preset(int in_bankid, int in_programid, EPresetType in_type, std::string&& in_name)
+        : bankid(in_bankid)
+        , programid(in_programid)
         , type(in_type)
         , name(std::move(in_name))
     {}
@@ -44,6 +45,7 @@ public:
     virtual const ADSR& getADSR() const = 0;
     virtual void getPWMData(PWMData&) const {}
 
+    const int bankid;
     const int programid;
     const EPresetType type;
     const std::string name;
@@ -52,8 +54,8 @@ public:
 class SynthPreset : public Preset
 {
 public:
-    SynthPreset(int in_id, std::string&& in_name, EDSPType in_synthType, ADSR&& in_adsr)
-        : Preset(in_id, EPresetType::Synth, std::move(in_name))
+    SynthPreset(int in_bankid, int in_programid, std::string&& in_name, EDSPType in_synthType, ADSR&& in_adsr)
+        : Preset(in_bankid, in_programid, EPresetType::Synth, std::move(in_name))
         , synthType(in_synthType)
         , adsr(std::move(in_adsr))
     {}
@@ -71,8 +73,8 @@ private:
 class PWMSynthPreset : public Preset
 {
 public:
-    PWMSynthPreset(int in_id, std::string&& in_name, ADSR&& in_adsr, PWMData&& in_data)
-        : Preset(in_id, EPresetType::Synth, std::move(in_name))
+    PWMSynthPreset(int in_bankid, int in_programid, std::string&& in_name, ADSR&& in_adsr, PWMData&& in_data)
+        : Preset(in_bankid, in_programid, EPresetType::Synth, std::move(in_name))
         , adsr(std::move(in_adsr))
         , pwmdata(std::move(in_data))
     {}
@@ -89,7 +91,7 @@ public:
 class SamplePreset : public Preset
 {
 public:
-    SamplePreset(int in_id, std::string&& in_name, std::string&& in_filepath, ADSR&& in_adsr, SampleInfo&& in_info);
+    SamplePreset(int in_bankid, int in_programid, std::string&& in_name, std::string&& in_filepath, ADSR&& in_adsr, SampleInfo&& in_info);
 
     Instrument* createPlayingInstance(const Note& note) const final;
     EDSPType getDSPType() const final { return EDSPType::PCM; }
@@ -131,7 +133,7 @@ public:
         int loopEnd = 0;
     };
 
-    SampleMultiPreset(int in_id, std::string&& in_name, ADSR&& in_adsr, std::vector<MultiSample>&& in_info);
+    SampleMultiPreset(int in_bankid, int in_programid, std::string&& in_name, ADSR&& in_adsr, std::vector<MultiSample>&& in_info);
 
     Instrument* createPlayingInstance(const Note& note) const final;
     EDSPType getDSPType() const final { return EDSPType::PCM; }
@@ -149,8 +151,8 @@ private:
 class SoundfontPreset : public Preset
 {
 public:
-    SoundfontPreset(int in_id, std::string&& in_name, const PresetsHandler& in_presetsHandler, std::vector<SoundfontSampleInfo>&& in_samples)
-        : Preset(in_id, EPresetType::Soundfont, std::move(in_name))
+    SoundfontPreset(int in_bankid, int in_programid, std::string&& in_name, const PresetsHandler& in_presetsHandler, std::vector<SoundfontSampleInfo>&& in_samples)
+        : Preset(in_bankid, in_programid, EPresetType::Soundfont, std::move(in_name))
         , m_presetsHandler(in_presetsHandler)
         , samples(std::move(in_samples))
     {}

@@ -27,8 +27,14 @@ class PresetCombo : public juce::ComboBox
 public:
     void refresh(const PresetsHandler& presets);
 
-    int getSelectedProgramId() const;
-    void setSelectedProgram(int presetId);
+    std::pair<int, int> getSelectedProgramId() const;
+    void setSelectedProgram(int bankId, int presetId);
+
+private:
+    int getMergedId(int bankId, int presetId) const;
+
+    int m_bankid = 0;
+    int m_program_id = 0;
 };
 
 }

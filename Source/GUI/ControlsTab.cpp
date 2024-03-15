@@ -35,8 +35,8 @@ ControlsTab::ControlsTab(Processor& p, MainWindow& e)
     m_comboPreset->refresh(m_audioProcessor.getPresets());
     m_comboPreset->onChange = [this] { presetComboChanged(); };
 
-    auto defaultSelection = p.GetChannelState(0).getCurrentPreset();
-    m_comboPreset->setSelectedId(defaultSelection);
+    auto [bankId, programId] = p.GetChannelState(0).getCurrentPreset();
+    m_comboPreset->setSelectedProgram(bankId, programId);
 
     addAndMakeVisible(*m_tickBoxIgnorePrgChg.get());
     m_tickBoxIgnorePrgChg->setButtonText("Ignore Program Change");
@@ -154,8 +154,8 @@ void ControlsTab::channelComboChanged()
     auto selectedChannel = m_comboChannel->getSelectedId();
 
     auto& channelState = m_audioProcessor.GetChannelState(selectedChannel - 1);
-    auto currentChannelPreset = channelState.getCurrentPreset();
-    m_comboPreset->setSelectedId(currentChannelPreset);
+    auto [bankId, programId] = channelState.getCurrentPreset();
+    m_comboPreset->setSelectedProgram(bankId, programId);
 
     refresh();
 }
@@ -163,10 +163,10 @@ void ControlsTab::channelComboChanged()
 void ControlsTab::presetComboChanged()
 {
     auto selectedChannel = m_comboChannel->getSelectedId();
-    auto selectedId = m_comboPreset->getSelectedProgramId();
+    auto [bankId, programId] = m_comboPreset->getSelectedProgramId();
 
     auto& channelState = m_audioProcessor.GetChannelState(selectedChannel - 1);
-    channelState.setPreset(selectedId, m_audioProcessor.getPresets());
+    channelState.setPreset(bankId, programId, m_audioProcessor.getPresets());
 
     refresh();
     m_mainWindow.refreshGlobalTab(false);
@@ -265,8 +265,8 @@ void ControlsTab::refresh()
 
     const auto& channelState = m_audioProcessor.GetChannelState(m_currentMidiChannel);
 
-    auto currentChannelPreset = channelState.getCurrentPreset();
-    m_comboPreset->setSelectedProgram(currentChannelPreset);
+    auto [bankId, programId] = channelState.getCurrentPreset();
+    m_comboPreset->setSelectedProgram(bankId, programId);
 
     m_sliderVolume->setValue(channelState.getVolume());
     m_sliderPan->setValue(channelState.getPan());

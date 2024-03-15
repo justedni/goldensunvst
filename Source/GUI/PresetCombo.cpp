@@ -67,11 +67,14 @@ void PresetCombo::refresh(const PresetsHandler& presets)
     auto* menu = getRootMenu();
     for (auto& preset : presets.m_presets)
     {
+        juce::String presetName;
+        presetName << preset->bankid << ":" << preset->programid << " " << preset->name;
+
         juce::PopupMenu::Item item;
-        item.text = juce::String(preset->name);
+        item.text = presetName;
         item.itemID = preset->programid + 1;
         item.customComponent = new ComboItem(
-            juce::String(preset->name),
+            juce::String(presetName),
             juce::String(EnumToString_EPresetType(preset->type)),
             getPresetColour(preset->type));
 
@@ -79,15 +82,27 @@ void PresetCombo::refresh(const PresetsHandler& presets)
     }
 }
 
-int PresetCombo::getSelectedProgramId() const
+int PresetCombo::getMergedId(int bankId, int presetId) const
 {
-    return (getSelectedId() - 1);
-
+    return (bankId << 8) | presetId;
 }
 
-void PresetCombo::setSelectedProgram(int presetId)
+std::pair<int, int>  PresetCombo::getSelectedProgramId() const
 {
-    setSelectedId(presetId + 1);
+    auto realId = getSelectedId() - 1;
+    int bankId = realId >> 8;
+    int programId = realId & 0xff;
+    return std::make_pair(bankId, programId);
+}
+
+void PresetCombo::setSelectedProgram(int bankId, int presetId)
+{
+    if (bankId != m_bankid || presetId != m_program_id)
+    {
+        m_bankid = bankId;
+        m_program_id = presetId;
+        setSelectedId(getMergedId(bankId, presetId) + 1, juce::dontSendNotification);
+    }
 }
 
 }

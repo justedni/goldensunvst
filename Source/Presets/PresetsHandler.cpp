@@ -35,16 +35,25 @@ void PresetsHandler::sort()
     std::sort(m_presets.begin(), m_presets.end(), [](auto& l, auto& r) { return l->programid < r->programid; });
 }
 
-const std::map<int, ProgramInfo>& PresetsHandler::getProgramInfo() const
+const ProgramInfo* PresetsHandler::findProgramInfo(const std::list<ProgramInfo>& list, int bankid, int programid) const
 {
-    static std::map<int, ProgramInfo> emptyMap;
+    const auto& it = std::find_if(list.begin(), list.end(), [&](const auto& e) {
+        return e.bankid == bankid && e.programid == programid; });
 
+    if (it != list.end())
+        return &(*it);
+
+    return nullptr;
+}
+
+const std::list<ProgramInfo>& PresetsHandler::getProgramInfo() const
+{
     switch (m_programNameMode)
     {
     default:
     case EProgramNameMode::Sf2:
     {
-        return emptyMap;
+        return m_emptyList;
     }
     case EProgramNameMode::GS:
     {
@@ -137,10 +146,10 @@ void PresetsHandler::clearPresetsOfType(EPresetType type)
     }
 }
 
-void PresetsHandler::addSamplePreset(int id, std::string&& name, std::string&& filepath, ADSR&& adsr,
+void PresetsHandler::addSamplePreset(int bankid, int programid, std::string&& name, std::string&& filepath, ADSR&& adsr,
     int pitch_correction, int original_pitch, int sample_rate)
 {
-    auto* newPreset = new SamplePreset(id, std::move(name), std::move(filepath), std::move(adsr), SampleInfo(calculateMidCFreq(pitch_correction, original_pitch, sample_rate)));
+    auto* newPreset = new SamplePreset(bankid, programid, std::move(name), std::move(filepath), std::move(adsr), SampleInfo(calculateMidCFreq(pitch_correction, original_pitch, sample_rate)));
     if (newPreset->loadFile(*m_formatManager.get()))
     {
         m_presets.push_back(newPreset);
@@ -151,10 +160,10 @@ void PresetsHandler::addSamplePreset(int id, std::string&& name, std::string&& f
     }
 }
 
-void PresetsHandler::addSamplePresetLooping(int id, std::string&& name, std::string&& filepath, ADSR&& adsr,
+void PresetsHandler::addSamplePresetLooping(int bankid, int programid, std::string&& name, std::string&& filepath, ADSR&& adsr,
     int pitch_correction, int original_pitch, int sample_rate, uint32_t in_loopPos, uint32_t in_endPos)
 {
-    auto* newPreset = new SamplePreset(id, std::move(name), std::move(filepath), std::move(adsr),
+    auto* newPreset = new SamplePreset(bankid, programid, std::move(name), std::move(filepath), std::move(adsr),
         SampleInfo(calculateMidCFreq(pitch_correction, original_pitch, sample_rate), true, in_loopPos, in_endPos));
 
     if (newPreset->loadFile(*m_formatManager.get()))
@@ -286,17 +295,16 @@ void PresetsHandler::addSoundFontPresets()
         auto presetId = preset.preset;
         auto name = tsf_get_presetname(soundFont, i);
 
-        if (std::find_if(m_presets.begin(), m_presets.end(), [&](auto* p) { return p->programid == presetId; }) != m_presets.end())
+        if (std::find_if(m_presets.begin(), m_presets.end(), [&](auto* p) { return p->programid == presetId && p->bankid == bankId; }) != m_presets.end())
             continue; // Don't add presets if there's already a Sample or Synth version of it
 
         const auto& friendlyNames = getProgramInfo();
-        const auto& friendlyNameIt = friendlyNames.find(presetId);
-        if (!friendlyNames.empty() && friendlyNameIt == friendlyNames.end())
+        const auto* foundFriendlyName = findProgramInfo(friendlyNames, bankId, presetId);
+        if (!friendlyNames.empty() && !foundFriendlyName)
             continue;
 
-        if (bankId == 0)
         {
-            std::string friendlyName = (friendlyNameIt != friendlyNames.end() ? friendlyNameIt->second.name : "");
+            std::string friendlyName = (foundFriendlyName ? foundFriendlyName->name : "");
             auto* newPreset = buildSoundfontPreset(preset, name, friendlyName);
             assert(newPreset);
             if (newPreset)
@@ -312,13 +320,8 @@ Preset* PresetsHandler::buildSoundfontPreset(const tsf_preset& preset, const std
     Preset* newPreset = nullptr;
 
     bool bIsEveryKeySplit = (std::string(name).find("Type 128") != std::string::npos);
+    auto bankId = preset.bank;
     auto presetId = preset.preset;
-
-    std::string label;
-    if (presetId < 10) label.append("00");
-    else if (presetId < 100) label.append("0");
-    label.append(std::to_string(presetId));
-    label.append(" ");
 
     if (isSynth(preset) && !bIsEveryKeySplit && preset.regionNum > 0)
     {
@@ -342,8 +345,7 @@ Preset* PresetsHandler::buildSoundfontPreset(const tsf_preset& preset, const std
             else if (synthName.find("square 75%") != std::string::npos) // Requires a modified version of GBA Mus Ripper
                 dutyCycle = WaveDuty::D75;
 
-            label.append(synthName);
-            newPreset = new SquareSynthPreset(presetId, std::move(label), std::move(firstAdsr), dutyCycle);
+            newPreset = new SquareSynthPreset(bankId, presetId, std::move(synthName), std::move(firstAdsr), dutyCycle);
         }
     }
 
@@ -385,12 +387,8 @@ Preset* PresetsHandler::buildSoundfontPreset(const tsf_preset& preset, const std
             samples.push_back(sampleInfo);
         }
 
-        if (!friendlyName.empty())
-            label.append(friendlyName);
-        else
-            label.append(name);
-
-        newPreset = new SoundfontPreset(presetId, std::move(label), *this, std::move(samples));
+        const auto& label = !friendlyName.empty() ? friendlyName : name;
+        newPreset = new SoundfontPreset(bankId, presetId, std::string(label), *this, std::move(samples));
     }
 
     return newPreset;

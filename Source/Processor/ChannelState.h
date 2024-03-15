@@ -48,9 +48,9 @@ public:
     void setReverbLevel(int val);
     int getReverbLevel() const { return reverbLevel; }
 
-    void setPreset(int presetId, const PresetsHandler& presets);
+    void setPreset(int bankId, int programId, const PresetsHandler& presets);
     void resetPreset();
-    int getCurrentPreset() const;
+    std::pair<int, int> getCurrentPreset() const;
 
     void updateADSR(const ADSR& in_adsr);
     const ADSR& getADSR() const { return m_envelope; }
@@ -89,6 +89,7 @@ private:
 
     int m_detectedBPM = -1;
 
+    int m_currentBankId = 0;
     const Preset* m_preset = nullptr;
 
     ADSR m_envelope;
