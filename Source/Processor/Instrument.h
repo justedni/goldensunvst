@@ -78,6 +78,7 @@ public:
     void setBPM(int bpm) { bpmRefresh = bpm; }
 
     virtual void release();
+    bool isStopping() const;
     void kill();
 
     void tickLfo();

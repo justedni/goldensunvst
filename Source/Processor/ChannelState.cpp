@@ -323,9 +323,10 @@ void ChannelState::handleNoteOff(int noteNumber)
 {
     for (auto& soundChannel : m_playingInstruments)
     {
-        if (soundChannel->getMidiNote() == noteNumber)
+        if (soundChannel->getMidiNote() == noteNumber && !soundChannel->isStopping())
         {
             soundChannel->release();
+            break;
         }
     }
 }

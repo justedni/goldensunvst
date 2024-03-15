@@ -84,6 +84,11 @@ void Instrument::release()
     stop = true;
 }
 
+bool Instrument::isStopping() const
+{
+    return stop;
+}
+
 void Instrument::kill()
 {
     envState = EnvState::DEAD;
