@@ -8,6 +8,7 @@ namespace GSVST {
 class Processor;
 class PresetCombo;
 class LevelMeter;
+struct ProgramInfo;
 
 struct ChannelDesc
 {
@@ -39,6 +40,8 @@ private:
     ChannelDesc m_channelDescs[MAX_MIDI_CHANNELS];
 
     Processor& m_audioProcessor;
+
+    std::map<int, ProgramInfo> m_overrideProgramInfo;
 };
 
 }

@@ -45,7 +45,7 @@ void ComboItem::resized()
 {
 }
 
-void PresetCombo::refresh(const PresetsHandler& presets)
+void PresetCombo::refresh(const PresetsHandler& presets, const ProgramInfo* customInfo)
 {
     clear();
 
@@ -68,11 +68,14 @@ void PresetCombo::refresh(const PresetsHandler& presets)
     for (auto& preset : presets.m_presets)
     {
         juce::String presetName;
-        presetName << preset->bankid << ":" << preset->programid << " " << preset->name;
+        if (customInfo)
+            presetName << customInfo->name;
+        else
+            presetName << preset->bankid << ":" << preset->programid << " " << preset->name;
 
         juce::PopupMenu::Item item;
         item.text = presetName;
-        item.itemID = preset->programid + 1;
+        item.itemID = getMergedId(preset->bankid, preset->programid) + 1;
         item.customComponent = new ComboItem(
             juce::String(presetName),
             juce::String(EnumToString_EPresetType(preset->type)),

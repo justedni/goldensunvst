@@ -20,7 +20,14 @@ GlobalViewTab::GlobalViewTab(Processor& p)
         auto& combo = m_channelDescs[i].m_presetCombo;
         combo.reset(new PresetCombo());
         addAndMakeVisible(*combo.get());
-        combo->refresh(p.getPresets());
+
+        ProgramInfo* customInfo = nullptr;
+        if (auto it = m_overrideProgramInfo.find(i); it != m_overrideProgramInfo.end())
+        {
+            customInfo = &(it->second);
+        }
+
+        combo->refresh(p.getPresets(), customInfo);
         combo->onChange = [this, id=i] { presetComboChanged(id); };
 
         auto [bankId, programId] = p.GetChannelState(i).getCurrentPreset();
@@ -63,9 +70,8 @@ void GlobalViewTab::paint(juce::Graphics& g)
         g.setColour(juce::Colours::white);
         g.drawText(std::to_string(i+1), 6, currentY, 20, 20, juce::Justification::centred);
 
-        g.setFont(10);
         g.setColour(m_channelDescs[i].m_deviceColour);
-        g.drawText(m_channelDescs[i].m_deviceName, 240, currentY, 60, 20, juce::Justification::centredLeft);
+        g.drawText(m_channelDescs[i].m_deviceName, 236, currentY + 1, 70, 20, juce::Justification::centredLeft);
         currentY += 22;
     }
 
@@ -79,7 +85,7 @@ void GlobalViewTab::resized()
     for (int i = 0; i < DISPLAYED_MIDI_CHANNELS; i++)
     {
         m_channelDescs[i].m_presetCombo->setBounds(30, currentY, 200, 20);
-        m_channelDescs[i].m_meter->setBounds(300, currentY, 100, 20);
+        m_channelDescs[i].m_meter->setBounds(310, currentY, 100, 20);
         currentY += 22;
     }
 }
@@ -104,7 +110,14 @@ void GlobalViewTab::refresh()
         auto [bankId, programId] = m_audioProcessor.GetChannelState(i).getCurrentPreset();
         desc.m_presetCombo->setSelectedProgram(bankId, programId);
 
-        if (auto* info = presetsHandler.findProgramInfo(programInfo, bankId, programId))
+        if (auto it = m_overrideProgramInfo.find(i); it != m_overrideProgramInfo.end())
+        {
+            desc.m_deviceName = it->second.device;
+            auto colour = getDeviceColour(it->second.device);
+            desc.m_deviceColour = colour;
+            desc.m_meter->setColour(colour);
+        }
+        else if (auto* info = presetsHandler.findProgramInfo(programInfo, bankId, programId))
         {
             desc.m_deviceName = info->device;
             auto colour = getDeviceColour(info->device);
@@ -121,9 +134,13 @@ juce::Colour GlobalViewTab::getDeviceColour(const std::string& name)
     if (name == "SC-88")
         return juce::Colour(230, 127, 22);
     else if (name == "Synth")
-        return juce::Colour(202, 0, 0);
+        return juce::Colour(255, 0, 0);
     else if (name == "JV-1080")
-        return juce::Colour(113, 196, 229);
+        return juce::Colour(70, 180, 221);
+    else if (name == "DM5")
+        return juce::Colour(34, 177, 76);
+    else if (name == "Custom")
+        return juce::Colour(123, 206, 227);
 
     return juce::Colour(66, 162, 200);
 }
@@ -134,7 +151,13 @@ void GlobalViewTab::refreshPresets()
     
     for (int i = 0; i < MAX_MIDI_CHANNELS; i++)
     {
-        m_channelDescs[i].m_presetCombo->refresh(presets);
+        ProgramInfo* customInfo = nullptr;
+        if (auto it = m_overrideProgramInfo.find(i); it != m_overrideProgramInfo.end())
+        {
+            customInfo = &(it->second);
+        }
+
+        m_channelDescs[i].m_presetCombo->refresh(presets, customInfo);
     }
 }
 

@@ -5,6 +5,7 @@
 namespace GSVST {
 
 struct PresetsHandler;
+struct ProgramInfo;
 
 class ComboItem : public juce::PopupMenu::CustomComponent
 {
@@ -25,7 +26,7 @@ private:
 class PresetCombo : public juce::ComboBox
 {
 public:
-    void refresh(const PresetsHandler& presets);
+    void refresh(const PresetsHandler& presets, const ProgramInfo* customInfo = nullptr);
 
     std::pair<int, int> getSelectedProgramId() const;
     void setSelectedProgram(int bankId, int presetId);
