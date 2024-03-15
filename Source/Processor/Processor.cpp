@@ -182,10 +182,10 @@ void Processor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&
         
         if (auto bpm = positionInfo->getBpm(); bpm.hasValue())
         {
-            auto newVal = *bpm;
+            auto newVal = static_cast<int>(std::round(*bpm));
             if (newVal != detectedBPM)
             {
-                detectedBPM = static_cast<int>(std::round(*bpm));
+                detectedBPM = newVal;
                 bRefreshUIRequired = true;
             }
         }
