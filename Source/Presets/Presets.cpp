@@ -174,8 +174,10 @@ Instrument* SoundfontPreset::createPlayingInstance(const Note& note) const
     noteToUse.midiKeyPitch = sampleInfo->fixed ? sampleInfo->notePitch : note.midiKeyPitch;
 
     auto* newInstance = new SoundfontSampleInstrument(std::move(sampleInfo), noteToUse);
-    newInstance->useTrackADSR(!sampleInfo->fixed);
-    if (sampleInfo->fixed) // Forcing preset ADSR, not the track one
+    bool bUseTrackADSR = (!sampleInfo->fixed && samples.size() == 1);
+    newInstance->useTrackADSR(bUseTrackADSR);
+
+    if (!bUseTrackADSR) // Forcing preset ADSR, not the track one
     {
         newInstance->updateADSR(sample->adsr);
     }
