@@ -48,18 +48,18 @@ const ProgramInfo* PresetsHandler::findProgramInfo(const std::list<ProgramInfo>&
 
 const std::list<ProgramInfo>& PresetsHandler::getProgramInfo() const
 {
-    switch (m_programNameMode)
-    {
-    default:
-    case EProgramNameMode::Sf2:
+    if (m_selectedGame == "SF2")
     {
         return m_emptyList;
     }
-    case EProgramNameMode::GS:
+    else
     {
-        return getCustomProgramList();
+        auto& programList = getGamesProgramList();
+        if (programList.find(m_selectedGame) != programList.end())
+            return programList.at(m_selectedGame);
     }
-    }
+
+    return m_emptyList;
 }
 
 void PresetsHandler::setSoundfont(const std::string& path)
@@ -110,11 +110,22 @@ void PresetsHandler::setAutoReplaceGBSynths(bool bEnable)
     }
 }
 
-void PresetsHandler::setProgramNameMode(EProgramNameMode mode)
+void PresetsHandler::setHideUnknownInstruments(bool bHide)
 {
-    if (m_programNameMode != mode)
+    if (m_bHideUnknownInstruments != bHide)
     {
-        m_programNameMode = mode;
+        m_bHideUnknownInstruments = bHide;
+
+        addSoundFontPresets();
+        sort();
+    }
+}
+
+void PresetsHandler::setSelectedGame(const std::string& gameName)
+{
+    if (m_selectedGame != gameName)
+    {
+        m_selectedGame = gameName;
 
         addSoundFontPresets();
         sort();
@@ -176,8 +187,11 @@ void PresetsHandler::addSamplePresetLooping(int bankid, int programid, std::stri
     }
 }
 
-bool PresetsHandler::isGSSynth(const std::string& presetName)
+bool PresetsHandler::isGSSynth(int bankId, const std::string& presetName)
 {
+    if (bankId != 0)
+        return false;
+
     if (presetName.find("Square @0x") != std::string::npos
         || presetName.find("Saw @0x") != std::string::npos
         || presetName.find("Triangle @0x") != std::string::npos)
@@ -201,7 +215,7 @@ bool PresetsHandler::isSynth(const tsf_preset& preset)
 
     auto& region = preset.regions[0];
 
-    if (isGBSynth(region.sampleName) || isGSSynth(region.sampleName))
+    if (isGBSynth(region.sampleName) || isGSSynth(preset.bank, region.sampleName))
         return true;
 
     return false;
@@ -300,7 +314,7 @@ void PresetsHandler::addSoundFontPresets()
 
         const auto& friendlyNames = getProgramInfo();
         const auto* foundFriendlyName = findProgramInfo(friendlyNames, bankId, presetId);
-        if (!friendlyNames.empty() && !foundFriendlyName)
+        if (m_bHideUnknownInstruments && !foundFriendlyName)
             continue;
 
         {
@@ -328,7 +342,7 @@ Preset* PresetsHandler::buildSoundfontPreset(const tsf_preset& preset, const std
         auto firstAdsr = getSoundfontADSR(preset.regions[0]);
         auto synthName = std::string(preset.regions[0].sampleName);
 
-        if (m_bAutoReplaceGSSynthsEnabled && isGSSynth(synthName))
+        if (m_bAutoReplaceGSSynthsEnabled && isGSSynth(bankId, synthName))
         {
             if (auto* synthPreset = buildCustomSynthPreset(presetId, synthName, firstAdsr))
                 newPreset = synthPreset;

@@ -9,7 +9,7 @@ struct GSPresets : public PresetsHandler
     GSPresets();
 
     void addSynthsPresets() override;
-    const std::list<ProgramInfo>& getCustomProgramList() const override;
+    const ProgramList& getGamesProgramList() const override;
 
     Preset* buildCustomSynthPreset(unsigned short presetId, const std::string& synthName, const ADSR& adsr) override;
 
@@ -25,7 +25,7 @@ private:
     std::vector<int> m_sawPresets;
     std::vector<int> m_triPresets;
 
-    std::list<ProgramInfo> m_programsList;
+    ProgramList m_programsList;
 };
 
 }

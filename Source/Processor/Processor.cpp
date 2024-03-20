@@ -368,11 +368,18 @@ void Processor::setAutoReplaceGBSynths(bool bEnable)
     m_presets->setAutoReplaceGBSynths(bEnable);
 }
 
-void Processor::setProgramNameMode(EProgramNameMode mode)
+void Processor::setHideUnknownInstruments(bool bHide)
 {
     killAll();
 
-    m_presets->setProgramNameMode(mode);
+    m_presets->setHideUnknownInstruments(bHide);
+}
+
+void Processor::setSelectedGame(const std::string& gameName)
+{
+    killAll();
+
+    m_presets->setSelectedGame(gameName);
 }
 
 void Processor::killAll()
@@ -392,7 +399,8 @@ void Processor::getStateInformation (juce::MemoryBlock& destData)
     root.setAttribute("version", 0.2);
     root.setAttribute("autoreplacegssynths", m_presets->m_bAutoReplaceGSSynthsEnabled);
     root.setAttribute("autoreplacegbsynths", m_presets->m_bAutoReplaceGBSynthsEnabled);
-    root.setAttribute("programnamemode", (int)m_presets->m_programNameMode);
+    root.setAttribute("hideunknowninstruments", m_presets->m_bHideUnknownInstruments);
+    root.setAttribute("gamename", m_presets->m_selectedGame);
     root.setAttribute("soundfont", m_presets->soundFontPath);
 
     copyXmlToBinary(root, destData);
@@ -417,10 +425,13 @@ void Processor::setStateInformation (const void* data, int sizeInBytes)
     if (xmlState->hasAttribute("autoreplacegbsynths"))
         m_presets->setAutoReplaceGBSynths(xmlState->getBoolAttribute("autoreplacegbsynths"));
 
-    if (xmlState->hasAttribute("programnamemode"))
+    if (xmlState->hasAttribute("hideunknowninstruments"))
+        m_presets->setHideUnknownInstruments(xmlState->getBoolAttribute("hideunknowninstruments"));
+
+    if (xmlState->hasAttribute("gamename"))
     {
-        auto mode = static_cast<EProgramNameMode>(xmlState->getIntAttribute("programnamemode"));
-        m_presets->setProgramNameMode(mode);
+        auto gameName = xmlState->getStringAttribute("gamename");
+        m_presets->setSelectedGame(gameName.toStdString());
     }
 
     auto path = std::string(xmlState->getStringAttribute("soundfont").getCharPointer());

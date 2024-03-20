@@ -19,8 +19,6 @@ namespace GSVST {
 
 class Preset;
 
-enum class EProgramNameMode : uint8_t { Sf2, GS };
-
 struct ProgramInfo
 {
     int bankid;
@@ -40,7 +38,9 @@ struct PresetsHandler
     void sort();
 
     const std::list<ProgramInfo>& getProgramInfo() const;
-    virtual const std::list<ProgramInfo>& getCustomProgramList() const { return m_emptyList; }
+
+    typedef std::map<std::string, std::list<ProgramInfo>> ProgramList;
+    virtual const ProgramList& getGamesProgramList() const { return m_emptyGameList; }
 
     virtual void addSynthsPresets() {}
     virtual Preset* buildCustomSynthPreset(unsigned short, const std::string&, const ADSR&) { return nullptr; }
@@ -59,9 +59,11 @@ struct PresetsHandler
     bool getAutoReplaceGSSynths() const { return m_bAutoReplaceGSSynthsEnabled; }
     void setAutoReplaceGBSynths(bool bEnable);
     bool getAutoReplaceGBSynths() const { return m_bAutoReplaceGBSynthsEnabled; }
+    void setHideUnknownInstruments(bool bHide);
+    bool getHideUnknownInstruments() const { return m_bHideUnknownInstruments; }
 
-    void setProgramNameMode(EProgramNameMode mode);
-    EProgramNameMode getProgramNameMode() const { return m_programNameMode; }
+    void setSelectedGame(const std::string& gameName);
+    const std::string& getSelectedGame() const { return m_selectedGame; }
 
     void clearPresetsOfType(EPresetType type);
 
@@ -74,7 +76,8 @@ struct PresetsHandler
 
     bool m_bAutoReplaceGSSynthsEnabled = true;
     bool m_bAutoReplaceGBSynthsEnabled = true;
-    EProgramNameMode m_programNameMode = EProgramNameMode::GS;
+    bool m_bHideUnknownInstruments = false;
+    std::string m_selectedGame;
 
 protected:
     int calculateMidCFreq(int pitch_correction, int original_pitch, int sample_rate);
@@ -82,11 +85,12 @@ protected:
     void addSoundFontPresets();
     Preset* buildSoundfontPreset(const tsf_preset& preset, const std::string& name, const std::string& friendlyName);
 
-    bool isGSSynth(const std::string& presetName);
+    bool isGSSynth(int bankId, const std::string& presetName);
     bool isGBSynth(const std::string& presetName);
     bool isSynth(const tsf_preset& preset);
     ADSR getSoundfontADSR(const tsf_region& region);
 
+    const ProgramList m_emptyGameList;
     const std::list<ProgramInfo> m_emptyList;
 
     std::unique_ptr<juce::AudioFormatManager> m_formatManager;

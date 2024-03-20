@@ -32,8 +32,11 @@ private:
 
     juce::ToggleButton m_gsSynthModeToggleButton;
     juce::ToggleButton m_gbSynthModeToggleButton;
+    juce::ToggleButton m_hideUnknownPresetsButton;
 
     juce::TextButton m_closeButton;
+
+    std::map<int, std::string> m_id_to_gamename;
 
     Processor& m_audioProcessor;
     MainWindow& m_mainWindow;

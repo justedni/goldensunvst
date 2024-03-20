@@ -13,12 +13,27 @@ SettingsWindow::SettingsWindow(Processor& p, MainWindow& e)
  , m_mainWindow(e)
 {
     addAndMakeVisible(m_comboProgramNameMode);
+
+    const auto& handler = p.getPresets();
+    const auto& gamesList = handler.getGamesProgramList();
+    const auto& selectedGame = handler.getSelectedGame();
+    int selectedGameId = 1;
+
     m_comboProgramNameMode.addItem("SF2", 1);
-    m_comboProgramNameMode.addItem("GS", 2);
+    int id = 2;
+    for (auto& game : gamesList)
+    {
+        m_id_to_gamename[id] = game.first;
+        m_comboProgramNameMode.addItem(game.first, id);
+
+        if (selectedGame == game.first)
+            selectedGameId = id;
+
+        id++;
+    }
 
     m_comboProgramNameMode.onChange = [this] { comboChangedProgramNameMode(); };
-    auto mode = static_cast<int>(p.getPresets().getProgramNameMode()) + 1;
-    m_comboProgramNameMode.setSelectedId(mode);
+    m_comboProgramNameMode.setSelectedId(selectedGameId);
 
     auto addButton = [&](auto& button, auto&& text)
     {
@@ -39,6 +54,10 @@ SettingsWindow::SettingsWindow(Processor& p, MainWindow& e)
     addAndMakeVisible(m_gbSynthModeToggleButton);
     m_gbSynthModeToggleButton.setButtonText("GB (Square)");
     m_gbSynthModeToggleButton.onClick = [this] { toggleButtonStateChanged(&m_gbSynthModeToggleButton); };
+
+    addAndMakeVisible(m_hideUnknownPresetsButton);
+    m_hideUnknownPresetsButton.setButtonText("Hide unknown instruments");
+    m_hideUnknownPresetsButton.onClick = [this] { toggleButtonStateChanged(&m_hideUnknownPresetsButton); };
 
     addAndMakeVisible(m_closeButton);
     m_closeButton.setButtonText("Close");
@@ -65,10 +84,12 @@ void SettingsWindow::resized()
     m_browseSoundfontButton.setBounds(10, 35, 60, 20);
     m_clearSoundfontButton.setBounds(90, 35, 60, 20);
 
-    m_comboProgramNameMode.setBounds(210, 60, 70, 20);
+    m_comboProgramNameMode.setBounds(210, 60, 150, 20);
 
     m_gsSynthModeToggleButton.setBounds(10, 100, getWidth() / 2, 20);
     m_gbSynthModeToggleButton.setBounds(getWidth() / 2, 100, getWidth() / 2, 20);
+
+    m_hideUnknownPresetsButton.setBounds(10, 120, getWidth() / 2, 20);
 
     m_closeButton.setBounds(getWidth() / 2 - 30, getHeight() - 30, 60, 20);
 }
@@ -87,6 +108,7 @@ void SettingsWindow::refresh(bool /*bForce*/)
 
     m_gsSynthModeToggleButton.setToggleState(presets.getAutoReplaceGSSynths(), juce::dontSendNotification);
     m_gbSynthModeToggleButton.setToggleState(presets.getAutoReplaceGBSynths(), juce::dontSendNotification);
+    m_hideUnknownPresetsButton.setToggleState(presets.getHideUnknownInstruments(), juce::dontSendNotification);
 }
 
 void SettingsWindow::buttonClicked(juce::Button* button)
@@ -128,6 +150,8 @@ void SettingsWindow::toggleButtonStateChanged(juce::ToggleButton* button)
         m_audioProcessor.setAutoReplaceGSSynths(button->getToggleState());
     else if (button == &m_gbSynthModeToggleButton)
         m_audioProcessor.setAutoReplaceGBSynths(button->getToggleState());
+    else if (button == &m_hideUnknownPresetsButton)
+        m_audioProcessor.setHideUnknownInstruments(button->getToggleState());
 
     m_mainWindow.refreshMainTab();
     m_mainWindow.refreshGlobalTab();
@@ -135,8 +159,8 @@ void SettingsWindow::toggleButtonStateChanged(juce::ToggleButton* button)
 
 void SettingsWindow::comboChangedProgramNameMode()
 {
-    auto mode = static_cast<EProgramNameMode>(m_comboProgramNameMode.getSelectedId() - 1);
-    m_audioProcessor.setProgramNameMode(mode);
+    auto gameName = m_id_to_gamename[m_comboProgramNameMode.getSelectedId()];
+    m_audioProcessor.setSelectedGame(gameName);
 
     m_mainWindow.refreshMainTab();
     m_mainWindow.refreshGlobalTab();

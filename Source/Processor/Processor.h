@@ -9,7 +9,6 @@
 namespace GSVST {
 
 struct PresetsHandler;
-enum class EProgramNameMode : uint8_t;
 
 class Processor  : public juce::AudioProcessor
                             #if JucePlugin_Enable_ARA
@@ -64,7 +63,8 @@ public:
     void setSoundfont(const std::string& path);
     void setAutoReplaceGSSynths(bool bEnable);
     void setAutoReplaceGBSynths(bool bEnable);
-    void setProgramNameMode(EProgramNameMode mode);
+    void setHideUnknownInstruments(bool bHide);
+    void setSelectedGame(const std::string& gameName);
 
     void setIgnoreProgramChange(bool in_ignore) { bIgnoreProgramChange = in_ignore; }
 

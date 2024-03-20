@@ -6,25 +6,15 @@
 namespace GSVST {
 
 GSPresets::GSPresets()
+    : m_pwmPresets({ 80, 81, 82, 85, 86, 87, 90, 91, 92, 95, 96, 97 })
+    , m_sawPresets({ 83, 93, 88, 98 })
+    , m_triPresets({ 84, 89, 94, 99 })
 {
     parseXmlInfo();
-
-    auto programs = getCustomProgramList();
-
-    for (const auto& info : programs)
-    {
-        if (info.type == EDSPType::ModPulse)
-            m_pwmPresets.push_back(info.programid);
-        else if (info.type == EDSPType::Saw)
-            m_sawPresets.push_back(info.programid);
-        else if (info.type == EDSPType::Tri)
-            m_triPresets.push_back(info.programid);
-    }
 
     addSynthsPresets();
     sort();
 }
-
 
 void GSPresets::parseXmlInfo()
 {
@@ -61,7 +51,8 @@ void GSPresets::parseXmlInfo()
     {
         for (const auto* gameElem : mainElement->getChildIterator())
         {
-            auto gameName = gameElem->getStringAttribute("name");
+            auto gameName = gameElem->getStringAttribute("name").toStdString();
+            auto& gameContainer = m_programsList[gameName];
 
             // Parse instruments
             {
@@ -76,7 +67,7 @@ void GSPresets::parseXmlInfo()
                         auto type = instrElem->hasAttribute("type") ? parseType(instrElem->getStringAttribute("type")) : EDSPType::PCM;
                         auto visible = instrElem->hasAttribute("visible") ? (instrElem->getIntAttribute("visible") == 1) : true;
 
-                        m_programsList.push_back(ProgramInfo{ bankid, programid, name.getCharPointer(), device.getCharPointer(), type, visible });
+                        gameContainer.push_back(ProgramInfo{bankid, programid, name.getCharPointer(), device.getCharPointer(), type, visible});
                     }
                 }
             }
@@ -262,7 +253,7 @@ Preset* GSPresets::buildGSSynthPreset(unsigned short presetId)
     return newPreset;
 }
 
-const std::list<ProgramInfo>& GSPresets::getCustomProgramList() const
+const GSPresets::ProgramList& GSPresets::getGamesProgramList() const
 {
     return m_programsList;
 }
