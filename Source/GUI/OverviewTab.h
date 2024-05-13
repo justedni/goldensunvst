@@ -2,12 +2,12 @@
 
 #include <JuceHeader.h>
 #include "Processor/Types.h"
+#include "LevelMeter.h"
 
 namespace GSVST {
 
 class Processor;
 class PresetCombo;
-class LevelMeter;
 struct ProgramInfo;
 
 struct ChannelDesc

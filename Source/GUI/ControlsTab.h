@@ -3,13 +3,13 @@
 #include <JuceHeader.h>
 #include "PropertyListener.h"
 #include "SliderEx.h"
+#include "PresetCombo.h"
 
 namespace GSVST {
 
 class Processor;
 class MainWindow;
 
-class PresetCombo;
 class SliderEx;
 
 class ControlsTab : public juce::Component
