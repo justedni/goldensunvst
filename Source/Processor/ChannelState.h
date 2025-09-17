@@ -73,7 +73,6 @@ public:
     void resetAllRPNs();
 
 private:
-    static void allocateBuffersIfNecessary(std::vector<sample>& io_buffers, int numSamples);
     static void zeroBuffers(std::vector<sample>& io_buffers);
 
     void allocateReverb();

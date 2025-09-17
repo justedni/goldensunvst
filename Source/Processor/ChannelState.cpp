@@ -31,6 +31,8 @@ void ChannelState::init(double in_sampleRate, int in_samplesPerBlock, int in_sam
         m_samplesPerBlock = in_samplesPerBlock;
         m_samplesPerBlockComputation = in_samplesPerBlockComputation;
 
+        outputBuffers.resize(in_samplesPerBlock);
+
         allocateReverb();
     }
 }
@@ -107,21 +109,8 @@ void ChannelState::allocateIfNecessary(int numSamples)
     if (!isActive())
     {
         zeroBuffers(outputBuffers);
-        allocateBuffersIfNecessary(outputBuffers, numSamples);
     }
 
-}
-
-void ChannelState::allocateBuffersIfNecessary(std::vector<sample>& io_buffers, int numSamples)
-{
-    if (io_buffers.size() != numSamples)
-    {
-        io_buffers.clear();
-        for (int i = 0; i < numSamples; i++)
-        {
-            io_buffers.push_back(sample());
-        }
-    }
 }
 
 void ChannelState::zeroBuffers(std::vector<sample>& io_buffers)
