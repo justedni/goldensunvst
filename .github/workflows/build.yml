@@ -1,0 +1,73 @@
+name: Build VST Plugin
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ published ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+    
+    - name: Setup Visual Studio
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+    
+    - name: Cache CMake build
+      uses: actions/cache@v3
+      with:
+        path: |
+          build/
+          JUCE/build/
+        key: ${{ runner.os }}-cmake-${{ hashFiles('**/CMakeLists.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-cmake-
+    
+    - name: Configure CMake
+      run: |
+        cmake -B build -G "Visual Studio 17 2022" -A x64 `
+          -DCMAKE_BUILD_TYPE=Release `
+          -DCMAKE_CONFIGURATION_TYPES="Release"
+    
+    - name: Build VST
+      run: |
+        cmake --build build --config Release --parallel
+    
+    - name: Prepare artifacts
+      run: |
+        mkdir artifacts
+        # Copy VST (adjust path based on your plugin name)
+        if (Test-Path "build\*_artefacts\Release\VST\*.dll") {
+          Copy-Item -Recurse "build\*_artefacts\Release\VST\*.dll" artifacts\
+        }
+        # Alternative path structure
+        if (Test-Path "build\Release\*.dll") {
+          Copy-Item -Recurse "build\Release\*.dll" artifacts\
+        }
+        # List contents for debugging
+        Get-ChildItem -Recurse build\ -Include "*.dll" | Format-Table FullName
+    
+    - name: Upload VST artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: VST-Windows-x64
+        path: artifacts/
+    
+    - name: Release Upload
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: artifacts/*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
