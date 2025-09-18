@@ -90,17 +90,17 @@
     </GROUP>
   </MAINGROUP>
   <MODULES>
-    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
-            useGlobalPath="1"/>
-    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="1"
+            useGlobalPath="0"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
   </MODULES>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
   <EXPORTFORMATS>
@@ -112,16 +112,16 @@
                        postbuildCommand="copy /Y &quot;$(SolutionDir)..\..\Source\Resources\presets_info.xml&quot; &quot;$(TargetDir)\$(TargetName)_presets_info.xml&quot;"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_audio_basics" path="Source/Externals/Juce/modules"/>
-        <MODULEPATH id="juce_core" path="Source/Externals/Juce/modules"/>
-        <MODULEPATH id="juce_events" path="Source/Externals/Juce/modules"/>
-        <MODULEPATH id="juce_graphics" path="Source/Externals/Juce/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="Source/Externals/Juce/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="Source/Externals/Juce/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="Source/Externals/Juce/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="Source/Externals/Juce/modules"/>
-        <MODULEPATH id="juce_data_structures" path="Source/Externals/Juce/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../juce-7.0.7-windows/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="./JUCE"/>
+        <MODULEPATH id="juce_core" path="./JUCE"/>
+        <MODULEPATH id="juce_events" path="./JUCE"/>
+        <MODULEPATH id="juce_graphics" path="./JUCE"/>
+        <MODULEPATH id="juce_gui_basics" path="./JUCE"/>
+        <MODULEPATH id="juce_gui_extra" path="./JUCE"/>
+        <MODULEPATH id="juce_audio_processors" path="./JUCE"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="./JUCE"/>
+        <MODULEPATH id="juce_data_structures" path="./JUCE"/>
+        <MODULEPATH id="juce_audio_formats" path="./JUCE"/>
       </MODULEPATHS>
     </VS2022>
   </EXPORTFORMATS>

@@ -1,2 +1,4 @@
-**/Builds
-**/JuceLibraryCode
+Builds/
+JuceLibraryCode/
+build/
+cmake-build-*/
