@@ -67,7 +67,10 @@ void GSPresets::parseXmlInfo()
                         auto type = instrElem->hasAttribute("type") ? parseType(instrElem->getStringAttribute("type")) : EDSPType::PCM;
                         auto visible = instrElem->hasAttribute("visible") ? (instrElem->getIntAttribute("visible") == 1) : true;
 
-                        gameContainer.push_back(ProgramInfo{bankid, programid, name.getCharPointer(), device.getCharPointer(), type, visible});
+                        gameContainer.push_back(ProgramInfo{
+                            bankid, programid,
+                            std::string(name.getCharPointer()),
+                            std::string(device.getCharPointer()), type, visible});
                     }
                 }
             }
