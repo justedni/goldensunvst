@@ -131,22 +131,24 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y \
+          build-essential \
           libasound2-dev \
           libjack-jackd2-dev \
           ladspa-sdk \
           libcurl4-openssl-dev \
           libfreetype6-dev \
+          libfreetype-dev \
           libx11-dev \
           libxcomposite-dev \
-          libxcursor-dev \
           libxcursor-dev \
           libxext-dev \
           libxinerama-dev \
           libxrandr-dev \
           libxrender-dev \
           libglu1-mesa-dev \
-          mesa-common-dev
-    
+          mesa-common-dev \
+          pkg-config
+
     - name: Cache CMake build
       uses: actions/cache@v3
       with:
@@ -160,7 +162,9 @@ jobs:
     - name: Configure CMake
       run: |
         cmake -B build \
-          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_PREFIX_PATH="/usr/lib/x86_64-linux-gnu/pkgconfig" \
+          .
     
     - name: Build VST3
       run: |
