@@ -109,17 +109,41 @@ juce_add_plugin(${PROJECT_NAME}
 
 target_sources(${PROJECT_NAME} PRIVATE ${ALL_SOURCES})
 
-target_include_directories(${PROJECT_NAME}
-    PRIVATE
-        Source
-        Source/JuceGenerated
-)
-
 target_compile_definitions(${PROJECT_NAME}
     PUBLIC
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
         JUCE_VST3_CAN_REPLACE_VST2=0)
+
+
+if(WIN32)
+set(ADDITIONAL_INCLUDE_DIRS
+)
+
+set(ADDITIONAL_LINK_LIBS
+)
+
+elseif(UNIX)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(FREETYPE2 REQUIRED freetype2)
+
+set(ADDITIONAL_INCLUDE_DIRS
+    ${FREETYPE2_INCLUDE_DIRS}
+)
+
+set(ADDITIONAL_LINK_LIBS
+    ${FREETYPE2_LIBRARIES}
+    pthread
+    dl
+)
+endif()
+
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+        Source
+        Source/JuceGenerated
+        ${FREETYPE2_INCLUDE_DIRS}
+)
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
@@ -133,10 +157,12 @@ target_link_libraries(${PROJECT_NAME}
         juce::juce_audio_plugin_client
         juce::juce_data_structures
         juce::juce_audio_formats
+        ${ADDITIONAL_LINK_LIBS}
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags)
+
 
 source_group("GS" FILES ${GS_SOURCES})
 source_group("Processor" FILES ${PROCESSOR_SOURCES})
