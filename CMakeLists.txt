@@ -93,8 +93,6 @@ set(ALL_SOURCES
     ${JUCE_GENERATED_SOURCES}
 )
 
-juce_set_vst2_sdk_path("Source/External/VST2_SDK")
-
 juce_add_plugin(${PROJECT_NAME}
     COMPANY_NAME "Vincent Dortel"
     IS_SYNTH TRUE
