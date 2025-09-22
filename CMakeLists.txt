@@ -117,34 +117,34 @@ target_compile_definitions(${PROJECT_NAME}
 
 
 if(WIN32 OR APPLE)
-set(ADDITIONAL_INCLUDE_DIRS
-)
+    set(ADDITIONAL_INCLUDE_DIRS
+    )
 
-set(ADDITIONAL_LINK_LIBS
-)
+    set(ADDITIONAL_LINK_LIBS
+    )
 elseif(UNIX)
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(FREETYPE2 REQUIRED freetype2)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(FREETYPE2 REQUIRED freetype2)
 
-find_package(Freetype REQUIRED)
+    find_package(Freetype REQUIRED)
 
-set(ADDITIONAL_INCLUDE_DIRS
-    /usr/include/freetype2
-    -I/usr/local/include/freetype2
-)
+    set(ADDITIONAL_INCLUDE_DIRS
+        /usr/include/freetype2
+        -I/usr/local/include/freetype2
+    )
 
-set(ADDITIONAL_LINK_LIBS
-    freetype
-)
+    set(ADDITIONAL_LINK_LIBS
+        freetype
+    )
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE
         Source
         Source/JuceGenerated
-        ${FREETYPE2_INCLUDE_DIRS}
+        ${ADDITIONAL_INCLUDE_DIRS}
 )
 
 target_link_libraries(${PROJECT_NAME}
