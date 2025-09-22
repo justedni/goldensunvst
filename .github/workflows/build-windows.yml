@@ -1,4 +1,4 @@
-name: Build VST Plugin
+name: VST3 Windows
 
 on:
   push:
@@ -71,48 +71,3 @@ jobs:
         files: artifacts/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  build-macos:
-    runs-on: macos-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        submodules: recursive
-        fetch-depth: 0
-    
-    - name: Cache CMake build
-      uses: actions/cache@v3
-      with:
-        path: |
-          build/
-          JUCE/build/
-        key: ${{ runner.os }}-cmake-${{ hashFiles('**/CMakeLists.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-cmake-
-    
-    - name: Configure CMake
-      run: |
-        cmake -B build -G "Xcode" \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
-          -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13
-    
-    - name: Build VST3
-      run: |
-        cmake --build build --config Release --parallel
-    
-    - name: Prepare artifacts
-      run: |
-        mkdir artifacts
-        # Copy VST3 (no AU anymore)
-        find build -name "*.vst3" -type d -exec cp -r {} artifacts/ \;
-        # List contents for debugging
-        find build -name "*.vst3"
-    
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: VST3-macOS-Universal
-        path: artifacts/

@@ -1,3 +1,8 @@
+<p align="left">
+<a href="https://github.com/justedni/goldensunvst/actions/workflows/build-windows.yml?query=event%3Apush"><img src="https://github.com/justedni/goldensunvst/actions/workflows/build-windows.yml/badge.svg" /></a>
+<a href="https://github.com/justedni/goldensunvst/actions/workflows/build-macos.yml?query=event%3Apush"><img src="https://github.com/justedni/goldensunvst/actions/workflows/build-macos.yml/badge.svg" /></a>
+</p>
+
 # goldensunvst
 
 ## goldensunvst
