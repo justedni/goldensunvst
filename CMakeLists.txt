@@ -116,26 +116,28 @@ target_compile_definitions(${PROJECT_NAME}
         JUCE_VST3_CAN_REPLACE_VST2=0)
 
 
-if(WIN32)
+if(WIN32 OR APPLE)
 set(ADDITIONAL_INCLUDE_DIRS
 )
 
 set(ADDITIONAL_LINK_LIBS
 )
-
 elseif(UNIX)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(FREETYPE2 REQUIRED freetype2)
 
+find_package(Freetype REQUIRED)
+
 set(ADDITIONAL_INCLUDE_DIRS
-    ${FREETYPE2_INCLUDE_DIRS}
+    /usr/include/freetype2
+    -I/usr/local/include/freetype2
 )
 
 set(ADDITIONAL_LINK_LIBS
-    ${FREETYPE2_LIBRARIES}
-    pthread
-    dl
+    freetype
 )
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
 target_include_directories(${PROJECT_NAME}
