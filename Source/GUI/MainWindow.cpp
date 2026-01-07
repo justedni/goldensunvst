@@ -24,7 +24,7 @@ MainWindow::MainWindow (Processor& p)
 {
     setSize (600, 300);
 
-    startTimer(400);
+    startTimer(50);
 
     m_customLookAndFeel.reset(new CustomLookAndFeel());
     juce::LookAndFeel::setDefaultLookAndFeel(m_customLookAndFeel.get());
@@ -48,6 +48,8 @@ MainWindow::MainWindow (Processor& p)
 
 MainWindow::~MainWindow()
 {
+    juce::LookAndFeel::setDefaultLookAndFeel(nullptr);
+
     if (m_window)
     {
         m_window.deleteAndZero();

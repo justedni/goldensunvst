@@ -126,10 +126,10 @@ void ChannelState::setBPM(int in_bpm)
 {
     m_detectedBPM = in_bpm;
 
-    for (auto* soundChannel : m_playingInstruments)
+    ForAllPlayingInstruments([in_bpm](auto* soundChannel)
     {
         soundChannel->setBPM(in_bpm);
-    }
+    });
 }
 
 void ChannelState::setReverbType(EReverbType type)
@@ -189,10 +189,10 @@ void ChannelState::setVolume(int val)
 {
     volume = static_cast<uint8_t>(std::round(val * val / 127.0f));
 
-    for (auto* soundChannel : m_playingInstruments)
+    ForAllPlayingInstruments([&](auto* soundChannel)
     {
         soundChannel->setVol(volume);
-    }
+    });
 }
 
 int ChannelState::getPan() const
@@ -208,10 +208,10 @@ void ChannelState::setPan(int val)
 
     pan = convertedVal;
 
-    for (auto& soundChannel : m_playingInstruments)
+    ForAllPlayingInstruments([convertedVal](auto* soundChannel)
     {
         soundChannel->setPan(convertedVal);
-    }
+    });
 }
 
 void ChannelState::setPreset(int bankId, int programId, const PresetsHandler& presets)
@@ -246,20 +246,20 @@ void ChannelState::updateADSR(const ADSR& in_adsr)
     m_envelope.sus = in_adsr.sus;
     m_envelope.rel = in_adsr.rel;
 
-    for (auto* soundChannel : m_playingInstruments)
+    ForAllPlayingInstruments([in_adsr](auto* soundChannel)
     {
         soundChannel->updateADSR(in_adsr);
-    }
+    });
 }
 
 void ChannelState::updatePWMData(const PWMData& in_data)
 {
     m_pwmData = PWMData(in_data);
 
-    for (auto* soundChannel : m_playingInstruments)
+    ForAllPlayingInstruments([in_data](auto* soundChannel)
     {
         soundChannel->updatePWMData(in_data);
-    }
+    });
 }
 
 Instrument* ChannelState::handleNoteOn(uint8_t noteNumber, int8_t velocity, int bpm)
@@ -350,10 +350,10 @@ bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHand
         val = (val >> 7) - 0x40;
         pitchWheel = static_cast<int16_t>(val);
 
-        for (auto& soundChannel : m_playingInstruments)
+        ForAllPlayingInstruments([&](auto* soundChannel)
         {
             soundChannel->setPitchWheel(pitchWheel);
-        }
+        });
     }
     else if (msg.isControllerOfType(1)) // Mod Wheel
     {
@@ -362,10 +362,10 @@ bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHand
         auto lfoSpeedVal = m_rpnHanlder->hasValue(RPN::Param::LfoSpeed) ? m_rpnHanlder->getValue(RPN::Param::LfoSpeed) : 0;
         if (lfoSpeedVal != 0 && modWheel != 0)
         {
-            for (auto& soundChannel : m_playingInstruments)
+            ForAllPlayingInstruments([&](auto* soundChannel)
             {
                 soundChannel->setLfo(static_cast<uint8_t>(lfoSpeedVal), modWheel);
-            }
+            });
         }
     }
     else if (msg.isControllerOfType(7)) // Volume MSB
@@ -411,7 +411,8 @@ bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHand
                 if (param != RPN::Param::None)
                 {
                     auto convertedVal = m_rpnHanlder->getValue(param);
-                    for (auto& soundChannel : m_playingInstruments)
+
+                    ForAllPlayingInstruments([&](auto* soundChannel)
                     {
                         switch (param)
                         {
@@ -425,7 +426,7 @@ bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHand
                             soundChannel->setLfo(static_cast<uint8_t>(convertedVal), modWheel);
                             break;
                         }
-                    }
+                    });
 
                     bRefreshRequired = true;
                 }

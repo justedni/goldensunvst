@@ -1,11 +1,12 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "Presets/PresetsHandler.h"
 
 namespace GSVST {
 
 struct PresetsHandler;
+struct ProgramInfo;
+class ComboLookAndFeel;
 
 class ComboItem : public juce::PopupMenu::CustomComponent
 {
