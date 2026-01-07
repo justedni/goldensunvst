@@ -5,7 +5,13 @@ project(GoldenSunVST VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+option(ENABLE_VST2 "Build VST2 format (requires VST2 SDK)" OFF)
+
 add_subdirectory(JUCE)
+
+if(ENABLE_VST2)
+    juce_set_vst2_sdk_path("Source/External/VST2_SDK")
+endif()
 
 juce_add_binary_data(AudioPluginData
     SOURCES
@@ -93,6 +99,11 @@ set(ALL_SOURCES
     ${JUCE_GENERATED_SOURCES}
 )
 
+set(PLUGIN_FORMATS VST3)
+if(ENABLE_VST2)
+    list(APPEND PLUGIN_FORMATS VST)
+endif()
+
 juce_add_plugin(${PROJECT_NAME}
     COMPANY_NAME "Vincent Dortel"
     IS_SYNTH TRUE
@@ -103,7 +114,7 @@ juce_add_plugin(${PROJECT_NAME}
     COPY_PLUGIN_AFTER_BUILD FALSE
     PLUGIN_MANUFACTURER_CODE vdor
     PLUGIN_CODE GSVS
-    FORMATS VST3
+    FORMATS ${PLUGIN_FORMATS}
     NEEDS_WEB_BROWSER FALSE
     PRODUCT_NAME "${PROJECT_NAME}")
 
