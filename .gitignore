@@ -2,3 +2,4 @@ Builds/
 JuceLibraryCode/
 build/
 cmake-build-*/
+Source/External/VST2_SDK/
