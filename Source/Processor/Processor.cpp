@@ -213,22 +213,7 @@ void Processor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&
         }
     }
 
-    struct PendingNoteOn
-    {
-        PendingNoteOn(double in_time, uint8_t in_note, int in_chan, unsigned char in_vel)
-            : timestamp(in_time)
-            , noteNumber(in_note)
-            , channel(in_chan)
-            , velocity(in_vel)
-        {}
-
-        double timestamp;
-        uint8_t noteNumber;
-        int channel;
-        unsigned char velocity;
-    };
-
-    std::vector<PendingNoteOn> pendingNotesOn;
+    pendingNotesOn.clear();
 
     for (const auto& msgRaw : midiMessages)
     {
@@ -248,7 +233,7 @@ void Processor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&
         }
         else if (msg.isNoteOff())
         {
-            // Ignore for now
+            state.addPendingNoteOff(msg.getTimeStamp(), msg.getNoteNumber());
         }
         else
         {
@@ -275,31 +260,18 @@ void Processor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&
             auto& state = GetChannelState(noteOn.channel);
             state.allocateIfNecessary(numSamples);
 
-            if (auto* newChan = state.handleNoteOn(noteOn.noteNumber, noteOn.velocity, detectedBPM))
+            auto offset = (int)std::round(noteOn.timestamp);
+            if (auto* newChan = state.handleNoteOn(noteOn.noteNumber, noteOn.velocity, offset, detectedBPM))
             {
-                auto offset = (int)std::round(noteOn.timestamp);
                 newChan->processCommon(state.getOutBuffer().data() + offset, numSamples - offset, margs);
             }
         }
-        pendingNotesOn.clear();
     }
 
     ForEachMidiChannel([&](auto& state)
     {
         state.processReverb(numSamples, margs.samplesPerBufferForComputation, buffer);
     });
-
-    // Processing "note off" messages after buffer process
-    for (auto msgRaw : midiMessages)
-    {
-        auto msg = msgRaw.getMessage();
-        auto& state = GetChannelState(getChannelId(msg));
-        if (msg.isNoteOff())
-        {
-            auto noteNumber = msg.getNoteNumber();
-            state.handleNoteOff(noteNumber);
-        }
-    }
 
     ForEachMidiChannel([](auto& state)
     {

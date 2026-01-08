@@ -35,8 +35,12 @@ public:
 
     EDSPType getType() const { return m_type; }
 
+    static int getLinearizedVolume(int val);
     void setVolume(int val);
     int getVolume() const { return volume; }
+
+    void addPendingVolChange(int timestamp, int volume);
+    void addPendingNoteOff(int timestamp, int note);
 
     void setPan(int val);
     int getPan() const;
@@ -58,8 +62,7 @@ public:
     void updatePWMData(const PWMData& in_data);
     const PWMData& getPWMData() const { return m_pwmData; }
 
-    Instrument* handleNoteOn(uint8_t noteNumber, int8_t velocity, int bpm);
-    void handleNoteOff(int noteNumber);
+    Instrument* handleNoteOn(uint8_t noteNumber, int8_t velocity, int noteOffset, int bpm);
     bool handleMidiMsg(const juce::MidiMessage& msg, const PresetsHandler& presets, bool bIgnorePrgChg, bool bIsPlaying);
     void allNotesOff();
 
@@ -85,6 +88,8 @@ private:
     int8_t pan = 0;
     int16_t pitchWheel = 0;
     uint8_t modWheel = 0;
+
+    std::vector<VolChange> pendingVolChanges;
 
     int m_detectedBPM = -1;
 

@@ -8,11 +8,11 @@ namespace GSVST {
 
 struct ProcArgs
 {
-    float lVol;
-    float rVol;
-    float lVolStep;
-    float rVolStep;
-    float interStep;
+    float lVol = 0.0f;
+    float rVol = 0.0f;
+    float lVolStep = 0.0f;
+    float rVolStep = 0.0f;
+    float interStep = 0.0f;
     bool bInitialized = false;
 };
 
@@ -45,8 +45,8 @@ public:
     int8_t getMidiKeyPitch() const { return note.midiKeyPitch; }
     uint8_t getMidiNote() const { return note.midiKeyTrackData; }
 
-    virtual void processStart(const MixingArgs& args);
-    virtual void processEnd(const MixingArgs& args);
+    virtual void processStart(const MixingArgs& args, size_t currentSample, size_t numSamples);
+    virtual void processEnd(const MixingArgs& args, size_t currentSample);
 
     struct VolumeFade
     {
@@ -86,7 +86,13 @@ public:
     enum class EnvState : int { INIT = 0, ATK, DEC, SUS, REL, PSEUDO_ECHO, DIE, DEAD };
     bool isDead() const { return envState == EnvState::DEAD; }
 
+    void addPendingVolChange(int timestamp, int volume);
+    bool hasPendingNoteOff() const;
+    void addPendingNoteOff(int timestamp);
 protected:
+    void handlePendingVolumeChanges(int sampleId);
+    void handlePendingNoteOff(int sampleId);
+
     void updateIncrements(const MixingArgs& args);
     void updateBPMStack();
 
@@ -99,9 +105,9 @@ protected:
     uint8_t envLevelCur;
     uint8_t envLevelPrev;
     uint8_t leftVolCur = 0;
-    uint8_t leftVolPrev;
+    uint8_t leftVolPrev = 0;
     uint8_t rightVolCur = 0;
-    uint8_t rightVolPrev;
+    uint8_t rightVolPrev = 0;
 
     uint8_t lfoPhase = 0;
     int8_t lfoSpeed = 0;
@@ -129,6 +135,9 @@ protected:
     Note note;
 
     bool bUseTrackADSR = true;
+
+    std::vector<VolChange> pendingVolChanges;
+    std::vector<double> pendingNoteOff;
 };
 
 }

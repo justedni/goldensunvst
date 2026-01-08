@@ -79,6 +79,17 @@ struct sample {
     float right = 0.0f;
 };
 
+struct VolChange
+{
+    VolChange(int in_time, int in_vol)
+        : timestamp(in_time)
+        , volume(in_vol)
+    {}
+
+    int timestamp;
+    int volume;
+};
+
 struct MixingArgs
 {
     float vol;

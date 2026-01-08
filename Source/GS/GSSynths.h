@@ -46,7 +46,7 @@ public:
     {}
 
     EDSPType getType() const final { return EDSPType::ModPulse; }
-    void processStart(const MixingArgs& args) final;
+    void processStart(const MixingArgs& args, size_t currentSample, size_t numSamples) final;
     void process(sample* buffer, size_t numSamples, const MixingArgs& args) final;
 
     void updatePWMData(const PWMData& in_data) final

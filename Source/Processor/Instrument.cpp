@@ -32,22 +32,112 @@ void Instrument::processCommon(sample* buffer, size_t numSamples, const MixingAr
 
     process(buffer, numSamples, args);
 
-    updateVolFade();
+    if (!pendingVolChanges.empty())
+    {
+        for (auto& chg : pendingVolChanges)
+        {
+            chg.timestamp = 0;
+        }
+    }
+    
+    assert(pendingNoteOff.empty());
 }
 
-void Instrument::processStart(const MixingArgs& args)
+
+void Instrument::processStart(const MixingArgs& args, size_t currentSample, size_t numSamples)
 {
     if (envSampleCount == 0)
     {
+        handlePendingVolumeChanges(currentSample);
+
         stepEnvelope();
+
         updateArgs(args);
         updateBPMStack();
     }
 }
 
-void Instrument::processEnd(const MixingArgs& args)
+void Instrument::addPendingVolChange(int timestamp, int volume)
+{
+    pendingVolChanges.emplace_back(timestamp, volume);
+}
+
+bool Instrument::hasPendingNoteOff() const
+{
+    return (!pendingNoteOff.empty());
+}
+
+void Instrument::addPendingNoteOff(int timestamp)
+{
+    pendingNoteOff.emplace_back(timestamp);
+}
+
+void Instrument::handlePendingVolumeChanges(int sampleId)
+{
+    if (isStopping())
+    {
+        pendingVolChanges.clear();
+    }
+    else if (!pendingNoteOff.empty())
+    {
+        const double noteOffTimestamp = pendingNoteOff.front();
+        for (auto it = pendingVolChanges.begin(); it != pendingVolChanges.end();)
+        {
+            if (it->timestamp >= noteOffTimestamp || it->volume > vol)
+            {
+                it = pendingVolChanges.erase(it);
+            }
+            else
+            {
+                it++;
+            }
+        }
+    }
+
+    for (auto it = pendingVolChanges.begin(); it != pendingVolChanges.end();)
+    {
+        if (it->timestamp <= sampleId)
+        {
+            setVol(it->volume);
+            it = pendingVolChanges.erase(it);
+        }
+        else
+        {
+            it++;
+        }
+    }
+}
+
+void Instrument::handlePendingNoteOff(int sampleId)
+{
+    if (pendingNoteOff.empty())
+        return;
+
+    for (auto it = pendingNoteOff.begin(); it != pendingNoteOff.end();)
+    {
+        auto& timestamp = (*it);
+        if (!isStopping() && timestamp <= sampleId)
+        {
+            release();
+            it = pendingNoteOff.erase(it);
+        }
+        else
+        {
+            it++;
+        }
+    }
+}
+
+void Instrument::processEnd(const MixingArgs& args, size_t currentSample)
 {
     updateIncrements(args);
+
+    if (envSampleCount == 0)
+    {
+        updateVolFade();
+    }
+
+    handlePendingNoteOff(currentSample);
 }
 
 void Instrument::setVol(uint8_t in_vol)

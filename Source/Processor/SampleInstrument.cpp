@@ -37,11 +37,9 @@ void SampleInstrument::updateArgs(const MixingArgs& args)
 
 void SampleInstrument::process(sample* buffer, size_t numSamples, const MixingArgs& args)
 {
-    int debugSampleCount = 0;
-
     if (!cargs.bInitialized)
     {
-        // First init
+        // First init (cargs.interStep must be calculated before first call to processStart)
         updateArgs(args);
         cargs.bInitialized = true;
     }
@@ -54,7 +52,7 @@ void SampleInstrument::process(sample* buffer, size_t numSamples, const MixingAr
 
     size_t i = 0;
     do {
-        processStart(args);
+        processStart(args, i, args.samplesPerBufferForComputation);
 
         buffer->left += outBuffer[i].left * cargs.lVol;
         buffer->right += outBuffer[i].right * cargs.rVol;
@@ -63,8 +61,8 @@ void SampleInstrument::process(sample* buffer, size_t numSamples, const MixingAr
         cargs.lVol += cargs.lVolStep;
         cargs.rVol += cargs.rVolStep;
 
-        debugSampleCount++;
-        processEnd(args);
+        processEnd(args, i);
+
     } while (--numSamples > 0);
 
     if (!running)

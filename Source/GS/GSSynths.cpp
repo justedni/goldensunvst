@@ -64,7 +64,7 @@ void GSPWMSynth::calculateModPulseThreshold(float nBlocksReciprocal)
     m_fThreshold = m_baseThresh;
 }
 
-void GSPWMSynth::processStart(const MixingArgs& args)
+void GSPWMSynth::processStart(const MixingArgs& args, size_t currentSample, size_t numSamples)
 {
     if (envSampleCount == 0)
     {
@@ -77,8 +77,9 @@ void GSPWMSynth::processStart(const MixingArgs& args)
 
 void GSPWMSynth::process(sample* buffer, size_t numSamples, const MixingArgs& args)
 {
+    size_t i = 0;
     do {
-        processStart(args);
+        processStart(args, i, numSamples);
 
         float baseSamp = interPos < m_fThreshold ? 0.5f : -0.5f;
         // correct dc offset
@@ -87,6 +88,7 @@ void GSPWMSynth::process(sample* buffer, size_t numSamples, const MixingArgs& ar
         buffer->left += baseSamp * cargs.lVol;
         buffer->right += baseSamp * cargs.rVol;
         buffer++;
+        i++;
 
         cargs.lVol += cargs.lVolStep;
         cargs.rVol += cargs.rVolStep;
@@ -95,7 +97,7 @@ void GSPWMSynth::process(sample* buffer, size_t numSamples, const MixingArgs& ar
         // this below might glitch for too high frequencies, which usually shouldn't be used anyway
         if (interPos >= 1.0f) interPos -= 1.0f;
 
-        processEnd(args);
+        processEnd(args, i);
     } while (--numSamples > 0);
 }
 
@@ -103,8 +105,9 @@ void GSSawSynth::process(sample* buffer, size_t numSamples, const MixingArgs& ar
 {
     const uint32_t fix = 0x70;
 
+    size_t i = 0;
     do {
-        processStart(args);
+        processStart(args, i, numSamples);
 
         /*
          * Sorry that the baseSamp calculation looks ugly.
@@ -123,18 +126,20 @@ void GSSawSynth::process(sample* buffer, size_t numSamples, const MixingArgs& ar
         buffer->left += baseSamp * cargs.lVol;
         buffer->right += baseSamp * cargs.rVol;
         buffer++;
+        i++;
 
         cargs.lVol += cargs.lVolStep;
         cargs.rVol += cargs.rVolStep;
 
-        processEnd(args);
+        processEnd(args, i);
     } while (--numSamples > 0);
 }
 
 void GSTriangleSynth::process(sample* buffer, size_t numSamples, const MixingArgs& args)
 {
+    size_t i = 0;
     do {
-        processStart(args);
+        processStart(args, i, numSamples);
 
         interPos += cargs.interStep;
         if (interPos >= 1.0f) interPos -= 1.0f;
@@ -149,11 +154,12 @@ void GSTriangleSynth::process(sample* buffer, size_t numSamples, const MixingArg
         buffer->left += baseSamp * cargs.lVol;
         buffer->right += baseSamp * cargs.rVol;
         buffer++;
+        i++;
 
         cargs.lVol += cargs.lVolStep;
         cargs.rVol += cargs.rVolStep;
 
-        processEnd(args);
+        processEnd(args, i);
     } while (--numSamples > 0);
 }
 

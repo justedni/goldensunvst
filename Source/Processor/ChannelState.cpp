@@ -60,6 +60,12 @@ void ChannelState::process(size_t numSamples, const MixingArgs& margs)
         {
             instr->processCommon(outputBuffers.data(), numSamples, margs);
         }
+
+        // Volume changes are only valid for this frame
+        if (pendingVolChanges.size() > 0)
+            volume = pendingVolChanges.back().volume;
+ 
+        pendingVolChanges.clear();
     }
 }
 
@@ -185,14 +191,45 @@ void ChannelState::setReverbLevel(int val)
         revdsp->SetIntensity(val);
 }
 
+int ChannelState::getLinearizedVolume(int val)
+{
+    return static_cast<uint8_t>(std::round(val * val / 127.0f));
+}
+
 void ChannelState::setVolume(int val)
 {
-    volume = static_cast<uint8_t>(std::round(val * val / 127.0f));
+    volume = getLinearizedVolume(val);
 
     ForAllPlayingInstruments([&](auto* soundChannel)
     {
         soundChannel->setVol(volume);
     });
+}
+
+void ChannelState::addPendingVolChange(int timestamp, int volume)
+{
+    auto linearizedVolume = getLinearizedVolume(volume);
+    pendingVolChanges.emplace_back(timestamp, linearizedVolume);
+
+    ForAllPlayingInstruments([&](auto* soundChannel)
+    {
+        soundChannel->addPendingVolChange(timestamp, linearizedVolume);
+    });
+}
+
+void ChannelState::addPendingNoteOff(int timestamp, int note)
+{
+    for (auto* soundChannel : m_playingInstruments)
+    {
+        if (!soundChannel->isDead() && !soundChannel->isStopping())
+        {
+            if (soundChannel->getMidiNote() == note && !soundChannel->hasPendingNoteOff())
+            {
+                soundChannel->addPendingNoteOff(timestamp);
+                break;
+            }
+        }
+    }
 }
 
 int ChannelState::getPan() const
@@ -262,7 +299,7 @@ void ChannelState::updatePWMData(const PWMData& in_data)
     });
 }
 
-Instrument* ChannelState::handleNoteOn(uint8_t noteNumber, int8_t velocity, int bpm)
+Instrument* ChannelState::handleNoteOn(uint8_t noteNumber, int8_t velocity, int noteOffset, int bpm)
 {
     if (!m_preset)
         return nullptr;
@@ -296,8 +333,19 @@ Instrument* ChannelState::handleNoteOn(uint8_t noteNumber, int8_t velocity, int 
                 newInstance->setLfo(static_cast<uint8_t>(lfoSpeedVal), modWheel);
         }
 
+        int initialVolume = volume;
+        if (pendingVolChanges.size() > 0)
+        {
+            for (auto& chg : pendingVolChanges)
+            {
+                if (chg.timestamp <= noteOffset)
+                {
+                    initialVolume = chg.volume;
+                }
+            }
+        }
 
-        newInstance->setVol(volume);
+        newInstance->setVol(initialVolume);
         newInstance->setPan(pan);
 
         newInstance->updatePWMData(m_pwmData);
@@ -306,18 +354,6 @@ Instrument* ChannelState::handleNoteOn(uint8_t noteNumber, int8_t velocity, int 
     }
 
     return newInstance;
-}
-
-void ChannelState::handleNoteOff(int noteNumber)
-{
-    for (auto& soundChannel : m_playingInstruments)
-    {
-        if (soundChannel->getMidiNote() == noteNumber && !soundChannel->isStopping())
-        {
-            soundChannel->release();
-            break;
-        }
-    }
 }
 
 void ChannelState::allNotesOff()
@@ -370,7 +406,7 @@ bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHand
     }
     else if (msg.isControllerOfType(7)) // Volume MSB
     {
-        setVolume(msg.getControllerValue());
+        addPendingVolChange(static_cast<int>(std::round(msg.getTimeStamp())), msg.getControllerValue());
         bRefreshRequired = true;
     }
     else if (msg.isControllerOfType(10)) // Pan Position MSB

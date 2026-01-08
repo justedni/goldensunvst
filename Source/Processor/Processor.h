@@ -93,6 +93,23 @@ private:
     
     bool bIgnoreProgramChange = false;
 
+    struct PendingNoteOn
+    {
+        PendingNoteOn(double in_time, uint8_t in_note, int in_chan, unsigned char in_vel)
+            : timestamp(in_time)
+            , noteNumber(in_note)
+            , channel(in_chan)
+            , velocity(in_vel)
+        {}
+
+        double timestamp;
+        uint8_t noteNumber;
+        int channel;
+        unsigned char velocity;
+    };
+
+    std::vector<PendingNoteOn> pendingNotesOn;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Processor)
 };
 

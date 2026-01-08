@@ -306,7 +306,7 @@ void SquareChannel::process(sample* buffer, size_t numSamples, const MixingArgs&
 
     size_t i = 0;
     do {
-        processStart(args);
+        processStart(args, i, numSamples);
 
         buffer->left  += outBuffer[i].left * cargs.lVol;
         buffer->right += outBuffer[i].right * cargs.rVol;
@@ -315,7 +315,7 @@ void SquareChannel::process(sample* buffer, size_t numSamples, const MixingArgs&
         cargs.lVol += cargs.lVolStep;
         cargs.rVol += cargs.rVolStep;
 
-        processEnd(args);
+        processEnd(args, i);
     } while (--numSamples > 0);
 
     if (sweepEnabled) {
