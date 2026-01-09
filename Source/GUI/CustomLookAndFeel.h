@@ -15,6 +15,7 @@ public:
 
     EUITheme getTheme() const;
     juce::Typeface::Ptr getTypeface() { return m_typefacePtr; }
+    juce::Font getDefaultFont() const { return m_defaultFont; }
 
     void positionComboBoxText(juce::ComboBox& box, juce::Label& label) override;
     juce::Font getComboBoxFont(juce::ComboBox& combo) override;
@@ -26,6 +27,7 @@ private:
 
     MainWindow* m_mainWindow = nullptr;
     juce::Typeface::Ptr m_typefacePtr;
+    juce::Font m_defaultFont{ 14.0f };
 };
 
 
@@ -37,7 +39,6 @@ public:
     void setTheme(EUITheme theme);
     EUITheme getTheme() const { return m_theme; }
 
-    juce::Typeface::Ptr getComboTypeface() { return m_typefacePtr; }
     juce::Font getDefaultFont() const { return m_defaultFont; }
 
     void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos,

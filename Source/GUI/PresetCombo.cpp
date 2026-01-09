@@ -4,8 +4,9 @@
 
 namespace GSVST {
 
-ComboItem::ComboItem(juce::String&& name, juce::String&& type, juce::Colour&& colour)
-    : m_name(std::move(name))
+ComboItem::ComboItem(PresetCombo* parent, juce::String&& name, juce::String&& type, juce::Colour&& colour)
+    : m_parent(parent)
+    , m_name(std::move(name))
     , m_type(std::move(type))
     , m_colour(std::move(colour))
 {
@@ -31,6 +32,9 @@ void ComboItem::paint(juce::Graphics& g)
     }
 
     r.reduce(juce::jmin(5, area.getWidth() / 20), 0);
+
+    auto* lnf = m_parent->getComboLookAndFeel();
+    g.setFont(lnf->getDefaultFont());
 
     g.setFont(12);
 
@@ -112,6 +116,7 @@ void PresetCombo::refresh(const PresetsHandler& presets, const ProgramInfo* cust
         item.text = presetName;
         item.itemID = mergedId + 1;
         item.customComponent = new ComboItem(
+            this,
             juce::String(presetName),
             juce::String(EnumToString_EPresetType(preset->type)),
             getPresetColour(preset->type));

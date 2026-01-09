@@ -39,6 +39,7 @@ void ComboLookAndFeel::updateTheme(bool bInit)
     }
 
     setDefaultSansSerifTypeface(m_typefacePtr);
+    m_defaultFont = juce::Font(m_typefacePtr).withHeight(12.0f);
 
     m_theme = theme;
 }

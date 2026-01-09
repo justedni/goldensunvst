@@ -8,12 +8,13 @@ class MainWindow;
 struct PresetsHandler;
 struct ProgramInfo;
 class ComboLookAndFeel;
+class PresetCombo;
 enum EUITheme : uint8_t;
  
 class ComboItem : public juce::PopupMenu::CustomComponent
 {
 public:
-    ComboItem(juce::String&& name, juce::String&& type, juce::Colour&& colour);
+    ComboItem(PresetCombo* parent, juce::String&& name, juce::String&& type, juce::Colour&& colour);
 
     void getIdealSize(int& idealWidth, int& idealHeight) override { idealWidth = 100; idealHeight = 20; }
 
@@ -23,6 +24,8 @@ public:
     const juce::String& getName() const { return m_name; }
 
 private:
+    PresetCombo* m_parent = nullptr;
+
     juce::String m_name;
     juce::String m_type;
     juce::Colour m_colour;
@@ -42,6 +45,8 @@ public:
 
     std::pair<int, int> getSelectedProgramId() const;
     void setSelectedProgram(int bankId, int presetId);
+
+    ComboLookAndFeel* getComboLookAndFeel() const { return m_lookAndFeel.get(); }
 private:
     static juce::String getPresetName(EUITheme theme, int bankid, int programId, const juce::String& programName, const juce::String& customName);
 

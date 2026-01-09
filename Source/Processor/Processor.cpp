@@ -374,6 +374,7 @@ void Processor::getStateInformation (juce::MemoryBlock& destData)
     root.setAttribute("hideunknowninstruments", m_presets->m_bHideUnknownInstruments);
     root.setAttribute("gamename", m_presets->m_selectedGame);
     root.setAttribute("soundfont", m_presets->soundFontPath);
+    root.setAttribute("theme", m_uiTheme);
 
     copyXmlToBinary(root, destData);
 }
@@ -404,6 +405,11 @@ void Processor::setStateInformation (const void* data, int sizeInBytes)
     {
         auto gameName = xmlState->getStringAttribute("gamename");
         m_presets->setSelectedGame(gameName.toStdString());
+    }
+
+    if (xmlState->hasAttribute("theme"))
+    {
+        m_uiTheme = xmlState->getIntAttribute("theme");
     }
 
     auto path = std::string(xmlState->getStringAttribute("soundfont").getCharPointer());

@@ -100,12 +100,6 @@ void SettingsWindow::resized()
     m_browseSoundfontButton.setBounds(buttonArea.removeFromLeft(60).withWidth(60));
     m_clearSoundfontButton.setBounds(buttonArea.withWidth(60));
 
-    auto getIdealWidth = [](auto& label)
-    {
-        juce::Font font = label.getFont();
-        return font.getStringWidth(label.getText());
-    };
-
     auto programModeArea = bounds.removeFromTop(20);
     m_labelProgramNameMode.setBounds(programModeArea.removeFromLeft(150));
     m_comboProgramNameMode.setBounds(programModeArea.withWidth(180));
@@ -143,6 +137,8 @@ void SettingsWindow::refresh(bool /*bForce*/)
     m_gsSynthModeToggleButton.setToggleState(presets.getAutoReplaceGSSynths(), juce::dontSendNotification);
     m_gbSynthModeToggleButton.setToggleState(presets.getAutoReplaceGBSynths(), juce::dontSendNotification);
     m_hideUnknownPresetsButton.setToggleState(presets.getHideUnknownInstruments(), juce::dontSendNotification);
+
+    m_comboTheme.setSelectedId(m_mainWindow.getSelectedTheme(), juce::dontSendNotification);
 }
 
 void SettingsWindow::buttonClicked(juce::Button* button)

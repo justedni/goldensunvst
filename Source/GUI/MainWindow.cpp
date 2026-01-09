@@ -39,7 +39,6 @@ MainWindow::MainWindow (Processor& p)
     m_aboutButton->setButtonText("About");
     m_aboutButton->onClick = [this] { openPopupWindow(EPopup::About); };
 
-    setSelectedTheme(EUITheme::GS);
     refresh(true);
 
     setSize(600, 300);
@@ -102,6 +101,12 @@ void MainWindow::refresh(bool bForce)
 
     if (bForce || m_audioProcessor.presetsRefreshRequired())
     {
+        auto currentTheme = m_audioProcessor.getUITheme();
+        if (m_customLookAndFeel->getTheme() != currentTheme)
+        {
+            setSelectedTheme(static_cast<EUITheme>(currentTheme));
+        }
+
         m_mainTab->refreshPresets();
         m_globalViewTab->refreshPresets();
     }
@@ -185,6 +190,7 @@ void MainWindow::setSelectedTheme(EUITheme id)
 {
     m_customLookAndFeel->setTheme(id);
     m_globalViewTab->updateTheme(id);
+    m_audioProcessor.setUITheme(static_cast<uint8_t>(id));
     repaint();
 }
 

@@ -68,6 +68,8 @@ public:
 
     void setIgnoreProgramChange(bool in_ignore) { bIgnoreProgramChange = in_ignore; }
 
+    uint8_t getUITheme() const { return m_uiTheme; }
+    void setUITheme(uint8_t uiTheme) { m_uiTheme = uiTheme; }
 private:
     int getNumSamplesForComputation(double sampleRate);
 
@@ -87,6 +89,7 @@ private:
     ChannelState* m_channels[MAX_MIDI_CHANNELS];
 
     std::unique_ptr<PresetsHandler> m_presets;
+    uint8_t m_uiTheme = 0;
 
     volatile bool bRefreshUIRequired = false;
     volatile bool bRefreshPresetsRequired = false;
