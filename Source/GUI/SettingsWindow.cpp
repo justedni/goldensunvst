@@ -45,7 +45,14 @@ SettingsWindow::SettingsWindow(Processor& p, MainWindow& e)
     addButton(m_browseSoundfontButton, "Browse");
     addButton(m_clearSoundfontButton, "Clear");
 
+    m_labelProgramNameMode.setText("Program names:", juce::dontSendNotification);
+    m_labelTheme.setText("UI:", juce::dontSendNotification);
+    m_labelAutoReplaceSynths.setText("Auto-replace synths with better ones:", juce::dontSendNotification);
+
     addAndMakeVisible(m_labelSoundfont);
+    addAndMakeVisible(m_labelProgramNameMode);
+    addAndMakeVisible(m_labelTheme);
+    addAndMakeVisible(m_labelAutoReplaceSynths);
 
     addAndMakeVisible(m_gsSynthModeToggleButton);
     m_gsSynthModeToggleButton.setButtonText("GS (PWM, Tri, Saw)");
@@ -59,39 +66,64 @@ SettingsWindow::SettingsWindow(Processor& p, MainWindow& e)
     m_hideUnknownPresetsButton.setButtonText("Hide unknown instruments");
     m_hideUnknownPresetsButton.onClick = [this] { toggleButtonStateChanged(&m_hideUnknownPresetsButton); };
 
-    addAndMakeVisible(m_closeButton);
-    m_closeButton.setButtonText("Close");
-    m_closeButton.addListener(this);
+    {
+        m_comboTheme.addItem("GS", EUITheme::GS);
+        m_comboTheme.addItem("CotM", EUITheme::CoTM);
+        m_comboTheme.onChange = [this] { comboChangedTheme(); };
+        addAndMakeVisible(m_comboTheme);
+    }
+
+    m_lookAndFeel.reset(new ComboLookAndFeel(&e));
+    getLookAndFeel().setDefaultSansSerifTypeface(m_lookAndFeel->getTypeface());
+
+    m_comboProgramNameMode.setLookAndFeel(m_lookAndFeel.get());
+    m_comboTheme.setLookAndFeel(m_lookAndFeel.get());
+}
+
+SettingsWindow::~SettingsWindow()
+{
+    m_comboProgramNameMode.setLookAndFeel(nullptr);
+    m_comboTheme.setLookAndFeel(nullptr);
 }
 
 void SettingsWindow::paint(juce::Graphics& g)
 {
     CustomLookAndFeel::drawGSBox(g, 0, 0, getWidth(), getHeight());
-
-    g.setColour(juce::Colours::white);
-    g.setFont(14);
-    g.drawText("Soundfont:", 10, 10, 130, 20, juce::Justification::centredLeft);
-
-    g.setFont(10);
-    g.drawText("Use program names from:", 10, 60, 180, 20, juce::Justification::centredLeft);
-    g.drawText("Auto-replace synths with better ones:", 10, 80, 300, 20, juce::Justification::centredLeft);
 }
 
 void SettingsWindow::resized()
 {
-    m_labelSoundfont.setBounds(140, 10, getWidth() - 150, 20);
+    auto bounds = getLocalBounds().reduced(10);
+    m_labelSoundfont.setBounds(bounds.removeFromTop(20));
 
-    m_browseSoundfontButton.setBounds(10, 35, 60, 20);
-    m_clearSoundfontButton.setBounds(90, 35, 60, 20);
+    auto buttonArea = bounds.removeFromTop(20);
+    m_browseSoundfontButton.setBounds(buttonArea.removeFromLeft(60).withWidth(60));
+    m_clearSoundfontButton.setBounds(buttonArea.withWidth(60));
 
-    m_comboProgramNameMode.setBounds(210, 60, 150, 20);
+    auto getIdealWidth = [](auto& label)
+    {
+        juce::Font font = label.getFont();
+        return font.getStringWidth(label.getText());
+    };
 
-    m_gsSynthModeToggleButton.setBounds(10, 100, getWidth() / 2, 20);
-    m_gbSynthModeToggleButton.setBounds(getWidth() / 2, 100, getWidth() / 2, 20);
+    auto programModeArea = bounds.removeFromTop(20);
+    m_labelProgramNameMode.setBounds(programModeArea.removeFromLeft(150));
+    m_comboProgramNameMode.setBounds(programModeArea.withWidth(180));
 
-    m_hideUnknownPresetsButton.setBounds(10, 120, getWidth() / 2, 20);
+    auto themeArea = bounds.removeFromTop(20);
+    m_labelTheme.setBounds(themeArea.removeFromLeft(35));
+    m_comboTheme.setBounds(themeArea.withWidth(100));
 
-    m_closeButton.setBounds(getWidth() / 2 - 30, getHeight() - 30, 60, 20);
+    bounds.removeFromTop(10);
+
+    m_labelAutoReplaceSynths.setBounds(bounds.removeFromTop(20));
+    auto firstRow = bounds.removeFromTop(20);
+    const auto halfWidth = getWidth() / 2;
+    m_gsSynthModeToggleButton.setBounds(firstRow.removeFromLeft(halfWidth));
+    m_gbSynthModeToggleButton.setBounds(firstRow);
+
+    auto secondRow = bounds.removeFromTop(20);
+    m_hideUnknownPresetsButton.setBounds(secondRow);
 }
 
 void SettingsWindow::refresh(bool /*bForce*/)
@@ -100,9 +132,11 @@ void SettingsWindow::refresh(bool /*bForce*/)
 
     auto soundFontPath = presets.getSoundFontPath();
     juce::File file(soundFontPath);
-    juce::String text = "No soundfont";
+    juce::String text = "Soundfont: ";
     if (!soundFontPath.empty() && file.exists())
-        text = file.getFileName();
+        text += file.getFileName();
+    else
+        text += "none";
 
     m_labelSoundfont.setText(text, juce::dontSendNotification);
 
@@ -130,10 +164,6 @@ void SettingsWindow::buttonClicked(juce::Button* button)
             refresh();
             m_mainWindow.refreshMainTab();
         });
-    }
-    else if (button == &m_closeButton)
-    {
-        m_mainWindow.closePopupWindow();
     }
     else if (button == &m_clearSoundfontButton)
     {
@@ -166,5 +196,12 @@ void SettingsWindow::comboChangedProgramNameMode()
     m_mainWindow.refreshGlobalTab();
 }
 
+void SettingsWindow::comboChangedTheme()
+{
+    auto theme = m_comboTheme.getSelectedId();
+    m_mainWindow.setSelectedTheme(static_cast<EUITheme>(theme));
+    sendLookAndFeelChange();
+    resized();
+}
 
 }

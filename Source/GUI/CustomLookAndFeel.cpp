@@ -1,20 +1,137 @@
 #include "CustomLookAndFeel.h"
 
+#include "MainWindow.h"
+
 namespace GSVST {
+
+
+ComboLookAndFeel::ComboLookAndFeel(MainWindow* mainWindow)
+    : m_mainWindow(mainWindow)
+{
+    setColour(juce::TabbedComponent::ColourIds::outlineColourId, juce::Colour());
+
+    updateTheme(true);
+}
+
+EUITheme ComboLookAndFeel::getTheme() const
+{
+    return m_mainWindow->getSelectedTheme();
+}
+
+void ComboLookAndFeel::updateTheme(bool bInit)
+{
+    auto theme = getTheme();
+    if (!bInit && m_theme == theme)
+        return;
+
+    switch (theme)
+    {
+    case GS:
+    {
+        m_typefacePtr = juce::Typeface::createSystemTypefaceFor(BinaryData::gsfont_ttf, BinaryData::gsfont_ttfSize);
+        break;
+    }
+    case CoTM:
+    {
+        m_typefacePtr = juce::Typeface::createSystemTypefaceFor(BinaryData::cotmaltfont_ttf, BinaryData::cotmaltfont_ttfSize);
+        break;
+    }
+    }
+
+    setDefaultSansSerifTypeface(m_typefacePtr);
+
+    m_theme = theme;
+}
+
+
+void ComboLookAndFeel::positionComboBoxText(juce::ComboBox& box, juce::Label& label)
+{
+    updateTheme(false);
+
+    switch (m_mainWindow->getSelectedTheme())
+    {
+    case GS:
+    {
+        LookAndFeel_V4::positionComboBoxText(box, label);
+        break;
+    }
+    case CoTM:
+    {
+        label.setBounds(1, -5,
+            box.getWidth() - 30,
+            box.getHeight());
+
+        label.setFont(getComboBoxFont(box));
+        break;
+    }
+    }
+}
+
+juce::Font ComboLookAndFeel::getComboBoxFont(juce::ComboBox& combo)
+{
+    updateTheme(false);
+
+    switch (m_mainWindow->getSelectedTheme())
+    {
+    case GS:
+    {
+        auto font = LookAndFeel_V4::getComboBoxFont(combo);
+        font.setHeight(12);
+        return font;
+    }
+    case CoTM:
+    {
+        return juce::Font(getTypefaceForFont(juce::Font())).withHeight(combo.getHeight());
+    }
+    }
+}
+
 
 CustomLookAndFeel::CustomLookAndFeel()
 {
-    auto typeface = juce::Typeface::createSystemTypefaceFor(BinaryData::gsfont_ttf, BinaryData::gsfont_ttfSize);
-    setDefaultSansSerifTypeface(typeface);
-
     setColour(juce::TabbedComponent::ColourIds::outlineColourId, juce::Colour());
+
+    updateTheme();
 }
 
-juce::Font CustomLookAndFeel::getComboBoxFont(juce::ComboBox& combo)
+void CustomLookAndFeel::setTheme(EUITheme theme)
 {
-    auto font = LookAndFeel_V4::getComboBoxFont(combo);
-    font.setHeight(10);
-    return font;
+    if (theme != m_theme)
+    {
+        m_theme = theme;
+        updateTheme();
+    }
+}
+
+void CustomLookAndFeel::updateTheme()
+{
+    switch (m_theme)
+    {
+    case GS:
+    {
+        m_typefacePtr = juce::Typeface::createSystemTypefaceFor(BinaryData::gsfont_ttf, BinaryData::gsfont_ttfSize);
+        break;
+    }
+    case CoTM:
+    {
+        m_typefacePtr = juce::Typeface::createSystemTypefaceFor(BinaryData::cotmfont_ttf, BinaryData::cotmfont_ttfSize);
+        break;
+    }
+    }
+
+    setDefaultSansSerifTypeface(m_typefacePtr);
+    m_defaultFont = juce::Font(m_typefacePtr).withHeight(12.0f);
+}
+
+juce::Font CustomLookAndFeel::getTextButtonFont(juce::TextButton& button, int buttonHeight)
+{
+    switch (m_theme)
+    {
+    case GS:
+        return juce::Font(getTypefaceForFont(juce::Font())).withHeight(juce::jmin(16.0f, (float)buttonHeight * 0.6f));
+    case CoTM:
+        return juce::Font(m_typefacePtr).withHeight(juce::jmin(16.0f, (float)buttonHeight * 0.4f));
+    }
 }
 
 juce::Font CustomLookAndFeel::getLabelFont(juce::Label& label)

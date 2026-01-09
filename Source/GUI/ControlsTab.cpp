@@ -13,7 +13,7 @@ namespace GSVST {
 
 ControlsTab::ControlsTab(Processor& p, MainWindow& e)
     : m_comboChannel(new juce::ComboBox())
-    , m_comboPreset(new PresetCombo())
+    , m_comboPreset(new PresetCombo(&e))
     , m_tickBoxIgnorePrgChg(new juce::ToggleButton())
     , m_comboReverb(new juce::ComboBox())
     , m_changeReverbForAll(new juce::ToggleButton())
@@ -77,6 +77,11 @@ ControlsTab::ControlsTab(Processor& p, MainWindow& e)
     addAndMakeVisible(*m_changeReverbForAll.get());
     m_changeReverbForAll->setToggleState(true, juce::dontSendNotification);
     m_changeReverbForAll->addListener(this);
+}
+
+ControlsTab::~ControlsTab()
+{
+    m_comboPreset.reset();
 }
 
 void ControlsTab::paint(juce::Graphics& g)

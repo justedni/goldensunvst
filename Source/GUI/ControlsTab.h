@@ -18,6 +18,7 @@ class ControlsTab : public juce::Component
 {
 public:
     ControlsTab(Processor& p, MainWindow& e);
+    ~ControlsTab();
 
     void paint(juce::Graphics&) override;
     void resized() override;

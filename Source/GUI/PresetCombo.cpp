@@ -1,5 +1,6 @@
 #include "PresetCombo.h"
 #include "Presets/PresetsHandler.h"
+#include "CustomLookAndFeel.h"
 
 namespace GSVST {
 
@@ -45,6 +46,38 @@ void ComboItem::resized()
 {
 }
 
+PresetCombo::PresetCombo(MainWindow* mainWindow)
+{
+    m_lookAndFeel.reset(new ComboLookAndFeel(mainWindow));
+    setLookAndFeel(m_lookAndFeel.get());
+    getLookAndFeel().setDefaultSansSerifTypeface(m_lookAndFeel->getTypeface());
+}
+
+PresetCombo::~PresetCombo()
+{
+    setLookAndFeel(nullptr);
+}
+
+
+void PresetCombo::setTheme(EUITheme theme)
+{
+    updateText(theme);
+    lookAndFeelChanged();
+}
+
+void PresetCombo::updateText(EUITheme theme)
+{
+    if (m_bankid != -1 && m_program_id != -1)
+    {
+        juce::String presetName = getPresetName(theme, m_bankid, m_program_id, m_name, juce::String());
+        setText(presetName, juce::dontSendNotification);
+    }
+    else
+    {
+        setText("", juce::dontSendNotification);
+    }
+}
+
 void PresetCombo::refresh(const PresetsHandler& presets, const ProgramInfo* customInfo)
 {
     clear();
@@ -63,26 +96,46 @@ void PresetCombo::refresh(const PresetsHandler& presets, const ProgramInfo* cust
         }
     };
 
+    auto theme = m_lookAndFeel->getTheme();
 
     auto* menu = getRootMenu();
+    menu->clear();
+    m_programNames.clear();
+
     for (auto& preset : presets.m_presets)
     {
-        juce::String presetName;
-        if (customInfo)
-            presetName << customInfo->name;
-        else
-            presetName << preset->bankid << ":" << preset->programid << " " << preset->name;
+        juce::String presetName = getPresetName(theme, preset->bankid, preset->programid, preset->name, customInfo ? customInfo->name : juce::String());
+
+        auto mergedId = getMergedId(preset->bankid, preset->programid);
 
         juce::PopupMenu::Item item;
         item.text = presetName;
-        item.itemID = getMergedId(preset->bankid, preset->programid) + 1;
+        item.itemID = mergedId + 1;
         item.customComponent = new ComboItem(
             juce::String(presetName),
             juce::String(EnumToString_EPresetType(preset->type)),
             getPresetColour(preset->type));
 
         menu->addItem(std::move(item));
+        m_programNames[mergedId] = preset->name;
     }
+}
+
+juce::String PresetCombo::getPresetName(EUITheme theme, int bankid, int programId, const juce::String& programName, const juce::String& customName)
+{
+    juce::String presetName;
+    if (theme == EUITheme::GS)
+    {
+        if (customName.isNotEmpty())
+            presetName << customName;
+        else
+            presetName << bankid << ":" << programId << " " << programName;
+    }
+    else
+    {
+        presetName << programName;
+    }
+    return presetName;
 }
 
 int PresetCombo::getMergedId(int bankId, int presetId) const
@@ -104,7 +157,18 @@ void PresetCombo::setSelectedProgram(int bankId, int presetId)
     {
         m_bankid = bankId;
         m_program_id = presetId;
-        setSelectedId(getMergedId(bankId, presetId) + 1, juce::dontSendNotification);
+
+        auto mergedId = getMergedId(bankId, presetId);
+        auto it = m_programNames.find(mergedId);
+        if (it != m_programNames.end())
+        {
+            m_name = it->second;
+        }
+
+        setSelectedId(mergedId + 1, juce::dontSendNotification);
+
+        auto theme = m_lookAndFeel->getTheme();
+        updateText(theme);
     }
 }
 

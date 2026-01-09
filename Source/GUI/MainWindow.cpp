@@ -14,20 +14,17 @@ namespace GSVST {
 MainWindow::MainWindow (Processor& p)
     : AudioProcessorEditor (&p)
     , m_tabbedComponent(new juce::TabbedComponent(juce::TabbedButtonBar::Orientation::TabsAtTop))
-    , m_mainTab(new ControlsTab(p, *this))
-    , m_globalViewTab(new GlobalViewTab(p))
-    , m_settingsWindow(new SettingsWindow(p, *this))
     , m_aboutWindow(new AboutWindow(*this))
     , m_settingsButton(new juce::TextButton())
     , m_aboutButton(new juce::TextButton())
     , m_audioProcessor (p)
 {
-    setSize (600, 300);
-
-    startTimer(50);
-
     m_customLookAndFeel.reset(new CustomLookAndFeel());
     juce::LookAndFeel::setDefaultLookAndFeel(m_customLookAndFeel.get());
+
+    m_mainTab.reset(new ControlsTab(p, *this));
+    m_globalViewTab.reset(new GlobalViewTab(p, *this));
+    m_settingsWindow.reset(new SettingsWindow(p, *this));
 
     addAndMakeVisible(m_tabbedComponent.get());
     m_tabbedComponent->setOrientation(juce::TabbedButtonBar::TabsAtBottom);
@@ -42,12 +39,18 @@ MainWindow::MainWindow (Processor& p)
     m_aboutButton->setButtonText("About");
     m_aboutButton->onClick = [this] { openPopupWindow(EPopup::About); };
 
+    setSelectedTheme(EUITheme::GS);
     refresh(true);
+
+    setSize(600, 300);
+    startTimer(50);
 }
 
 
 MainWindow::~MainWindow()
 {
+    stopTimer();
+
     juce::LookAndFeel::setDefaultLookAndFeel(nullptr);
 
     if (m_window)
@@ -55,7 +58,9 @@ MainWindow::~MainWindow()
         m_window.deleteAndZero();
     }
 
-    stopTimer();
+    m_mainTab.reset();
+    m_globalViewTab.reset();
+    m_settingsWindow.reset();
 }
 
 //==============================================================================
@@ -102,11 +107,34 @@ void MainWindow::refresh(bool bForce)
     }
 }
 
+
+class PopupWindow : public juce::DocumentWindow
+{
+public:
+    PopupWindow(MainWindow* parent)
+        : juce::DocumentWindow("", juce::Colour(80, 80, 80), juce::DocumentWindow::TitleBarButtons::closeButton, false)
+        , m_parent(parent)
+    {
+    }
+
+    virtual ~PopupWindow() {}
+
+    void closeButtonPressed() override
+    {
+        m_parent->closePopupWindow();
+    }
+
+private:
+    MainWindow* m_parent = nullptr;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PopupWindow)
+};
+
 void MainWindow::openPopupWindow(EPopup popup)
 {
     if (!m_window)
     {
-        m_window = new juce::DocumentWindow("", juce::Colour(80, 80, 80), false, false);
+        m_window = new PopupWindow(this);
         addAndMakeVisible(m_window);
     }
 
@@ -146,6 +174,18 @@ void MainWindow::refreshGlobalTab(bool bRefreshPresets)
         m_globalViewTab->refreshPresets();
 
     m_globalViewTab->refresh();
+}
+
+EUITheme MainWindow::getSelectedTheme() const
+{
+    return m_customLookAndFeel->getTheme();
+}
+
+void MainWindow::setSelectedTheme(EUITheme id)
+{
+    m_customLookAndFeel->setTheme(id);
+    m_globalViewTab->updateTheme(id);
+    repaint();
 }
 
 }

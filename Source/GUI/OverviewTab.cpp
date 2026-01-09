@@ -8,17 +8,20 @@
 #include "Presets/PresetsHandler.h"
 #include "Presets/Presets.h"
 
+#include "MainWindow.h"
+
 #define DISPLAYED_MIDI_CHANNELS 10
 
 namespace GSVST {
 
-GlobalViewTab::GlobalViewTab(Processor& p)
+GlobalViewTab::GlobalViewTab(Processor& p, MainWindow& e)
     : m_audioProcessor(p)
+    , m_mainWindow(e)
 {
     for (int i = 0; i < MAX_MIDI_CHANNELS; i++)
     {
         auto& combo = m_channelDescs[i].m_presetCombo;
-        combo.reset(new PresetCombo());
+        combo.reset(new PresetCombo(&e));
         addAndMakeVisible(*combo.get());
 
         ProgramInfo* customInfo = nullptr;
@@ -60,7 +63,22 @@ void GlobalViewTab::timerCallback()
 
 void GlobalViewTab::paint(juce::Graphics& g)
 {
-    CustomLookAndFeel::drawGSBox(g, 0, 0, getWidth(), getHeight());
+    auto theme = m_mainWindow.getSelectedTheme();
+    switch (theme)
+    {
+    case GS:
+    {
+        CustomLookAndFeel::drawGSBox(g, 0, 0, getWidth(), getHeight());
+        break;
+    }
+    case CoTM:
+    {
+        juce::Image background = juce::ImageCache::getFromMemory(BinaryData::Cotm_background_png, BinaryData::Cotm_background_pngSize);
+        auto rect = juce::Rectangle<float>(0, 0, 420, 280);
+        g.drawImage(background, rect);
+        break;
+    }
+    }
 
     auto currentY = 10;
 
@@ -70,6 +88,10 @@ void GlobalViewTab::paint(juce::Graphics& g)
         g.setColour(juce::Colours::white);
         g.drawText(std::to_string(i+1), 6, currentY, 20, 20, juce::Justification::centred);
 
+        auto* lnf = m_mainWindow.getCustomLookAndFeel();
+        g.setFont(lnf->getDefaultFont());
+
+        g.setFont(12);
         g.setColour(m_channelDescs[i].m_deviceColour);
         g.drawText(m_channelDescs[i].m_deviceName, 236, currentY + 1, 70, 20, juce::Justification::centredLeft);
         currentY += 22;
@@ -159,6 +181,21 @@ void GlobalViewTab::refreshPresets()
 
         m_channelDescs[i].m_presetCombo->refresh(presets, customInfo);
     }
+}
+
+void GlobalViewTab::updateTheme(EUITheme theme)
+{
+    sendLookAndFeelChange();
+
+    for (int i = 0; i < MAX_MIDI_CHANNELS; i++)
+    {
+        m_channelDescs[i].updateTheme(theme);
+    }
+}
+
+void ChannelDesc::updateTheme(EUITheme theme)
+{
+    m_presetCombo->setTheme(theme);
 }
 
 }

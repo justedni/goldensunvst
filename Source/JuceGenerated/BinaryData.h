@@ -8,11 +8,20 @@
 
 namespace BinaryData
 {
+    extern const char*   cotmfont_ttf;
+    const int            cotmfont_ttfSize = 10280;
+
+    extern const char*   cotmaltfont_ttf;
+    const int            cotmaltfont_ttfSize = 7760;
+
     extern const char*   gsfont_ttf;
     const int            gsfont_ttfSize = 14208;
 
+    extern const char*   Cotm_background_png;
+    const int            Cotm_background_pngSize = 498;
+
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 1;
+    const int namedResourceListSize = 4;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];

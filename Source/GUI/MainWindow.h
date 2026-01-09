@@ -11,6 +11,7 @@ class GlobalViewTab;
 class SettingsWindow;
 class AboutWindow;
 class CustomLookAndFeel;
+enum EUITheme : uint8_t;
 
 class MainWindow  : public juce::AudioProcessorEditor
     , public juce::Timer
@@ -31,6 +32,10 @@ public:
     void refreshMainTab();
     void refreshGlobalTab(bool bRefreshPresets = true);
 
+    EUITheme getSelectedTheme() const;
+    void setSelectedTheme(EUITheme id);
+
+    CustomLookAndFeel* getCustomLookAndFeel() const { return m_customLookAndFeel.get(); }
 private:
     void refresh(bool bForce = false);
 
