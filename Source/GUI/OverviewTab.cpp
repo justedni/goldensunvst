@@ -84,14 +84,14 @@ void GlobalViewTab::paint(juce::Graphics& g)
 
     for (int i = 0; i < DISPLAYED_MIDI_CHANNELS; i++)
     {
-        g.setFont(12);
-        g.setColour(juce::Colours::white);
-        g.drawText(std::to_string(i+1), 6, currentY, 20, 20, juce::Justification::centred);
-
         auto* lnf = m_mainWindow.getCustomLookAndFeel();
         g.setFont(lnf->getDefaultFont());
 
-        g.setFont(12);
+        auto fontSize = lnf->getLabelFontSize();
+        g.setFont(fontSize);
+        g.setColour(juce::Colours::white);
+        g.drawText(std::to_string(i+1), 2, currentY, 28, 20, juce::Justification::centred);
+
         g.setColour(m_channelDescs[i].m_deviceColour);
         g.drawText(m_channelDescs[i].m_deviceName, 236, currentY + 1, 70, 20, juce::Justification::centredLeft);
         currentY += 22;

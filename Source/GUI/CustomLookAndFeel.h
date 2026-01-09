@@ -40,6 +40,7 @@ public:
     EUITheme getTheme() const { return m_theme; }
 
     juce::Font getDefaultFont() const { return m_defaultFont; }
+    int getLabelFontSize() const;
 
     void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
         const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider&) override;

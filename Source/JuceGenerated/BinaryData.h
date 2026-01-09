@@ -9,10 +9,10 @@
 namespace BinaryData
 {
     extern const char*   cotmfont_ttf;
-    const int            cotmfont_ttfSize = 10280;
+    const int            cotmfont_ttfSize = 11176;
 
     extern const char*   cotmaltfont_ttf;
-    const int            cotmaltfont_ttfSize = 7760;
+    const int            cotmaltfont_ttfSize = 6060;
 
     extern const char*   gsfont_ttf;
     const int            gsfont_ttfSize = 14208;

@@ -135,10 +135,23 @@ juce::Font CustomLookAndFeel::getTextButtonFont(juce::TextButton& button, int bu
     }
 }
 
+int CustomLookAndFeel::getLabelFontSize() const
+{
+    switch (m_theme)
+    {
+    default:
+    case GS:
+        return 12;
+    case CoTM:
+        return 10;
+    }
+
+}
+
 juce::Font CustomLookAndFeel::getLabelFont(juce::Label& label)
 {
     auto font = LookAndFeel_V4::getLabelFont(label);
-    font.setHeight(12);
+    font.setHeight(getLabelFontSize());
     return font;
 }
 
@@ -146,7 +159,7 @@ void CustomLookAndFeel::drawToggleButton(
     juce::Graphics& g, juce::ToggleButton& button,
     bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
 {
-    auto fontSize = 12.0f;
+    auto fontSize = getLabelFontSize();
     auto tickWidth = fontSize * 1.1f;
 
     drawTickBox(g, button, 4.0f, ((float)button.getHeight() - tickWidth) * 0.5f,

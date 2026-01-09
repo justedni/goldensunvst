@@ -67,10 +67,13 @@ void MainWindow::paint (juce::Graphics& g)
 {
     g.fillAll(juce::Colours::black);
 
+    g.setFont(m_customLookAndFeel->getDefaultFont());
+    auto fontSize = m_customLookAndFeel->getLabelFontSize();
+
     g.setColour(juce::Colours::white);
-    g.setFont(14);
+    g.setFont(fontSize + 2);
     g.drawText("Golden Sun VST", getWidth() / 2, getHeight() - 38, (getWidth() / 2) - 20, 20, juce::Justification::centredRight);
-    g.setFont(10);
+    g.setFont(fontSize - 2);
     g.drawText("Vincent Dortel", getWidth() / 2, getHeight() - 20, (getWidth() / 2) - 20, 20, juce::Justification::centredRight);
 }
 

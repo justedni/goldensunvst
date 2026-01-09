@@ -90,7 +90,12 @@ void ControlsTab::paint(juce::Graphics& g)
     CustomLookAndFeel::drawGSBox(g, 320, 50, getWidth() - 320, 50);
 
     g.setColour(juce::Colours::white);
-    g.setFont(11);
+
+    auto* lnf = m_mainWindow.getCustomLookAndFeel();
+    g.setFont(lnf->getDefaultFont());
+
+    auto fontSize = lnf->getLabelFontSize() - 1;
+    g.setFont(fontSize);
     g.drawText("Midi channel / Program", 8, 5, getWidth() - 20, 20, juce::Justification::centredLeft);
 
     g.drawText(juce::String::formatted("LFO Speed: %d (BPM: %d)", m_lfoSpeed, m_detectedBPM),
