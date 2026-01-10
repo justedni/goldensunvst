@@ -15,7 +15,8 @@ AboutWindow::AboutWindow(MainWindow& e)
 
 void AboutWindow::paint(juce::Graphics& g)
 {
-    CustomLookAndFeel::drawGSBox(g, 0, 0, getWidth(), getHeight());
+    auto* lnf = m_mainWindow.getCustomLookAndFeel();
+    lnf->drawCustomBox(g, 0, 0, getWidth(), getHeight());
 
     auto width = getWidth() - 15;
     g.setFont(14);

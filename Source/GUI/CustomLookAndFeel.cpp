@@ -316,41 +316,73 @@ juce::Colour CustomLookAndFeel::getBackgroundColour()
     return juce::Colour(0, 96, 136);
 }
 
-void CustomLookAndFeel::drawGSBox(juce::Graphics& g, int x, int y, int width, int height)
+void CustomLookAndFeel::drawCustomBox(juce::Graphics& g, int x, int y, int width, int height)
 {
-    auto goldenSunBackColour = getBackgroundColour();
-    g.setColour(goldenSunBackColour);
-    g.fillRect(x, y, width, height);
-
-    auto drawRect1 = [&](int offset, auto colour)
+    switch (m_theme)
     {
-        g.setColour(colour);
-        g.fillRect(x + offset, y + offset, width - offset * 2, 1);
-        g.fillRect(x + offset, y + offset, 1, height - 2 * offset);
-    };
-
-    auto drawRect2 = [&](int offset, auto colour)
+    case GS:
     {
-        g.setColour(colour);
-        g.fillRect(x + offset, y + height - (offset + 1), width - offset * 2, 1);
-        g.fillRect(x + width - (offset + 1), y + offset, 1, height - offset * 2);
-    };
+        auto goldenSunBackColour = getBackgroundColour();
+        g.setColour(goldenSunBackColour);
+        g.fillRect(x, y, width, height);
 
-    drawRect1(0, juce::Colour(80, 80, 80));
-    drawRect1(1, juce::Colour(248, 248, 248));
-    drawRect1(2, juce::Colour(160, 160, 160));
-    drawRect1(3, juce::Colour(0, 0, 0));
-    drawRect1(4, juce::Colour(0, 72, 80));
-    drawRect1(5, juce::Colour(0, 80, 96));
-    drawRect1(6, juce::Colour(0, 88, 112));
+        auto drawRect1 = [&](int offset, auto colour)
+        {
+            g.setColour(colour);
+            g.fillRect(x + offset, y + offset, width - offset * 2, 1);
+            g.fillRect(x + offset, y + offset, 1, height - 2 * offset);
+        };
 
-    drawRect2(0, juce::Colour(0, 0, 0));
-    drawRect2(1, juce::Colour(160, 160, 160));
-    drawRect2(2, juce::Colour(248, 248, 248));
-    drawRect2(3, juce::Colour(80, 80, 80));
-    drawRect2(4, juce::Colour(8, 128, 184));
-    drawRect2(5, juce::Colour(8, 112, 168));
-    drawRect2(6, juce::Colour(8, 104, 152));
+        auto drawRect2 = [&](int offset, auto colour)
+        {
+            g.setColour(colour);
+            g.fillRect(x + offset, y + height - (offset + 1), width - offset * 2, 1);
+            g.fillRect(x + width - (offset + 1), y + offset, 1, height - offset * 2);
+        };
+
+        drawRect1(0, juce::Colour(80, 80, 80));
+        drawRect1(1, juce::Colour(248, 248, 248));
+        drawRect1(2, juce::Colour(160, 160, 160));
+        drawRect1(3, juce::Colour(0, 0, 0));
+        drawRect1(4, juce::Colour(0, 72, 80));
+        drawRect1(5, juce::Colour(0, 80, 96));
+        drawRect1(6, juce::Colour(0, 88, 112));
+
+        drawRect2(0, juce::Colour(0, 0, 0));
+        drawRect2(1, juce::Colour(160, 160, 160));
+        drawRect2(2, juce::Colour(248, 248, 248));
+        drawRect2(3, juce::Colour(80, 80, 80));
+        drawRect2(4, juce::Colour(8, 128, 184));
+        drawRect2(5, juce::Colour(8, 112, 168));
+        drawRect2(6, juce::Colour(8, 104, 152));
+
+        break;
+    }
+    case CoTM:
+    {
+        const int spacing = 2;
+        const int leftX = x + spacing;
+        const int rightX = x + width - (spacing * 2);
+        const int topY = y + spacing;
+        const int bottomY = y + height - (spacing * 2);
+
+        juce::Path p;
+        p.startNewSubPath(leftX + 4, topY);
+        p.lineTo(rightX - 4, topY);
+        p.lineTo(rightX, topY + 4);
+        p.lineTo(rightX, bottomY - 4);
+        p.lineTo(rightX - 4, bottomY);
+        p.lineTo(leftX + 4, bottomY);
+        p.lineTo(leftX, bottomY - 4);
+        p.lineTo(leftX, topY + 4);
+        p.lineTo(leftX + 4, topY);
+        p.closeSubPath();
+
+        g.setColour(juce::Colours::white);
+        g.strokePath(p, juce::PathStrokeType(1.0f));
+        break;
+    }
+    }
 }
 
 }

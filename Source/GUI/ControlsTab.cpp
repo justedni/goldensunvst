@@ -86,12 +86,21 @@ ControlsTab::~ControlsTab()
 
 void ControlsTab::paint(juce::Graphics& g)
 {
-    CustomLookAndFeel::drawGSBox(g, 0, 0, getWidth(), 50);
-    CustomLookAndFeel::drawGSBox(g, 320, 50, getWidth() - 320, 50);
+    auto theme = m_mainWindow.getSelectedTheme();
+    auto* lnf = m_mainWindow.getCustomLookAndFeel();
+
+    if (theme == CoTM)
+    {
+        auto width = getWidth();
+        juce::Image background = juce::ImageCache::getFromMemory(BinaryData::Cotm_background_png, BinaryData::Cotm_background_pngSize);
+        auto rect = juce::Rectangle<float>(0, 0, getWidth() - 2, 240);
+        g.drawImage(background, rect);
+    }
+
+    lnf->drawCustomBox(g, 0, 0, getWidth(), 50);
+    lnf->drawCustomBox(g, 320, 50, getWidth() - 320, 50);
 
     g.setColour(juce::Colours::white);
-
-    auto* lnf = m_mainWindow.getCustomLookAndFeel();
     g.setFont(lnf->getDefaultFont());
 
     auto fontSize = lnf->getLabelFontSize() - 1;
@@ -104,11 +113,11 @@ void ControlsTab::paint(juce::Graphics& g)
     g.drawText(juce::String::formatted("Detune: %d PitchbendRange: %d", m_detune, m_pitchBendRange),
         300, 77, getWidth() - 310, 15, juce::Justification::centredRight);
 
-    CustomLookAndFeel::drawGSBox(g, 0, 51, 290, 99);
-    CustomLookAndFeel::drawGSBox(g, 0, 151, 290, 100);
+    lnf->drawCustomBox(g, 0, 51, 290, 99);
+    lnf->drawCustomBox(g, 0, 151, 290, 100);
 
     if (m_isPWMSynth)
-        CustomLookAndFeel::drawGSBox(g, 295, 151, getWidth() - 295, 100);
+        lnf->drawCustomBox(g, 295, 151, getWidth() - 295, 100);
 }
 
 void ControlsTab::resized()

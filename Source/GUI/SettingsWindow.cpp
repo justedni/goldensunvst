@@ -88,7 +88,8 @@ SettingsWindow::~SettingsWindow()
 
 void SettingsWindow::paint(juce::Graphics& g)
 {
-    CustomLookAndFeel::drawGSBox(g, 0, 0, getWidth(), getHeight());
+    auto* lnf = m_mainWindow.getCustomLookAndFeel();
+    lnf->drawCustomBox(g, 0, 0, getWidth(), getHeight());
 }
 
 void SettingsWindow::resized()

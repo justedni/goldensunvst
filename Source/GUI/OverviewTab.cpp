@@ -64,18 +64,21 @@ void GlobalViewTab::timerCallback()
 void GlobalViewTab::paint(juce::Graphics& g)
 {
     auto theme = m_mainWindow.getSelectedTheme();
+    auto* lnf = m_mainWindow.getCustomLookAndFeel();
     switch (theme)
     {
     case GS:
     {
-        CustomLookAndFeel::drawGSBox(g, 0, 0, getWidth(), getHeight());
+        lnf->drawCustomBox(g, 0, 0, getWidth(), getHeight());
         break;
     }
     case CoTM:
     {
         juce::Image background = juce::ImageCache::getFromMemory(BinaryData::Cotm_background_png, BinaryData::Cotm_background_pngSize);
-        auto rect = juce::Rectangle<float>(0, 0, 420, 280);
+        auto rect = juce::Rectangle<float>(0, 0, 420, 220);
         g.drawImage(background, rect);
+
+        lnf->drawCustomBox(g, 0, 0, 422, 240);
         break;
     }
     }
