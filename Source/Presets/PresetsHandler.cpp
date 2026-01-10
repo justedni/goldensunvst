@@ -32,7 +32,14 @@ PresetsHandler::~PresetsHandler()
 
 void PresetsHandler::sort()
 {
-    std::sort(m_presets.begin(), m_presets.end(), [](auto& l, auto& r) { return l->programid < r->programid; });
+    std::sort(m_presets.begin(), m_presets.end(),
+        [](const auto* l, const auto* r)
+        {
+            if (l->bankid != r->bankid)
+                return l->bankid < r->bankid;
+            return l->programid < r->programid;
+        }
+    );
 }
 
 const ProgramInfo* PresetsHandler::findProgramInfo(const std::list<ProgramInfo>& list, int bankid, int programid) const
