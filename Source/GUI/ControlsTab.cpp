@@ -89,13 +89,7 @@ void ControlsTab::paint(juce::Graphics& g)
     auto theme = m_mainWindow.getSelectedTheme();
     auto* lnf = m_mainWindow.getCustomLookAndFeel();
 
-    if (theme == CoTM)
-    {
-        auto width = getWidth();
-        juce::Image background = juce::ImageCache::getFromMemory(BinaryData::Cotm_background_png, BinaryData::Cotm_background_pngSize);
-        auto rect = juce::Rectangle<float>(0, 0, getWidth() - 2, 240);
-        g.drawImage(background, rect);
-    }
+    lnf->drawWindowBackground(g, 0, 0, getWidth() - 2, 240);
 
     lnf->drawCustomBox(g, 0, 0, getWidth(), 50);
     lnf->drawCustomBox(g, 320, 50, getWidth() - 320, 50);

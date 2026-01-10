@@ -56,6 +56,7 @@ public:
     void drawTabButton(juce::TabBarButton& button, juce::Graphics& g, bool isMouseOver, bool isMouseDown);
     void drawTabButtonText(juce::TabBarButton& button, juce::Graphics& g, bool isMouseOver, bool isMouseDown);
 
+    void drawWindowBackground(juce::Graphics& g, int x, int y, int width, int height);
     void drawCustomBox(juce::Graphics& g, int x, int y, int width, int height);
     static juce::Colour getBackgroundColour();
 

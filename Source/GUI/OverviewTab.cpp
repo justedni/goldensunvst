@@ -65,6 +65,9 @@ void GlobalViewTab::paint(juce::Graphics& g)
 {
     auto theme = m_mainWindow.getSelectedTheme();
     auto* lnf = m_mainWindow.getCustomLookAndFeel();
+
+    lnf->drawWindowBackground(g, 0, 0, 420, 220);
+
     switch (theme)
     {
     case GS:
@@ -74,10 +77,6 @@ void GlobalViewTab::paint(juce::Graphics& g)
     }
     case CoTM:
     {
-        juce::Image background = juce::ImageCache::getFromMemory(BinaryData::Cotm_background_png, BinaryData::Cotm_background_pngSize);
-        auto rect = juce::Rectangle<float>(0, 0, 420, 220);
-        g.drawImage(background, rect);
-
         lnf->drawCustomBox(g, 0, 0, 422, 240);
         break;
     }

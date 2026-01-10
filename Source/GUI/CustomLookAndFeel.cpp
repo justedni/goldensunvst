@@ -316,6 +316,40 @@ juce::Colour CustomLookAndFeel::getBackgroundColour()
     return juce::Colour(0, 96, 136);
 }
 
+void CustomLookAndFeel::drawWindowBackground(juce::Graphics& g, int x, int y, int width, int height)
+{
+    switch (m_theme)
+    {
+    case GS:
+    {
+        // No background, only outlines
+        break;
+    }
+    case CoTM:
+    {
+        int currY = y;
+
+        auto drawRect = [&](int size, auto colour)
+        {
+            g.setColour(colour);
+            int actualHeight = (height * size) / 160;
+            g.fillRect(x, currY, width, actualHeight);
+            currY += (actualHeight);
+        };
+
+        drawRect(32, juce::Colour(0, 0, 104));
+        drawRect(24, juce::Colour(0, 0, 88));
+        drawRect(24, juce::Colour(0, 0, 72));
+        drawRect(16, juce::Colour(0, 0, 56));
+        drawRect(16, juce::Colour(0, 0, 40));
+        drawRect(16, juce::Colour(0, 0, 24));
+        drawRect(16, juce::Colour(0, 0, 8));
+        drawRect(16, juce::Colour(0, 0, 0));
+        break;
+    }
+    }
+}
+
 void CustomLookAndFeel::drawCustomBox(juce::Graphics& g, int x, int y, int width, int height)
 {
     switch (m_theme)
