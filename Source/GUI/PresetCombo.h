@@ -21,8 +21,6 @@ public:
     void paint(juce::Graphics&) override;
     void resized() override;
 
-    const juce::String& getName() const { return m_name; }
-
 private:
     PresetCombo* m_parent = nullptr;
 
@@ -49,6 +47,7 @@ public:
     ComboLookAndFeel* getComboLookAndFeel() const { return m_lookAndFeel.get(); }
 private:
     static juce::String getPresetName(EUITheme theme, int bankid, int programId, const juce::String& programName, const juce::String& customName);
+    static juce::String getFullPresetName(int bankid, int programId, const juce::String& programName, const juce::String& customName);
 
     int getMergedId(int bankId, int presetId) const;
     void updateText(EUITheme theme);

@@ -36,12 +36,13 @@ void ComboItem::paint(juce::Graphics& g)
     auto* lnf = m_parent->getComboLookAndFeel();
     g.setFont(lnf->getDefaultFont());
 
-    g.setFont(12);
+    auto fontSize = lnf->getComboFontSize();
+    g.setFont(fontSize);
 
     r.removeFromRight(3);
     g.drawFittedText(m_name, r, juce::Justification::centredLeft, 1);
 
-    g.setFont(10);
+    g.setFont(fontSize - 2);
     g.setColour(m_colour);
     g.drawText(m_type, getWidth() - 50, 0, 50, getHeight(), juce::Justification::centredRight);
 }
@@ -108,7 +109,7 @@ void PresetCombo::refresh(const PresetsHandler& presets, const ProgramInfo* cust
 
     for (auto& preset : presets.m_presets)
     {
-        juce::String presetName = getPresetName(theme, preset->bankid, preset->programid, preset->name, customInfo ? customInfo->name : juce::String());
+        juce::String presetName = getFullPresetName(preset->bankid, preset->programid, preset->name, customInfo ? customInfo->name : juce::String());
 
         auto mergedId = getMergedId(preset->bankid, preset->programid);
 
@@ -128,18 +129,24 @@ void PresetCombo::refresh(const PresetsHandler& presets, const ProgramInfo* cust
 
 juce::String PresetCombo::getPresetName(EUITheme theme, int bankid, int programId, const juce::String& programName, const juce::String& customName)
 {
-    juce::String presetName;
     if (theme == EUITheme::GS)
     {
-        if (customName.isNotEmpty())
-            presetName << customName;
-        else
-            presetName << bankid << ":" << programId << " " << programName;
+        return getFullPresetName(bankid, programId, programName, customName);
     }
     else
     {
-        presetName << programName;
+        return programName;
     }
+}
+
+juce::String PresetCombo::getFullPresetName(int bankid, int programId, const juce::String& programName, const juce::String& customName)
+{
+    juce::String presetName;
+    if (customName.isNotEmpty())
+        presetName << customName;
+    else
+        presetName << bankid << ":" << programId << " " << programName;
+
     return presetName;
 }
 

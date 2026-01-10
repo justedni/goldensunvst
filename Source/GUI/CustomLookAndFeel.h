@@ -16,6 +16,7 @@ public:
     EUITheme getTheme() const;
     juce::Typeface::Ptr getTypeface() { return m_typefacePtr; }
     juce::Font getDefaultFont() const { return m_defaultFont; }
+    int getComboFontSize() const;
 
     void positionComboBoxText(juce::ComboBox& box, juce::Label& label) override;
     juce::Font getComboBoxFont(juce::ComboBox& combo) override;

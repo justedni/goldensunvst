@@ -87,6 +87,19 @@ juce::Font ComboLookAndFeel::getComboBoxFont(juce::ComboBox& combo)
     }
 }
 
+int ComboLookAndFeel::getComboFontSize() const
+{
+    switch (m_theme)
+    {
+    default:
+    case GS:
+        return 12;
+    case CoTM:
+        return 14;
+    }
+}
+
+
 
 CustomLookAndFeel::CustomLookAndFeel()
 {
@@ -145,7 +158,6 @@ int CustomLookAndFeel::getLabelFontSize() const
     case CoTM:
         return 10;
     }
-
 }
 
 juce::Font CustomLookAndFeel::getLabelFont(juce::Label& label)
