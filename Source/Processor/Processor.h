@@ -89,7 +89,7 @@ private:
     ChannelState* m_channels[MAX_MIDI_CHANNELS];
 
     std::unique_ptr<PresetsHandler> m_presets;
-    uint8_t m_uiTheme = 0;
+    uint8_t m_uiTheme = 1;
 
     volatile bool bRefreshUIRequired = false;
     volatile bool bRefreshPresetsRequired = false;
