@@ -103,9 +103,16 @@ Instrument* SampleMultiPreset::createPlayingInstance(const Note& note) const
     sampleInfo->numChannels = sample->numChannels;
     sampleInfo->sampleBuffer = sample->audioBuffer.getArrayOfReadPointers();
 
-    sampleInfo->loopEnabled = true;
-    sampleInfo->loopPos = sample->loopStart;
-    sampleInfo->endPos = sample->loopEnd;
+    sampleInfo->loopEnabled = sample->loopEnabled;
+    if (sample->loopEnabled)
+    {
+        sampleInfo->loopPos = sample->loopStart;
+        sampleInfo->endPos = sample->loopEnd;
+    }
+    else
+    {
+        sampleInfo->endPos = sample->lengthInSamples;
+    }
 
     return new SampleInstrument(std::move(sampleInfo), note);
 }
@@ -128,13 +135,19 @@ void SampleMultiPreset::getLoopTimesFromFile(juce::AudioFormatManager& formatMan
     delete reader;
 }
 
-bool SampleMultiPreset::loadFiles(juce::AudioFormatManager& formatManager)
+
+bool SampleMultiPreset::loadFiles(juce::AudioFormatManager& formatManager, bool bSearchForLoopPoints)
 {
+    bool bHasErrors = false;
+
     for (auto& sample : samples)
     {
         auto file = juce::File(sample.filePath);
         if (!file.exists())
+        {
+            bHasErrors = true;
             continue;
+        }
 
         auto* reader = formatManager.createReaderFor(file);
         sample.audioBuffer.setSize(reader->numChannels, reader->lengthInSamples);
@@ -142,17 +155,28 @@ bool SampleMultiPreset::loadFiles(juce::AudioFormatManager& formatManager)
         sample.numChannels = reader->numChannels;
         sample.lengthInSamples = reader->lengthInSamples;
 
-        juce::String defaultVal = "";
-        auto startVal = reader->metadataValues.getValue("Cue0Offset", defaultVal);
-        auto endVal = reader->metadataValues.getValue("Cue1Offset", defaultVal);
+        if (bSearchForLoopPoints)
+        {
+            juce::String defaultVal = "";
+            auto startVal = reader->metadataValues.getValue("Cue0Offset", defaultVal);
+            auto endVal = reader->metadataValues.getValue("Cue1Offset", defaultVal);
 
-        sample.loopStart = std::stoi(std::string(startVal.getCharPointer()));
-        sample.loopEnd = std::stoi(std::string(endVal.getCharPointer()));
+            if (startVal != "")
+                sample.loopStart = std::stoi(std::string(startVal.getCharPointer()));
+            if (endVal != "")
+                sample.loopEnd = std::stoi(std::string(endVal.getCharPointer()));
+
+            sample.loopEnabled = true;
+        }
+        else
+        {
+            sample.loopEnabled = false;
+        }
 
         delete reader;
     }
 
-    return true;
+    return !bHasErrors;
 }
 
 //-----------------------------------------------------------------------------

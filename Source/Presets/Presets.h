@@ -129,6 +129,7 @@ public:
         unsigned int numChannels = 0;
         int64_t lengthInSamples = 0;
 
+        bool loopEnabled = false;
         int loopStart = 0;
         int loopEnd = 0;
     };
@@ -139,7 +140,7 @@ public:
     EDSPType getDSPType() const final { return EDSPType::PCM; }
     const ADSR& getADSR() const final { return adsr; }
 
-    bool loadFiles(juce::AudioFormatManager& formatManager);
+    bool loadFiles(juce::AudioFormatManager& formatManager, bool bSearchForLoopPoints);
 
     static void getLoopTimesFromFile(juce::AudioFormatManager& formatManager, std::string filePath, int& loopStart, int& loopEnd);
 
