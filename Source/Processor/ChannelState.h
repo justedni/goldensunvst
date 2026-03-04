@@ -35,7 +35,7 @@ public:
 
     EDSPType getType() const { return m_type; }
 
-    static int getLinearizedVolume(int val);
+    static int getLinearizedValue(int val);
     void setVolume(int val);
     int getVolume() const { return volume; }
 

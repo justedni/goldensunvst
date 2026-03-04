@@ -191,14 +191,14 @@ void ChannelState::setReverbLevel(int val)
         revdsp->SetIntensity(val);
 }
 
-int ChannelState::getLinearizedVolume(int val)
+int ChannelState::getLinearizedValue(int val)
 {
     return static_cast<uint8_t>(std::round(val * val / 127.0f));
 }
 
 void ChannelState::setVolume(int val)
 {
-    volume = getLinearizedVolume(val);
+    volume = getLinearizedValue(val);
 
     ForAllPlayingInstruments([&](auto* soundChannel)
     {
@@ -208,7 +208,7 @@ void ChannelState::setVolume(int val)
 
 void ChannelState::addPendingVolChange(int timestamp, int volume)
 {
-    auto linearizedVolume = getLinearizedVolume(volume);
+    auto linearizedVolume = getLinearizedValue(volume);
     pendingVolChanges.emplace_back(timestamp, linearizedVolume);
 
     ForAllPlayingInstruments([&](auto* soundChannel)
@@ -307,7 +307,7 @@ Instrument* ChannelState::handleNoteOn(uint8_t noteNumber, int8_t velocity, int 
     Note note;
     note.midiKeyTrackData = noteNumber;
     note.midiKeyPitch = noteNumber;
-    note.velocity = velocity;
+    note.velocity = getLinearizedValue(velocity);
 
     Instrument* newInstance = m_preset->createPlayingInstance(note);
 
