@@ -45,9 +45,6 @@ struct PresetsHandler
     virtual void addSynthsPresets() {}
     virtual Preset* buildCustomSynthPreset(unsigned short, const std::string&, const ADSR&) { return nullptr; }
 
-    void addSamplePreset(int bankid, int programid, std::string&& name, std::string&& filename, ADSR&& adsr, int pitch_correction, int original_pitch, int sample_rate);
-    void addSamplePresetLooping(int bankid, int programid, std::string&& name, std::string&& filepath, ADSR&& adsr, int pitch_correction, int original_pitch, int sample_rate, uint32_t in_loopPos, uint32_t in_endPos);
-
     void setSoundfont(const std::string& path);
     void cleanupSoundfont();
 
@@ -80,8 +77,6 @@ struct PresetsHandler
     std::string m_selectedGame;
 
 protected:
-    int calculateMidCFreq(int pitch_correction, int original_pitch, int sample_rate);
-
     void addSoundFontPresets();
     Preset* buildSoundfontPreset(const tsf_preset& preset, const std::string& name, const std::string& friendlyName);
 

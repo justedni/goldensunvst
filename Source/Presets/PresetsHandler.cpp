@@ -11,7 +11,6 @@
 #include "External/tinysoundfont/tsf.h"
 
 #include <map>
-#include <cmath>
 #include <algorithm>
 #include <assert.h>
 
@@ -161,36 +160,6 @@ void PresetsHandler::clearPresetsOfType(EPresetType type)
         }
         else
             ++it;
-    }
-}
-
-void PresetsHandler::addSamplePreset(int bankid, int programid, std::string&& name, std::string&& filepath, ADSR&& adsr,
-    int pitch_correction, int original_pitch, int sample_rate)
-{
-    auto* newPreset = new SamplePreset(bankid, programid, std::move(name), std::move(filepath), std::move(adsr), SampleInfo(calculateMidCFreq(pitch_correction, original_pitch, sample_rate)));
-    if (newPreset->loadFile(*m_formatManager.get()))
-    {
-        m_presets.push_back(newPreset);
-    }
-    else
-    {
-        delete newPreset;
-    }
-}
-
-void PresetsHandler::addSamplePresetLooping(int bankid, int programid, std::string&& name, std::string&& filepath, ADSR&& adsr,
-    int pitch_correction, int original_pitch, int sample_rate, uint32_t in_loopPos, uint32_t in_endPos)
-{
-    auto* newPreset = new SamplePreset(bankid, programid, std::move(name), std::move(filepath), std::move(adsr),
-        SampleInfo(calculateMidCFreq(pitch_correction, original_pitch, sample_rate), true, in_loopPos, in_endPos));
-
-    if (newPreset->loadFile(*m_formatManager.get()))
-    {
-        m_presets.push_back(newPreset);
-    }
-    else
-    {
-        delete newPreset;
     }
 }
 
@@ -388,9 +357,6 @@ Preset* PresetsHandler::buildSoundfontPreset(const tsf_preset& preset, const std
 
             bool fixed = (region.pitch_keytrack == 0);
 
-            // Calculate mid-c freq
-            int calculated_mid_c = calculateMidCFreq(region.tune, region.pitch_keycenter, region.sample_rate);
-
             int8_t rhythmPan = 0;
 
             if (bIsEveryKeySplit && region.pan)
@@ -398,7 +364,8 @@ Preset* PresetsHandler::buildSoundfontPreset(const tsf_preset& preset, const std
                 rhythmPan = static_cast<int8_t>(std::round((region.pan * 256)));
             }
 
-            auto sampleInfo = SoundfontSampleInfo(calculated_mid_c, fixed, region.sample_rate, bLoopEnabled, loopStart, loopEnd);
+            auto sampleInfo = SoundfontSampleInfo(fixed, region.sample_rate, bLoopEnabled, loopStart, loopEnd);
+            sampleInfo.setMidCFreq(region.tune, region.pitch_keycenter, region.sample_rate);
             sampleInfo.adsr = getSoundfontADSR(region);
             sampleInfo.offset = offset;
             sampleInfo.keyRange = { region.lokey, region.hikey };
@@ -423,18 +390,6 @@ void PresetsHandler::cleanupSoundfont()
         //deletion handled by tsf
         soundFont = nullptr;
     }
-}
-
-int PresetsHandler::calculateMidCFreq(int pitch_correction, int original_pitch, int sample_rate)
-{
-    int calculated_mid_c = 22050;
-
-    int int_delta_note = original_pitch - 60;
-    float delta_note = int_delta_note - (pitch_correction / 100.0f);
-
-    calculated_mid_c = static_cast<int>(std::floor(sample_rate / pow(2, delta_note / 12)));
-
-    return calculated_mid_c;
 }
 
 }

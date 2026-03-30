@@ -114,7 +114,10 @@ Instrument* SampleMultiPreset::createPlayingInstance(const Note& note) const
         sampleInfo->endPos = sample->lengthInSamples;
     }
 
-    return new SampleInstrument(std::move(sampleInfo), note);
+    Note noteToUse = note;
+    noteToUse.rhythmPan = sampleInfo->rhythmPan;
+
+    return new SampleInstrument(std::move(sampleInfo), noteToUse);
 }
 
 void SampleMultiPreset::getLoopTimesFromFile(juce::AudioFormatManager& formatManager, std::string filePath, int& loopStart, int& loopEnd)
@@ -154,6 +157,8 @@ bool SampleMultiPreset::loadFiles(juce::AudioFormatManager& formatManager, bool 
         reader->read(&sample.audioBuffer, 0, reader->lengthInSamples, 0, true, true);
         sample.numChannels = reader->numChannels;
         sample.lengthInSamples = reader->lengthInSamples;
+
+        sample.info.setMidCFreq(0, sample.info.rootNote, std::round(reader->sampleRate));
 
         if (bSearchForLoopPoints)
         {

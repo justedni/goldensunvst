@@ -1,6 +1,16 @@
 #include "SampleInstrument.h"
 
+#include <cmath>
+
 namespace GSVST {
+
+void SampleInfo::setMidCFreq(int pitch_correction, int original_pitch, int sample_rate)
+{
+    int int_delta_note = original_pitch - 60;
+    float delta_note = int_delta_note - (pitch_correction / 100.0f);
+
+    midCfreq = static_cast<int>(std::floor(sample_rate / pow(2, delta_note / 12)));
+}
 
 SoundfontSampleInstrument::SoundfontSampleInstrument(SoundfontSampleInfo* in_info, const Note& in_note)
     : SampleInstrument(std::move(in_info), in_note)

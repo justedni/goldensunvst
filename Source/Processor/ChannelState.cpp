@@ -309,10 +309,18 @@ Instrument* ChannelState::handleNoteOn(uint8_t noteNumber, int8_t velocity, int 
     note.midiKeyPitch = noteNumber;
     note.velocity = getLinearizedValue(velocity);
 
+    bool bIsDrumMap = m_preset->isDrumMap();
+    if (bIsDrumMap)
+    {
+        note.midiKeyPitch = noteNumber;
+    }
+
     Instrument* newInstance = m_preset->createPlayingInstance(note);
 
     if (newInstance)
     {
+        newInstance->useTrackADSR(!bIsDrumMap);
+
         newInstance->setBPM(bpm);
 
         if (newInstance->shouldUseTrackADSR())

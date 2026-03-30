@@ -44,6 +44,7 @@ public:
     virtual EDSPType getDSPType() const = 0;
     virtual const ADSR& getADSR() const = 0;
     virtual void getPWMData(PWMData&) const {}
+    virtual bool isDrumMap() const { return false; }
 
     const int bankid;
     const int programid;
@@ -139,14 +140,17 @@ public:
     Instrument* createPlayingInstance(const Note& note) const final;
     EDSPType getDSPType() const final { return EDSPType::PCM; }
     const ADSR& getADSR() const final { return adsr; }
+    bool isDrumMap() const const { return m_bIsDrumMap; }
 
     bool loadFiles(juce::AudioFormatManager& formatManager, bool bSearchForLoopPoints);
+    void setIsDrumMap(bool bSet) { m_bIsDrumMap = bSet; }
 
     static void getLoopTimesFromFile(juce::AudioFormatManager& formatManager, std::string filePath, int& loopStart, int& loopEnd);
 
 private:
     std::vector<MultiSample> samples;
     ADSR adsr;
+    bool m_bIsDrumMap = false;
 };
 
 class SoundfontPreset : public Preset

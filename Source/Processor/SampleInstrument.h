@@ -9,33 +9,27 @@ namespace GSVST {
 
 struct SampleInfo
 {
-    SampleInfo(int in_midCfreq)
-        : midCfreq(in_midCfreq)
+    static constexpr int DEFAULT_MIDC_FREQ = 16738;
+
+    SampleInfo()
+        : midCfreq(DEFAULT_MIDC_FREQ)
         , loopPos(0)
         , endPos(0)
         , loopEnabled(false)
     {
     }
 
-    SampleInfo(int in_midCfreq,bool in_loopEnabled, uint32_t in_loopPos, uint32_t in_endPos)
-        : midCfreq(in_midCfreq)
+    SampleInfo(bool in_loopEnabled, uint32_t in_loopPos, uint32_t in_endPos)
+        : midCfreq(DEFAULT_MIDC_FREQ)
         , loopPos(in_loopPos)
         , endPos(in_endPos)
         , loopEnabled(in_loopEnabled)
     {
     }
 
-    SampleInfo(const SampleInfo& other)
-        : midCfreq(other.midCfreq)
-        , loopPos(other.loopPos)
-        , endPos(other.endPos)
-        , loopEnabled(other.loopEnabled)
-        , numChannels(other.numChannels)
-        , adsr(other.adsr)
-        , notePitch(other.notePitch)
-        , rhythmPan(other.rhythmPan)
-    {
-    }
+    SampleInfo(const SampleInfo& other) = default;
+
+    void setMidCFreq(int pitch_correction, int original_pitch, int sample_rate);
 
     virtual void fillSample(uint32_t pos, float& out_left, float& out_right) const
     {
@@ -48,7 +42,8 @@ struct SampleInfo
 
     virtual EDSPType getType() const { return EDSPType::PCM; }
 
-    const int midCfreq = 16738;
+    int rootNote = 0;
+    int midCfreq = DEFAULT_MIDC_FREQ;
     const float* const* sampleBuffer = nullptr;
     uint32_t loopPos = 0;
     uint32_t endPos = 0;
@@ -63,8 +58,8 @@ struct SampleInfo
 
 struct SoundfontSampleInfo : public SampleInfo
 {
-    SoundfontSampleInfo(int in_midCfreq, bool in_fixed, uint32_t in_fixedSampleRate, bool in_loopEnabled, uint32_t in_loopPos, uint32_t in_endPos)
-        : SampleInfo(in_midCfreq, in_loopEnabled, in_loopPos, in_endPos)
+    SoundfontSampleInfo(bool in_fixed, uint32_t in_fixedSampleRate, bool in_loopEnabled, uint32_t in_loopPos, uint32_t in_endPos)
+        : SampleInfo(in_loopEnabled, in_loopPos, in_endPos)
         , fixed(in_fixed)
         , fixedSampleRate(in_fixedSampleRate)
     {
