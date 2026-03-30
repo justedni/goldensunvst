@@ -60,13 +60,13 @@ void ChannelState::process(size_t numSamples, const MixingArgs& margs)
         {
             instr->processCommon(outputBuffers.data(), numSamples, margs);
         }
-
-        // Volume changes are only valid for this frame
-        if (pendingVolChanges.size() > 0)
-            volume = pendingVolChanges.back().volume;
- 
-        pendingVolChanges.clear();
     }
+
+    // Volume changes are only valid for this frame
+    if (pendingVolChanges.size() > 0)
+        volume = pendingVolChanges.back().volume;
+
+    pendingVolChanges.clear();
 }
 
 void ChannelState::processReverb(size_t numSamples, size_t samplesPerBufferForComputation, juce::AudioBuffer<float>& buffer)
