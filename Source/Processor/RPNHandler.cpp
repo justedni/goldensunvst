@@ -9,6 +9,8 @@ RPNHandler::RPNHandler()
     rpns.emplace_back(RPN::Type::RPN,  RPN::Param::Detune, 0, 1, 0);
     rpns.emplace_back(RPN::Type::RPN,  RPN::Param::PitchBendRange, 0, 0, 2);
     rpns.emplace_back(RPN::Type::NRPN, RPN::Param::LfoSpeed, 1, 8, 40);
+    rpns.emplace_back(RPN::Type::NRPN, RPN::Param::LfoType, 1, 11, 0);
+    rpns.emplace_back(RPN::Type::NRPN, RPN::Param::LfoPanDepth, 1, 10, 0);
 }
 
 RPNHandler::~RPNHandler()
@@ -59,6 +61,20 @@ RPN::Param RPNHandler::setDataEntry(int controllerVal, double timestamp)
             case RPN::Param::LfoSpeed:
             {
                 int16_t val = static_cast<int16_t>(controllerVal);
+                rpn.setValue(val);
+                break;
+            }
+            case RPN::Param::LfoType:
+            {
+                if (controllerVal >= 0 && controllerVal <= 2)
+                {
+                    rpn.setValue(controllerVal);
+                }
+                break;
+            }
+            case RPN::Param::LfoPanDepth:
+            {
+                int16_t val = static_cast<int16_t>(controllerVal) / 10;
                 rpn.setValue(val);
                 break;
             }

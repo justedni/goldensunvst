@@ -241,7 +241,6 @@ int ChannelState::getPan() const
 void ChannelState::setPan(int val)
 {
     int8_t convertedVal = static_cast<int8_t>(std::clamp(val, 0, 127) - 0x40);
-    convertedVal = (convertedVal << 1) / 2;
 
     pan = convertedVal;
 
@@ -334,11 +333,21 @@ Instrument* ChannelState::handleNoteOn(uint8_t noteNumber, int8_t velocity, int 
         if (m_rpnHanlder->hasValue(RPN::Param::Detune))
             newInstance->setTune(m_rpnHanlder->getValue(RPN::Param::Detune));
 
+        if (m_rpnHanlder->hasValue(RPN::Param::LfoType))
+        {
+            auto lfoType = m_rpnHanlder->getValue(RPN::Param::LfoType);
+            newInstance->setLfoType(static_cast<ELfoType>(lfoType));
+        }
+
+
         if (m_rpnHanlder->hasValue(RPN::Param::LfoSpeed))
         {
             auto lfoSpeedVal = m_rpnHanlder->getValue(RPN::Param::LfoSpeed);
-            if (lfoSpeedVal != 0 && modWheel != 0)
-                newInstance->setLfo(static_cast<uint8_t>(lfoSpeedVal), modWheel);
+            if (lfoSpeedVal != 0)
+                newInstance->setLfoSpeed(static_cast<uint8_t>(lfoSpeedVal));
+
+            if (modWheel != 0)
+                newInstance->setLfoDepth(modWheel);
         }
 
         int initialVolume = volume;
@@ -403,14 +412,19 @@ bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHand
     {
         modWheel = static_cast<uint8_t>(msg.getControllerValue() / 10);
 
-        auto lfoSpeedVal = m_rpnHanlder->hasValue(RPN::Param::LfoSpeed) ? m_rpnHanlder->getValue(RPN::Param::LfoSpeed) : 0;
-        if (lfoSpeedVal != 0 && modWheel != 0)
+        ForAllPlayingInstruments([&](auto* soundChannel)
         {
-            ForAllPlayingInstruments([&](auto* soundChannel)
-            {
-                soundChannel->setLfo(static_cast<uint8_t>(lfoSpeedVal), modWheel);
-            });
-        }
+            soundChannel->setLfoDepth(modWheel);
+        });
+    }
+    else if (msg.isChannelPressure()) // ChannelPressure for LFO
+    {
+        modWheel = static_cast<uint8_t>(msg.getChannelPressureValue() / 10);
+
+        ForAllPlayingInstruments([&](auto* soundChannel)
+        {
+            soundChannel->setLfoDepth(modWheel);
+        });
     }
     else if (msg.isControllerOfType(7)) // Volume MSB
     {
@@ -467,10 +481,21 @@ bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHand
                             soundChannel->setPitchBendRange(static_cast<int16_t>(convertedVal));
                             break;
                         case RPN::Param::LfoSpeed:
-                            soundChannel->setLfo(static_cast<uint8_t>(convertedVal), modWheel);
+                            soundChannel->setLfoSpeed(static_cast<uint8_t>(convertedVal));
+                            break;
+                        case RPN::Param::LfoType:
+                            soundChannel->setLfoType(static_cast<ELfoType>(convertedVal));
+                            break;
+                        case RPN::Param::LfoPanDepth:
+                            soundChannel->setLfoDepth(convertedVal);
                             break;
                         }
                     });
+
+                    if (param == RPN::Param::LfoPanDepth)
+                    {
+                        modWheel = convertedVal;
+                    }
 
                     bRefreshRequired = true;
                 }
@@ -512,6 +537,11 @@ int16_t ChannelState::getPitchBendRange() const
 int16_t ChannelState::getLfoSpeed() const
 {
     return m_rpnHanlder->getValue(RPN::Param::LfoSpeed);
+}
+
+ELfoType ChannelState::getLfoType() const
+{
+    return static_cast<ELfoType>(m_rpnHanlder->getValue(RPN::Param::LfoType));
 }
 
 void ChannelState::resetAllRPNs()

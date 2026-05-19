@@ -73,6 +73,7 @@ public:
     int16_t getDetune() const;
     int16_t getPitchBendRange() const;
     int16_t getLfoSpeed() const;
+    ELfoType getLfoType() const;
     void resetAllRPNs();
 
 private:

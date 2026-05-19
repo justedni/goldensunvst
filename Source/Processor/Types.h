@@ -10,6 +10,7 @@
 namespace GSVST {
 
 enum class EReverbType : uint8_t { None, Default, GS1, GS2, MGAT };
+enum class ELfoType : uint8_t { Pitch = 0, Vol, Pan };
 
 struct ADSR
 {

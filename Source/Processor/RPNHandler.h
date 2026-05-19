@@ -7,7 +7,7 @@ namespace GSVST {
 struct RPN
 {
     enum class Type { RPN, NRPN };
-    enum class Param { None, Detune, PitchBendRange, LfoSpeed };
+    enum class Param { None, Detune, PitchBendRange, LfoSpeed, LfoType, LfoPanDepth };
 
     RPN(Type in_type, Param in_param, int in_msb, int in_lsb, int in_defaultVal)
         : type(in_type)

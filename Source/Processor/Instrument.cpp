@@ -152,12 +152,45 @@ void Instrument::setPan(int8_t in_pan)
     updateVolAndPan();
 }
 
+uint8_t Instrument::getLfoVol() const
+{
+    if (lfoType == ELfoType::Vol)
+    {
+        int v = vol << 1;
+        v = (v * (lfoValue + 128)) >> 7;
+        v >>= 1;
+        return static_cast<uint8_t>(v);
+    }
+    else
+        return static_cast<uint8_t>(vol);
+}
+
+int16_t Instrument::getPitch() const
+{
+    int p = tune + pitchWheel * pitchBendRange;
+    if (lfoType == ELfoType::Pitch)
+        p += lfoValue * 4;
+    return static_cast<int16_t>(p);
+}
+
+int8_t Instrument::getPan() const
+{
+    int p = pan << 1;
+    if (lfoType == ELfoType::Pan)
+        p += lfoValue;
+    p /= 2;
+
+    return static_cast<int8_t>(std::clamp(p, -64, 63));
+}
+
 void Instrument::updateVolAndPan()
 {
     if (!stop) {
-        int combinedPan = std::clamp(pan + note.rhythmPan, -64, +63);
-        this->leftVolCur = uint8_t(note.velocity * vol * (-combinedPan + 64) / 8192);
-        this->rightVolCur = uint8_t(note.velocity * vol * (combinedPan + 64) / 8192);
+        int lfoPan = getPan();
+        int lfoVol = getLfoVol();
+        int combinedPan = std::clamp(lfoPan + note.rhythmPan, -64, +63);
+        this->leftVolCur = uint8_t(note.velocity * lfoVol * (-combinedPan + 64) / 8192);
+        this->rightVolCur = uint8_t(note.velocity * lfoVol * (combinedPan + 64) / 8192);
     }
 }
 
@@ -202,15 +235,30 @@ void Instrument::tickLfo()
         {
             lfoValue = static_cast<int8_t>(lfoPoint);
             updatePitch();
+            updateVolAndPan();
         }
     }
 }
 
-void Instrument::setLfo(uint8_t speed, uint8_t value)
+void Instrument::setLfoType(ELfoType type)
+{
+    lfoType = type;
+    updatePitch();
+    updateVolAndPan();
+}
+
+void Instrument::setLfoSpeed(uint8_t speed)
 {
     lfoSpeed = speed;
-    modWheel = value;
     updatePitch();
+    updateVolAndPan();
+}
+
+void Instrument::setLfoDepth(uint8_t depth)
+{
+    modWheel = depth;
+    updatePitch();
+    updateVolAndPan();
 }
 
 void Instrument::setPitchWheel(int16_t pitch)
@@ -233,7 +281,7 @@ void Instrument::setTune(int16_t in_tune)
 
 void Instrument::updatePitch()
 {
-    auto pitch = tune + pitchWheel * pitchBendRange + (lfoValue * 4);
+    auto pitch = getPitch();
     freq = getMidCFreq() * powf(2.0f, float(getMidiKeyPitch() - 60) * (1.0f / 12.0f) + float(pitch) * (1.0f / 768.0f));
 }
 

@@ -58,6 +58,9 @@ public:
 
     virtual VolumeFade getVol() const;
     void setVol(uint8_t in_vol);
+    uint8_t getLfoVol() const;
+    int16_t getPitch() const;
+    int8_t getPan() const;
     void setPan(int8_t in_pan);
     void updateVolAndPan();
 
@@ -69,7 +72,9 @@ public:
 
     virtual void updatePWMData(const PWMData&) {}
 
-    void setLfo(uint8_t speed, uint8_t value);
+    void setLfoType(ELfoType type);
+    void setLfoSpeed(uint8_t speed);
+    void setLfoDepth(uint8_t depth);
     void setPitchWheel(int16_t pitch);
     void setPitchBendRange(int16_t range);
     void setTune(int16_t in_tune);
@@ -109,6 +114,7 @@ protected:
     uint8_t rightVolCur = 0;
     uint8_t rightVolPrev = 0;
 
+    ELfoType lfoType = ELfoType::Pitch;
     uint8_t lfoPhase = 0;
     int8_t lfoSpeed = 0;
     int8_t lfoValue = 0;
