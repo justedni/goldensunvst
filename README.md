@@ -14,7 +14,7 @@ The goal of this plugin is to offer an alternative to general soundfont plugins 
 - GBA-specific LFO: its speed is linked to the song BPM
 - Possibility to use custom-made soundfonts with improved HQ samples
 
-![Screenshot](https://github.com/justedni/goldensunvst/assets/155494991/225c319b-8da4-4bbd-a306-17494d0550dc)
+![Screenshot](Screenshots/screenshot.gif)
 
 ## Quick Start
 - Windows and macOS versions of the plugin (VST3) are automatically built and deployed using Github Actions. Click on one of the icons at the top of this readme, you want to find the "Artifacts" section, there you'll find the files you need to download.
