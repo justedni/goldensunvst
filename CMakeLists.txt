@@ -99,14 +99,9 @@ set(ALL_SOURCES
     ${JUCE_GENERATED_SOURCES}
 )
 
-set(TARGET_FOLDERS
-    VST3
-)
-
-set(PLUGIN_FORMATS VST3)
+set(TARGET_PLUGINS VST3)
 if(ENABLE_VST2)
-    list(APPEND PLUGIN_FORMATS VST)
-    list(APPEND TARGET_FOLDERS VST)
+    list(APPEND TARGET_PLUGINS VST)
 endif()
 
 juce_add_plugin(${PROJECT_NAME}
@@ -119,16 +114,16 @@ juce_add_plugin(${PROJECT_NAME}
     COPY_PLUGIN_AFTER_BUILD FALSE
     PLUGIN_MANUFACTURER_CODE vdor
     PLUGIN_CODE GSVS
-    FORMATS ${PLUGIN_FORMATS}
+    FORMATS ${TARGET_PLUGINS}
     NEEDS_WEB_BROWSER FALSE
     PRODUCT_NAME "${PROJECT_NAME}"
 )
 
-foreach(folder ${TARGET_FOLDERS})
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+foreach(folder ${TARGET_PLUGINS})
+    add_custom_command(TARGET ${PROJECT_NAME}_${folder} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
             "${CMAKE_CURRENT_SOURCE_DIR}/Source/Resources/presets_info.xml"
-            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/${folder}/GoldenSunVST_presets_info.xml"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}_${folder}>/GoldenSunVST_presets_info.xml"
     )
 endforeach()
 
