@@ -134,13 +134,23 @@ foreach(folder ${TARGET_PLUGINS})
 endforeach()
 
 
-set_source_files_properties(
-    "${JUCE_SOURCE_DIR}/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp"
-    TARGET_DIRECTORY ${PROJECT_NAME}_VST3
-    PROPERTIES HEADER_FILE_ONLY TRUE)
+if(APPLE)
+    set_source_files_properties(
+        "${JUCE_SOURCE_DIR}/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.mm"
+        TARGET_DIRECTORY ${PROJECT_NAME}_VST3
+        PROPERTIES HEADER_FILE_ONLY TRUE)
+    
+    target_sources(${PROJECT_NAME}_VST3 PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/Source/JuceModified/juce_audio_plugin_client_VST3_Modified.mm")
+else()
+    set_source_files_properties(
+        "${JUCE_SOURCE_DIR}/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp"
+        TARGET_DIRECTORY ${PROJECT_NAME}_VST3
+        PROPERTIES HEADER_FILE_ONLY TRUE)
 
-target_sources(${PROJECT_NAME}_VST3 PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/Source/JuceModified/juce_audio_plugin_client_VST3_Modified.cpp")
+    target_sources(${PROJECT_NAME}_VST3 PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/Source/JuceModified/juce_audio_plugin_client_VST3_Modified.cpp")
+endif()
 
 
 target_sources(${PROJECT_NAME} PRIVATE ${ALL_SOURCES})
