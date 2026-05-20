@@ -17,7 +17,13 @@ The goal of this plugin is to offer an alternative to general soundfont plugins 
 ![Screenshot](Screenshots/screenshot.gif)
 
 ## Quick Start
-- Windows and macOS versions of the plugin (VST3) are automatically built and deployed using Github Actions. Click on one of the icons at the top of this readme, you want to find the "Artifacts" section, there you'll find the files you need to download.
+- download latest official version ("Release" tab)
+
+  or
+
+- get latest development version using Github Actions: click on one of the icons at the top of this readme (VST3 Windows or Mac), you want to find the "Artifacts" section, there you'll find the files you need to download.
+
+Important: there is currently a known limitation with VST3 where Parameter changes are not correctly sent (Multitimbral mode basically doesn't work). This problem does not occur with the VST2 version of the plugin.
 - On Windows, copy the GoldenSunVST.vst3 file to your VST folder. Typically this can be C:\Program Files\Steinberg\VSTPlugins
 - Open your DAW (I like to use Reaper). Import a midi file (it is recommended to use a file exported with [GBA Mus Ripper](https://github.com/CaptainSwag101/gba-mus-ripper))
 - Create an instance of the VST and route the midi tracks to it.
