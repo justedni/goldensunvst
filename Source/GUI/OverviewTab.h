@@ -2,13 +2,13 @@
 
 #include <JuceHeader.h>
 #include "Processor/Types.h"
+#include "LevelMeter.h"
 
 namespace GSVST {
 
 class Processor;
 class MainWindow;
 class PresetCombo;
-class LevelMeter;
 struct ProgramInfo;
 enum EUITheme : uint8_t;
 

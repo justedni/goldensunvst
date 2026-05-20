@@ -1,12 +1,12 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "Presets/PresetsHandler.h"
 
 namespace GSVST {
 
 class MainWindow;
 struct PresetsHandler;
-struct ProgramInfo;
 class ComboLookAndFeel;
 class PresetCombo;
 enum EUITheme : uint8_t;
