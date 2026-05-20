@@ -2,7 +2,6 @@
 #include "CustomLookAndFeel.h"
 #include "MainWindow.h"
 
-#include "Processor/Instrument.h"
 #include "Processor/Processor.h"
 #include "Processor/ReverbEffect.h"
 #include "Presets/PresetsHandler.h"

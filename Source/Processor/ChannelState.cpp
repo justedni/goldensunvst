@@ -11,6 +11,16 @@
 
 namespace GSVST {
 
+template<typename F>
+void ForAllPlayingInstruments(ChannelState* chan, F func)
+{
+    for (auto* soundChannel : chan->getPlayingInstruments())
+    {
+        if (!soundChannel->isDead() && !soundChannel->isStopping())
+            func(soundChannel);
+    }
+}
+
 ChannelState::ChannelState()
 {
     m_rpnHanlder.reset(new RPNHandler());
@@ -132,7 +142,7 @@ void ChannelState::setBPM(int in_bpm)
 {
     m_detectedBPM = in_bpm;
 
-    ForAllPlayingInstruments([in_bpm](auto* soundChannel)
+    ForAllPlayingInstruments(this, [in_bpm](auto* soundChannel)
     {
         soundChannel->setBPM(in_bpm);
     });
@@ -200,7 +210,7 @@ void ChannelState::setVolume(int val)
 {
     volume = getLinearizedValue(val);
 
-    ForAllPlayingInstruments([&](auto* soundChannel)
+    ForAllPlayingInstruments(this, [&](auto* soundChannel)
     {
         soundChannel->setVol(volume);
     });
@@ -211,7 +221,7 @@ void ChannelState::addPendingVolChange(int timestamp, int volume)
     auto linearizedVolume = getLinearizedValue(volume);
     pendingVolChanges.emplace_back(timestamp, linearizedVolume);
 
-    ForAllPlayingInstruments([&](auto* soundChannel)
+    ForAllPlayingInstruments(this, [&](auto* soundChannel)
     {
         soundChannel->addPendingVolChange(timestamp, linearizedVolume);
     });
@@ -244,7 +254,7 @@ void ChannelState::setPan(int val)
 
     pan = convertedVal;
 
-    ForAllPlayingInstruments([convertedVal](auto* soundChannel)
+    ForAllPlayingInstruments(this, [convertedVal](auto* soundChannel)
     {
         soundChannel->setPan(convertedVal);
     });
@@ -282,7 +292,7 @@ void ChannelState::updateADSR(const ADSR& in_adsr)
     m_envelope.sus = in_adsr.sus;
     m_envelope.rel = in_adsr.rel;
 
-    ForAllPlayingInstruments([in_adsr](auto* soundChannel)
+    ForAllPlayingInstruments(this, [in_adsr](auto* soundChannel)
     {
         soundChannel->updateADSR(in_adsr);
     });
@@ -292,7 +302,7 @@ void ChannelState::updatePWMData(const PWMData& in_data)
 {
     m_pwmData = PWMData(in_data);
 
-    ForAllPlayingInstruments([in_data](auto* soundChannel)
+    ForAllPlayingInstruments(this, [in_data](auto* soundChannel)
     {
         soundChannel->updatePWMData(in_data);
     });
@@ -403,7 +413,7 @@ bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHand
         val = (val >> 7) - 0x40;
         pitchWheel = static_cast<int16_t>(val);
 
-        ForAllPlayingInstruments([&](auto* soundChannel)
+        ForAllPlayingInstruments(this, [&](auto* soundChannel)
         {
             soundChannel->setPitchWheel(pitchWheel);
         });
@@ -412,7 +422,7 @@ bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHand
     {
         modWheel = static_cast<uint8_t>(msg.getControllerValue() / 10);
 
-        ForAllPlayingInstruments([&](auto* soundChannel)
+        ForAllPlayingInstruments(this, [&](auto* soundChannel)
         {
             soundChannel->setLfoDepth(modWheel);
         });
@@ -421,7 +431,7 @@ bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHand
     {
         modWheel = static_cast<uint8_t>(msg.getChannelPressureValue() / 10);
 
-        ForAllPlayingInstruments([&](auto* soundChannel)
+        ForAllPlayingInstruments(this, [&](auto* soundChannel)
         {
             soundChannel->setLfoDepth(modWheel);
         });
@@ -470,7 +480,7 @@ bool ChannelState::handleMidiMsg(const juce::MidiMessage& msg, const PresetsHand
                 {
                     auto convertedVal = m_rpnHanlder->getValue(param);
 
-                    ForAllPlayingInstruments([&](auto* soundChannel)
+                    ForAllPlayingInstruments(this, [&](auto* soundChannel)
                     {
                         switch (param)
                         {

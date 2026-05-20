@@ -76,6 +76,8 @@ public:
     ELfoType getLfoType() const;
     void resetAllRPNs();
 
+    const std::list<Instrument*>& getPlayingInstruments() const { return m_playingInstruments; }
+
 private:
     static void zeroBuffers(std::vector<sample>& io_buffers);
 
@@ -110,17 +112,6 @@ private:
     std::unique_ptr<ReverbEffect> revdsp;
 
     std::unique_ptr<RPNHandler> m_rpnHanlder;
-
-    template<typename F>
-    void ForAllPlayingInstruments(F func)
-    {
-        for (auto* soundChannel : m_playingInstruments)
-        {
-            if (!soundChannel->isDead() && !soundChannel->isStopping())
-                func(soundChannel);
-        }
-    }
-
 };
 
 }
