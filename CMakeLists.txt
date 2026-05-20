@@ -120,10 +120,16 @@ juce_add_plugin(${PROJECT_NAME}
 )
 
 foreach(folder ${TARGET_PLUGINS})
+    if(APPLE)
+        set(resource_dest "$<TARGET_FILE_DIR:${PROJECT_NAME}>/${folder}")
+    else()
+        set(resource_dest "$<TARGET_FILE_DIR:${PROJECT_NAME}_${folder}>")
+    endif()
+
     add_custom_command(TARGET ${PROJECT_NAME}_${folder} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
             "${CMAKE_CURRENT_SOURCE_DIR}/Source/Resources/presets_info.xml"
-            "$<TARGET_FILE_DIR:${PROJECT_NAME}_${folder}>/GoldenSunVST_presets_info.xml"
+            "${resource_dest}/GoldenSunVST_presets_info.xml"
     )
 endforeach()
 
